@@ -72,7 +72,7 @@
 //                 centerTitle: true,
 //                 pinned: true,
 //                 stretch: true,
-//                 title: TextView("Account", size: 20.0, color: Colors.white),
+//                 title: TextView(text:"Account", size: 20.0, color: Colors.white),
 //                 leading: IconButton(
 //                   icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
 //                   onPressed: () => Navigator.of(context).pop(),
@@ -109,7 +109,7 @@
 //                       },
 //                       child: Padding(
 //                         padding: const EdgeInsets.all(8.0),
-//                         child: TextView(
+//                         child: TextView(text:
 //                           "Deposit",
 //                           size: 24.0,
 //                           fontWeight: FontWeight.bold,
@@ -150,7 +150,7 @@
 //                             );
 //                           }
 //                           return Center(
-//                             child: TextView(
+//                             child: TextView(text:
 //                               "You don't have a deposit in this bank",
 //                             ),
 //                           );
@@ -159,7 +159,7 @@
 //                     ),
 //                     Padding(
 //                       padding: const EdgeInsets.all(8.0),
-//                       child: TextView(
+//                       child: TextView(text:
 //                         "Loan",
 //                         size: 24.0,
 //                         fontWeight: FontWeight.bold,
@@ -203,7 +203,7 @@
 //                             );
 //                           }
 //                           return Center(
-//                             child: TextView(
+//                             child: TextView(text:
 //                               "You don't have a loan in this bank",
 //                             ),
 //                           );
@@ -214,7 +214,7 @@
 //                       padding: const EdgeInsets.all(8.0),
 //                       child: Visibility(
 //                         visible: false,
-//                         child: TextView(
+//                         child: TextView(text:
 //                           "Chitty",
 //                           size: 24.0,
 //                           fontWeight: FontWeight.bold,
@@ -262,7 +262,7 @@
 //                               );
 //                             }
 //                             return Center(
-//                               child: TextView(
+//                               child: TextView(text:
 //                                 "You don't have a chitty in this bank",
 //                               ),
 //                             );
@@ -272,7 +272,7 @@
 //                     ),
 //                     Padding(
 //                       padding: const EdgeInsets.all(8.0),
-//                       child: TextView(
+//                       child: TextView(text:
 //                         "Share",
 //                         size: 24.0,
 //                         fontWeight: FontWeight.bold,
@@ -312,7 +312,7 @@
 //                             );
 //                           }
 //                           return Center(
-//                             child: TextView(
+//                             child: TextView(text:
 //                               "You don't have a share in this bank",
 //                             ),
 //                           );
@@ -411,7 +411,9 @@ class _AccountMenusState extends State<AccountMenus>
                 centerTitle: true,
                 pinned: true,
                 stretch: true,
-                title: TextView("Account", size: 20.0, color: Colors.white),
+                title:
+                
+                 TextView(text:"Account", size: 20.0, color: Colors.white),
               ),
               SliverSafeArea(
                 sliver: SliverList(
@@ -444,7 +446,7 @@ class _AccountMenusState extends State<AccountMenus>
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: TextView(
+                        child: TextView(text:
                           "Deposit",
                           size: 24.0,
                           fontWeight: FontWeight.bold,
@@ -490,7 +492,7 @@ class _AccountMenusState extends State<AccountMenus>
                             );
                           } else {
                             return Center(
-                              child: TextView(
+                              child: TextView(text:
                                 "You don't have a deposit in this bank",
                               ),
                             );
@@ -500,7 +502,7 @@ class _AccountMenusState extends State<AccountMenus>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextView(
+                      child: TextView(text:
                         "Loan",
                         size: 24.0,
                         fontWeight: FontWeight.bold,
@@ -542,7 +544,7 @@ class _AccountMenusState extends State<AccountMenus>
                             );
                           } else {
                             return Center(
-                              child: TextView(
+                              child: TextView(text:
                                 "You don't have a loan in this bank",
                               ),
                             );
@@ -552,7 +554,7 @@ class _AccountMenusState extends State<AccountMenus>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextView(
+                      child: TextView(text:
                         "Chitty",
                         size: 24.0,
                         fontWeight: FontWeight.bold,
@@ -594,7 +596,7 @@ class _AccountMenusState extends State<AccountMenus>
                             );
                           } else {
                             return Center(
-                              child: TextView(
+                              child: TextView(text:
                                 "You don't have a chitty in this bank",
                               ),
                             );
@@ -604,7 +606,7 @@ class _AccountMenusState extends State<AccountMenus>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextView(
+                      child: TextView(text:
                         "Share",
                         size: 24.0,
                         fontWeight: FontWeight.bold,
@@ -647,7 +649,7 @@ class _AccountMenusState extends State<AccountMenus>
                                   });*/
                           } else {
                             return Center(
-                              child: TextView(
+                              child: TextView(text:
                                 "You don't have a share in this bank",
                               ),
                             );

@@ -57,6 +57,10 @@ dependencies:
   meta: any
   shared_preferences_web: any
   url_launcher_web: any
+  font_awesome_flutter: ^10.8.0
+  screenshot: ^3.0.0
+  share_plus: ^11.0.0
+  qr_flutter: ^4.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

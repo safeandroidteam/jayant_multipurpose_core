@@ -206,7 +206,7 @@ class _CardBlockState extends State<CardBlock> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [TextView("Enter OTP", size: 24.0), SizedBox(height: 10.0)],
+        children: [TextView(text: "Enter OTP", size: 24.0), SizedBox(height: 10.0)],
       ),
       actionButton: StatefulBuilder(
         builder:

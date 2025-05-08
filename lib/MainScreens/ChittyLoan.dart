@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passbook_core_jayant/Passbook/ChittyTransaction.dart';
 import 'package:passbook_core_jayant/Passbook/LoanTransaction.dart';
 import 'package:passbook_core_jayant/Passbook/Model/PassbookListModel.dart';
+import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../REST/RestAPI.dart';
 
 class ChittyLoan extends StatefulWidget {
   ///if [type] is null it will show loan details. if it is "MMBS" it show chitty details.
@@ -24,18 +24,25 @@ class ChittyLoan extends StatefulWidget {
 class _ChittyLoanState extends State<ChittyLoan> {
   bool? isShare; // Initialize with default value
 
-  Future<List<PassbookItem>> getChittyShare() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
+  static const double spaceBetween = 3.0;
+  late SharedPreferences preferences;
+  loadDPShCard() async {
+    preferences = await SharedPreferences.getInstance();
 
-    Map<String, dynamic> res = await RestAPI().get(
-      "${APis.otherAccListInfo}${pref.getString(StaticValues.custID)}&Acc_Type=${widget.type ?? "LN"}",
-    );
-    successPrint("${widget.type} Data in Chitty Loan page=$res");
-    PassbookListModel transactionModel = PassbookListModel.fromJson(res);
-    return transactionModel.table!;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final passBookBloc = PassBookBloc.get(context);
+      var id = preferences.getString(StaticValues.custID) ?? "";
+      passBookBloc.add(ChittyLoanEvent(id, widget.type ?? ""));
+    });
   }
 
-  static const double spaceBetween = 3.0;
+  @override
+  void initState() {
+    isShare = widget.type == "LN" ? null : widget.type.toLowerCase() == "sh";
+    warningPrint("isShare=$isShare");
+    loadDPShCard();
+    super.initState();
+  }
 
   Widget accountDetailWidget(PassbookItem passbookTable) {
     return Card(
@@ -61,15 +68,15 @@ class _ChittyLoanState extends State<ChittyLoan> {
                         padding: const EdgeInsets.symmetric(
                           vertical: spaceBetween,
                         ),
-                        child: TextView(
+                        child: TextView(text:
                           "Balance ${StaticValues.rupeeSymbol}",
                           size: 12.0,
                         ),
                       ),
                     ),
-                    TableCell(child: TextView( ":")),
+                    TableCell(child: TextView(text:":")),
                     TableCell(
-                      child: TextView(
+                      child: TextView(text:
                         passbookTable.balance!.toStringAsFixed(2),
                         size: 16.0,
                         fontWeight: FontWeight.bold,
@@ -84,16 +91,11 @@ class _ChittyLoanState extends State<ChittyLoan> {
                         padding: const EdgeInsets.symmetric(
                           vertical: spaceBetween,
                         ),
-                        child: TextView( "Account Number", size: 12.0),
+                        child: TextView(text:"Account Number", size: 12.0),
                       ),
                     ),
-                    TableCell(child: TextView( ":")),
-                    TableCell(
-                      child: TextView(
-                        "${passbookTable.accNo}",
-                        size: 12.0,
-                      ),
-                    ),
+                    TableCell(child: TextView(text:":")),
+                    TableCell(child: TextView(text:passbookTable.accNo, size: 12.0)),
                   ],
                 ),
                 TableRow(
@@ -103,23 +105,19 @@ class _ChittyLoanState extends State<ChittyLoan> {
                         padding: const EdgeInsets.symmetric(
                           vertical: spaceBetween,
                         ),
-                        child: TextView(
-                         
-                              isShare == null
-                                  ? "Loan"
-                                  : isShare == true
-                                  ? "Share Type"
-                                  : "Chitty Type",
+                        child: TextView(text:
+                          isShare == null
+                              ? "Loan"
+                              : isShare == true
+                              ? "Share Type"
+                              : "Chitty Type",
                           size: 12.0,
                         ),
                       ),
                     ),
-                    TableCell(child: TextView( ":")),
+                    TableCell(child: TextView(text:":")),
                     TableCell(
-                      child: TextView(
-                        "${passbookTable.schName}",
-                        size: 12.0,
-                      ),
+                      child: TextView(text:passbookTable.schName, size: 12.0),
                     ),
                   ],
                 ),
@@ -127,18 +125,13 @@ class _ChittyLoanState extends State<ChittyLoan> {
                   children: <Widget>[
                     TableCell(
                       child: Padding(
-                        padding:  EdgeInsets.symmetric(
-                          vertical: spaceBetween,
-                        ),
-                        child: TextView( "Account Branch", size: 12.0),
+                        padding: EdgeInsets.symmetric(vertical: spaceBetween),
+                        child: TextView(text:"Account Branch", size: 12.0),
                       ),
                     ),
-                    TableCell(child: TextView( ":")),
+                    TableCell(child: TextView(text:":")),
                     TableCell(
-                      child: TextView(
-                        "${passbookTable.depBranch}",
-                        size: 12.0,
-                      ),
+                      child: TextView(text:passbookTable.depBranch, size: 12.0),
                     ),
                   ],
                 ),
@@ -156,10 +149,10 @@ class _ChittyLoanState extends State<ChittyLoan> {
                             (context) =>
                                 isShare == null
                                     ? LoanTransaction(
-                                      accNo: passbookTable.accNo!,
+                                      accNo: passbookTable.accNo,
                                     )
                                     : ChittyTransaction(
-                                      accNo: passbookTable.accNo!,
+                                      accNo: passbookTable.accNo,
                                     ),
                       ),
                     ),
@@ -171,7 +164,7 @@ class _ChittyLoanState extends State<ChittyLoan> {
                   color: Theme.of(context).dividerColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextView(
+                    child: TextView(text:
                       "view details",
                       size: 12.0,
                       color: Colors.white,
@@ -184,13 +177,6 @@ class _ChittyLoanState extends State<ChittyLoan> {
         ),
       ),
     );
-  }
-
-  @override
-  void initState() {
-    isShare = widget.type == "LN" ? null : widget.type.toLowerCase() == "sh";
-    warningPrint("isShare=$isShare");
-    super.initState();
   }
 
   @override
@@ -213,27 +199,35 @@ class _ChittyLoanState extends State<ChittyLoan> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: FutureBuilder<List<PassbookItem>?>(
-        future: getChittyShare(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: BlocBuilder<PassBookBloc, PassBookState>(
+        buildWhen:
+            (previous, current) =>
+                current is ChittyLoanLoading ||
+                current is ChittyLoanResponse ||
+                current is ChittyLoanErrorException ,
+
+        builder: (context, state) {
+          if (state is PassBookBlocInitial) {
             return Stack(
               children: [Center(child: CircularProgressIndicator())],
             );
           }
-          if (!snapshot.hasData) {
+          if (state is ChittyLoanLoading) {
             return Stack(
-              children: [
-                Center(
-                  child: TextView(
-                   
-                        "You don't have a ${widget.type == "" ? 'loan' : 'chitty'} in this bank",
-                  ),
-                ),
-              ],
+              children: [Center(child: CircularProgressIndicator())],
             );
-          } else {
-            if (snapshot.data!.isNotEmpty)
+          } else if (state is ChittyLoanResponse) {
+            if (state.passbookItemList.isEmpty) {
+              return Stack(
+                children: [
+                  Center(
+                    child: TextView(text:
+                      "You don't have a ${widget.type == "" ? 'loan' : 'chitty'} in this bank",
+                    ),
+                  ),
+                ],
+              );
+            } else {
               return SingleChildScrollView(
                 child: SafeArea(
                   child: Padding(
@@ -245,26 +239,30 @@ class _ChittyLoanState extends State<ChittyLoan> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              TextView(
-                                snapshot.data![0].custName!,
+                              TextView(text:
+                                state.passbookItemList[0].custName,
                                 size: 16.0,
                               ),
                               Text(
-                                snapshot.data![0].address!.split(",").join(","),
+                                state.passbookItemList[0].address!
+                                    .split(",")
+                                    .join(","),
                               ),
                             ],
                           ),
                           subtitle: Text(
-                            snapshot.data![0].brName!,
+                            state.passbookItemList[0].brName,
                             style: TextStyle(fontSize: 12.0),
                           ),
                         ),
                         ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: snapshot.data!.length,
+                          itemCount: state.passbookItemList.length,
                           itemBuilder: (context, index) {
-                            return accountDetailWidget(snapshot.data![index]);
+                            return accountDetailWidget(
+                              state.passbookItemList[index],
+                            );
                           },
                         ),
                       ],
@@ -272,17 +270,21 @@ class _ChittyLoanState extends State<ChittyLoan> {
                   ),
                 ),
               );
-            else
-              return Stack(
-                children: [
-                  Center(
-                    child: TextView(
-                     
-                          "You don't have a ${widget.type == "LN" ? 'loan' : 'chitty'} in this bank",
-                    ),
+            }
+          } else if (state is ChittyLoanErrorException) {
+            return Stack(
+              children: [Center(child: TextView(text:"Error :${state.error}"))],
+            );
+          } else {
+            return Stack(
+              children: [
+                Center(
+                  child: TextView(text:
+                    "You don't have a ${widget.type == "LN" ? 'loan' : 'chitty'} in this bank",
                   ),
-                ],
-              );
+                ),
+              ],
+            );
           }
         },
       ),

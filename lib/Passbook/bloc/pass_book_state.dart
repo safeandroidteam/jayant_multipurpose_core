@@ -24,7 +24,6 @@ class DPSHCardResponse extends PassBookState {
   final List<PassbookItem> passbookItemList;
 
   const DPSHCardResponse(this.passbookItemList);
-
 }
 
 class DPSHCardErrorException extends PassBookState {
@@ -35,7 +34,6 @@ class DPSHCardErrorException extends PassBookState {
   @override
   List<Object> get props => [error];
 }
-
 
 class DepositShareTransactionLoading extends PassBookState {
   final bool isDPSHCardLoading = false;
@@ -67,3 +65,44 @@ class CurrentPageState extends PassBookState {
   List<Object> get props => [currentPage];
 }
 
+class ChittyLoanLoading extends PassBookState {
+  final bool isChittyLoanLoading = false;
+  @override
+  List<Object> get props => [];
+}
+
+class ChittyLoanResponse extends PassBookState {
+  final List<PassbookItem> passbookItemList;
+
+  const ChittyLoanResponse(this.passbookItemList);
+}
+
+class ChittyLoanErrorException extends PassBookState {
+  final error;
+
+  const ChittyLoanErrorException(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class LoanTransactionLoading extends PassBookState {
+  final bool isLoanTranLoading = false;
+  @override
+  List<Object> get props => [];
+}
+
+class LoanTransactionResponse extends PassBookState {
+  final List<LoanTransTable> loanTransList;
+
+  const LoanTransactionResponse(this.loanTransList);
+}
+
+class LoanTransactionErrorException extends PassBookState {
+  final error;
+
+  const LoanTransactionErrorException(this.error);
+
+  @override
+  List<Object> get props => [error];
+}

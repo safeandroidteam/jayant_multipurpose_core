@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+import 'package:passbook_core_jayant/FundTransfer/FundTransfer.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
-import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
+import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
+import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_event.dart';
+import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_state.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
-import 'package:passbook_core_jayant/Util/util.dart';
+import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
+import 'package:passbook_core_jayant/Util/StaticValue.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OwnBankTransfer extends StatefulWidget {
+  const OwnBankTransfer({super.key});
+
   @override
   _OwnBankTransferState createState() => _OwnBankTransferState();
 }
@@ -18,30 +27,29 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
       accNo = TextEditingController(),
       name = TextEditingController(),
       amt = TextEditingController();
-  String? userName, userAcc = "", userId, userBal = "", custName = "";
+  String userName = "", userAcc = "", userId = "", userBal = "";
   bool mobVal = false, accNoVal = false, nameVal = false, amtVal = false;
-
-  List? accNos = [];
-  String? payerName = "";
+  List fromAc = [];
+  String acType = "";
+  List accNos = [];
+  String payerName = "";
   double amtBoxSize = 70.0;
-  int? toGroupValue = 0;
-
+  int toGroupValue = 0;
+  int fromGroupValue = 0;
   GlobalKey toKey = GlobalKey();
 
-  FocusNode _mobFocusNode = FocusNode();
+  final FocusNode _mobFocusNode = FocusNode();
 
-  ScrollController _customScrollController = ScrollController();
+  final ScrollController _customScrollController = ScrollController();
 
-  SharedPreferences? preferences;
+  late SharedPreferences preferences;
 
-  TransferBloc _transferBloc = TransferBloc(
-    initialState: LoadingTransferState(),
-  );
+  final TransferBloc _transferBloc = TransferBloc();
 
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  double? _minTransferAmt = 0.0, _maxTransferAmt = 0.0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  double _minTransferAmt = 0.0, _maxTransferAmt = 0.0;
 
-  Map<String, dynamic>? _referanceNo = Map();
+  Map<String, dynamic> _referanceNo = {};
 
   @override
   void dispose() {
@@ -68,16 +76,6 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
     super.initState();
   }
 
-  bool proceed = false;
-
-  void _buttonChange() {
-    setState(() {
-      if (!proceed) {
-        proceed = true;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -102,16 +100,9 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                   expandedHeight: MediaQuery.of(context).size.width / .8,
                   pinned: true,
                   stretch: true,
-                  title: Text(
-                    "Own Bank Transfer",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  title: Text("Own Bank Transfer"),
                   leading: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 30.0,
-                    ),
+                    icon: Icon(Icons.arrow_back, size: 30.0),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   flexibleSpace: FlexibleSpaceBar(
@@ -129,7 +120,8 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                         Icon(Icons.person, size: 56.0, color: Colors.white),
                         SizedBox(height: 5.0),
                         TextView(
-                          "Paying ${payerName == null || payerName!.isEmpty ? "____" : payerName}",
+                          text:
+                              "Paying ${payerName.isEmpty ? "____" : payerName}",
                           color: Colors.white,
                         ),
                         SizedBox(
@@ -142,14 +134,13 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                             maxLength: 8,
                             maxLines: 1,
                             hintColor: Colors.white60,
-                            size: 48,
+                            size: 56,
                             setDecoration: false,
                             setBorder: false,
-                            borderColor: Colors.transparent,
                             textAlign: TextAlign.center,
                             textCapitalization: TextCapitalization.words,
                             prefix: TextView(
-                              StaticValues.rupeeSymbol,
+                              text: StaticValues.rupeeSymbol,
                               size: 24,
                               color: Colors.white,
                             ),
@@ -164,14 +155,22 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                           ),
                         ),
                         TextView(
-                          "Minimum amount ${StaticValues.rupeeSymbol} $_minTransferAmt",
+                          text:
+                              "Minimum amount ${StaticValues.rupeeSymbol} $_minTransferAmt",
                           size: 10,
                           color: Colors.white,
                         ),
                         SizedBox(height: 20.0),
-                        TextView(userBal, size: 24, color: Colors.greenAccent),
+                        TextView(
+                          text: userBal,
+                          size: 24,
+                          color: Colors.greenAccent,
+                        ),
                         SizedBox(height: 10.0),
-                        TextView("Available Balance", color: Colors.white),
+                        TextView(
+                          text: "Available Balance",
+                          color: Colors.white,
+                        ),
                       ],
                     ),
                   ),
@@ -188,7 +187,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                             key: toKey,
                             children: [
                               TextView(
-                                "To",
+                                text: "To",
                                 size: 24.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey,
@@ -197,6 +196,9 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width * .75,
                                 child: EditTextBordered(
+                                  setBorder: true,
+                                  borderColor: Theme.of(context).primaryColor,
+                                  setDecoration: true,
                                   controller: mob,
                                   hint: "Enter payer mobile no.",
                                   errorText:
@@ -207,20 +209,23 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                                   focusNode: _mobFocusNode,
                                   obscureIcon: InkWell(
                                     onTap: () {
+                                      customPrint(
+                                        "blue button clicked with icon",
+                                      );
                                       if (mob.text.isNotEmpty && !mobVal) {
                                         _transferBloc.add(
                                           FetchCustomerAccNo(mob.text),
                                         );
                                       } else {
                                         GlobalWidgets().showSnackBar(
-                                          _scaffoldKey,
+                                          context,
                                           "Mobile number is invalid",
                                         );
                                       }
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).focusColor,
+                                        color: Theme.of(context).dividerColor,
                                         shape: BoxShape.circle,
                                         boxShadow: [
                                           BoxShadow(
@@ -231,15 +236,15 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                                           ),
                                         ],
                                       ),
-                                      child: Icon(
-                                        Icons.chevron_right,
-                                        color: Colors.white,
-                                        size: 30.0,
-                                      ),
                                       padding: EdgeInsets.all(5.0),
                                       margin: EdgeInsets.symmetric(
                                         horizontal: 10.0,
                                         vertical: 2.0,
+                                      ),
+                                      child: Icon(
+                                        Icons.chevron_right,
+                                        color: Colors.white,
+                                        size: 30.0,
                                       ),
                                     ),
                                   ),
@@ -254,54 +259,56 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                           ),
                           BlocListener<TransferBloc, TransferState>(
                             bloc: _transferBloc,
+                            listenWhen:
+                                (previous, current) =>
+                                    current is LoadingTransferState ||
+                                    current is CustAccNoResponse ||
+                                    current is CustAccNoError,
                             listener: (context, snapshot) {
                               if (snapshot is CustAccNoResponse) {
                                 setState(() {
-                                  if (snapshot.response!["Table"][0]["ACCNO"] ==
+                                  if (snapshot.response["Table"][0]["ACCNO"] ==
                                       "N") {
                                     mobVal = true;
                                     GlobalWidgets().showSnackBar(
-                                      _scaffoldKey,
+                                      context,
                                       "Mobile number does not exist",
                                     );
                                   } else {
-                                    accNos = snapshot.response!["Table"];
-                                    payerName =
-                                        snapshot
-                                            .response!["Table"][0]["Cust_Name"];
-                                    _buttonChange();
+                                    accNos = snapshot.response["Table"];
+                                    //   payerName = snapshot.response["Table"][0]["Cust_Name"];
                                   }
                                 });
                               }
                             },
                             child:
-                                accNos!.length > 0
+                                accNos.isNotEmpty
                                     ? ListView.builder(
                                       shrinkWrap: true,
                                       physics: NeverScrollableScrollPhysics(),
-                                      itemCount: accNos!.length,
+                                      itemCount: accNos.length,
                                       itemBuilder: (context, index) {
                                         return RadioListTile(
                                           value: index,
                                           groupValue: toGroupValue,
-                                          onChanged: (dynamic value) {
+                                          onChanged: (value) {
                                             setState(() {
-                                              toGroupValue = value;
+                                              toGroupValue = value!;
                                             });
                                           },
                                           title: TextView(
-                                            accNos![index]["ACCNO"],
+                                            text: accNos[index]["ACCNO"],
                                             size: 24,
                                           ),
                                           subtitle: TextView(
                                             //  "SB INDIVIDUAL",
-                                            accNos![index]["Cust_FirstName"],
+                                            text: accNos[index]["Cust_Name"],
                                             size: 12.0,
                                           ),
                                         );
                                       },
                                     )
-                                    : Container(),
+                                    : SizedBox.shrink(),
                           ),
                           SizedBox(height: 20.0),
                           Divider(
@@ -311,17 +318,41 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                           ),
                           SizedBox(height: 20.0),
                           TextView(
-                            "From",
+                            text: "From",
                             size: 24.0,
                             fontWeight: FontWeight.bold,
                             color: Colors.grey,
                           ),
-                          RadioListTile(
-                            value: 1,
-                            groupValue: 1,
-                            onChanged: null,
-                            title: TextView(userAcc, size: 24),
-                            subtitle: TextView("SB INDIVIDUAL", size: 12.0),
+                          if (fromAc.isEmpty)
+                            Center(child: Text("NO Account Found")),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: fromAc.length,
+                            itemBuilder: (context, index) {
+                              return RadioListTile(
+                                value: index,
+                                groupValue: fromGroupValue,
+                                onChanged: (value) {
+                                  setState(() {
+                                    fromGroupValue = value!;
+                                    userAcc = fromAc[index]["AccNo"].toString();
+                                    warningPrint("UserAcc=$userAcc");
+                                    userBal =
+                                        fromAc[index]["BalAmt"].toString();
+                                    warningPrint("UserBal=$userBal");
+                                  });
+                                },
+                                title: TextView(
+                                  text: fromAc[index]["AccNo"] ?? "",
+                                  size: 24,
+                                ),
+                                subtitle: TextView(
+                                  text: fromAc[index]["Types"] ?? "",
+                                  size: 12.0,
+                                ),
+                              );
+                            },
                           ),
                           SizedBox(height: 100.0),
                         ],
@@ -338,174 +369,206 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
               child: BlocListener<TransferBloc, TransferState>(
                 bloc: _transferBloc,
                 listener: (context, snapshot) {
-                  if (snapshot is DetailsResponse) {
-                    print(
-                      "object __ ${snapshot.response!["Table"][0]["Column1"]}",
+                  if (accNos[toGroupValue]["ACCNO"].toString() == userAcc) {
+                    Fluttertoast.showToast(
+                      msg: "You cannot send money to the same account",
+                      toastLength: Toast.LENGTH_SHORT,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.black54,
+                      textColor: Colors.white,
+                      fontSize: 16.0,
                     );
-                    if (snapshot.response!["Table"][0]["Column1"]
+                  } else if (snapshot is DetailsResponse) {
+                    print(
+                      "object __ ${snapshot.response["Table"][0]["Column1"]}",
+                    );
+                    if (snapshot.response["Table"][0]["Column1"]
                             .toString()
                             .toLowerCase() ==
                         'y') {
                       bool isLoading = false;
-                      String? _pass, _otp;
+                      String pass = "";
+                      String otp = "";
+                      String ogPassword =
+                          preferences.getString(StaticValues.userPass) ?? "";
                       GlobalWidgets().proceedToPaymentModal(
                         context,
                         getValue: (passVal, otpVal) {
+                          debugPrint("passval=$passVal");
+                          debugPrint("otpVal=$otpVal");
                           setState(() {
-                            _pass = passVal;
-                            _otp = otpVal;
+                            pass = passVal;
+                            otp = otpVal;
                           });
                         },
                         actionButton: CustomRaisedButton(
                           loadingValue: isLoading,
                           buttonText: "PAY",
                           onPressed:
-                              isLoading
-                                  ? () {}
+                              isLoading == true
+                                  ? null
                                   : () async {
-                                    print(
-                                      "passVal : $_pass and otpCtrl : $_otp",
-                                    );
-                                    if (_pass != null && _otp != null) {
-                                      Map otpValidateResponse = await (RestAPI()
-                                          .get(
-                                            APis.fundTransferOTPValidation({
-                                              "Acc_No": userAcc,
-                                              "OTP": _otp,
-                                            }),
-                                          ));
-                                      if (otpValidateResponse["Table"][0]["status"]
-                                              .toString()
-                                              .toLowerCase() ==
-                                          "y") {
-                                        Map<String, String?> params = {
-                                          "Customer_AccNo": userAcc,
-                                          "Customer_Mobileno": "",
-                                          "ShopAccno":
-                                              accNos![toGroupValue!]["ACCNO"]
-                                                  .toString(),
-                                          "PayAmount": amt.text,
-                                          "st_otp": _otp,
-                                          "RefNo":
-                                              _referanceNo!["Table"][0]["Tran_No"],
-                                        };
-
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-
-                                        try {
-                                          Map? response = await (RestAPI()
-                                              .get<Map>(
-                                                APis.ownBankFundTrans2(params),
-                                              ));
-
-                                          setState(() {
-                                            isLoading = false;
-                                          });
-
-                                          if (response!["Table"][0]["Status"]
-                                                  .toString()
-                                                  .toLowerCase() ==
-                                              "y") {
-                                            Navigator.of(
-                                              context,
-                                            ).pushAndRemoveUntil(
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (context) => Receipt(
-                                                      pushReplacementName:
-                                                          "/HomePage",
-                                                      amount: amt.text,
-                                                      transID:
-                                                          response["Table"][0]["TranNO"]
-                                                              .toString(),
-                                                      message:
-                                                          response["Table"][0]["message"],
-                                                      //   paidTo: payerName,
-                                                      paidTo:
-                                                          accNos![toGroupValue!]["ACCNO"]
-                                                              .toString(),
-                                                      accTo:
-                                                          accNos![toGroupValue!]["ACCNO"]
-                                                              .toString(),
-                                                      accFrom: userAcc,
-                                                    ),
-                                              ),
-                                              (Route<dynamic> route) => false,
-                                            );
-                                          } else {
-                                            Navigator.pop(context);
-                                            Navigator.of(
-                                              context,
-                                            ).pushAndRemoveUntil(
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (context) => Receipt(
-                                                      isFailure: true,
-                                                      pushReplacementName:
-                                                          "/HomePage",
-                                                      amount: amt.text,
-                                                      transID: "",
-                                                      message:
-                                                          response["Table"][0]["message"],
-                                                      //    paidTo: toBeginningOfSentenceCase(payerName).toString(),
-                                                      paidTo:
-                                                          accNos![toGroupValue!]["ACCNO"]
-                                                              .toString(),
-                                                      accTo:
-                                                          accNos![toGroupValue!]["ACCNO"]
-                                                              .toString(),
-                                                      accFrom: userAcc,
-                                                    ),
-                                              ),
-                                              (Route<dynamic> route) => false,
-                                            );
-                                          }
-                                        } on RestException catch (e) {
-                                          setState(() {
-                                            isLoading = false;
-                                          });
-                                          Navigator.of(context).pop();
-                                          GlobalWidgets().showSnackBar(
-                                            _scaffoldKey,
-                                            e.message,
-                                          );
-                                        }
-                                      } else {
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-
+                                    debugPrint("passVal $pass otpCtrl : $otp");
+                                    if ((pass.trim().isNotEmpty) &&
+                                        (otp.trim().isNotEmpty)) {
+                                      if (pass != ogPassword) {
                                         Fluttertoast.showToast(
-                                          msg: "Invalid OTP",
+                                          msg: "Invalid password",
                                           toastLength: Toast.LENGTH_SHORT,
                                           timeInSecForIosWeb: 1,
                                           backgroundColor: Colors.black54,
                                           textColor: Colors.white,
                                           fontSize: 16.0,
                                         );
-                                        Navigator.pop(context);
-                                      }
-                                    } else {
-                                      _pass == null && _otp != null
-                                          ? Fluttertoast.showToast(
-                                            msg: "Incorrect password",
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            timeInSecForIosWeb: 1,
-                                            backgroundColor: Colors.black54,
-                                            textColor: Colors.white,
-                                            fontSize: 16.0,
-                                          )
-                                          : Fluttertoast.showToast(
-                                            msg:
-                                                "Password & OTP should not be empty",
+                                      } else {
+                                        Map otpValidateResponse =
+                                            await RestAPI().get(
+                                              APis.fundTransferOTPValidation({
+                                                "Acc_No": userAcc,
+                                                "OTP": otp,
+                                              }),
+                                            );
+                                        if (otpValidateResponse["Table"][0]["status"]
+                                                .toString()
+                                                .toLowerCase() ==
+                                            "y") {
+                                          Map<String, String> params = {
+                                            "Customer_AccNo":
+                                                userAcc.toString(),
+                                            "Customer_Mobileno": "",
+                                            "ShopAccno":
+                                                accNos[toGroupValue]["ACCNO"]
+                                                    .toString(),
+                                            "PayAmount": amt.text,
+                                            "st_otp": otp,
+                                            "RefNo":
+                                                _referanceNo["Table"][0]["Tran_No"],
+                                          };
+
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+
+                                          try {
+                                            Map response = await RestAPI().get<
+                                              Map
+                                            >(APis.ownBankFundTrans2(params));
+
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+
+                                            if ((response["Table"][0]["Status"]
+                                                        .toString()
+                                                        .toLowerCase() ==
+                                                    "y") &&
+                                                (response["Table"][0]["TranNO"]
+                                                        .toString()
+                                                        .toLowerCase() !=
+                                                    "")) {
+                                              Navigator.of(
+                                                context,
+                                              ).pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) => Receipt(
+                                                        pushReplacementNamed:
+                                                           "/FundTransfer",
+                                                        amount: amt.text,
+                                                        transID:
+                                                            response["Table"][0]["TranNO"]
+                                                                .toString(),
+                                                        paidTo: payerName,
+                                                        accTo:
+                                                            accNos[toGroupValue]["ACCNO"]
+                                                                .toString(),
+                                                        message:
+                                                            "Transaction Sucess",
+                                                        accFrom: userAcc,
+                                                      ),
+                                                ),
+                                                (Route<dynamic> route) => false,
+                                              );
+                                            } else {
+                                              Navigator.pop(context);
+                                              Navigator.of(
+                                                context,
+                                              ).pushAndRemoveUntil(
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) => Receipt(
+                                                        isFailure: true,
+                                                        pushReplacementNamed:
+"/FundTransfer",
+                                                        amount: amt.text,
+                                                        transID: "",
+                                                        paidTo:
+                                                            toBeginningOfSentenceCase(
+                                                              payerName,
+                                                            ).toString(),
+                                                        accTo:
+                                                            accNos[toGroupValue]["ACCNO"]
+                                                                .toString(),
+                                                        message:
+                                                            "Transaction Failed",
+                                                        accFrom: userAcc,
+                                                      ),
+                                                ),
+                                                (Route<dynamic> route) => false,
+                                              );
+                                            }
+                                          } on RestException catch (e) {
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                            Navigator.of(context).pop();
+                                            GlobalWidgets().showSnackBar(
+                                              context,
+                                              e.message,
+                                            );
+                                          }
+                                        } else {
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                          Fluttertoast.showToast(
+                                            msg: "Invalid OTP",
                                             toastLength: Toast.LENGTH_SHORT,
                                             timeInSecForIosWeb: 1,
                                             backgroundColor: Colors.black54,
                                             textColor: Colors.white,
                                             fontSize: 16.0,
                                           );
+                                        }
+                                      }
+                                    } else if (pass.isEmpty && otp.isEmpty) {
+                                      Fluttertoast.showToast(
+                                        msg:
+                                            "Password & OTP should not be empty",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.black54,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0,
+                                      );
+                                    } else if (pass.isEmpty) {
+                                      Fluttertoast.showToast(
+                                        msg: "Password is empty",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.black54,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0,
+                                      );
+                                    } else if (otp.isEmpty) {
+                                      Fluttertoast.showToast(
+                                        msg: "Otp is empty",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.black54,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0,
+                                      );
                                     }
                                   },
                         ),
@@ -513,7 +576,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                     } else {
                       Navigator.of(context).pop();
                       GlobalWidgets().showSnackBar(
-                        _scaffoldKey,
+                        context,
                         ("Something went wrong please try again"),
                       );
                     }
@@ -521,67 +584,73 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                 },
                 child: BlocBuilder<TransferBloc, TransferState>(
                   bloc: _transferBloc,
+                  buildWhen:
+                      (previous, current) =>
+                          current is DetailsLoadingState ||
+                          current is DetailsResponse ||
+                          current is DetailsError,
                   builder: (context, snapshot) {
                     print("snapshot :: $snapshot");
-                    return Visibility(
-                      visible: proceed,
-                      child: CustomRaisedButton(
-                        loadingValue: snapshot is LoadingTransferState,
-                        onPressed: () async {
-                          print("accNos.length :: ${accNos!.length}");
-                          if (amt.text.isNotEmpty &&
-                              int.parse(amt.text) >= _minTransferAmt! &&
-                              double.parse(amt.text) <= _maxTransferAmt! &&
-                              double.parse(amt.text) <=
-                                  double.parse(userBal!)) {
-                            if (mob.text.isEmpty ||
-                                !mobVal && accNos!.length <= 0) {
-                              GlobalWidgets().showSnackBar(
-                                _scaffoldKey,
-                                ("Enter Payer Mobile number and select an account to transfer"),
-                                actions: SnackBarAction(
-                                  label: "Okay",
-                                  textColor: Colors.white,
-                                  onPressed: () {},
-                                ),
-                              );
-                            } else {
-                              print(
-                                "selectedAccNo :: ${accNos![toGroupValue!]["ACCNO"]}",
-                              );
-                              print(accNos![toGroupValue!]["ACCNO"].toString());
-                              Map<String, dynamic> params = {
-                                "Customer_AccNo": userAcc,
-                                "BankId": "",
-                                "Customer_Mobileno": "",
-                                "ShopAccno": accNos![toGroupValue!]["ACCNO"],
-                                "PayAmount": amt.text,
-                              };
-                              _transferBloc.add(
-                                SendDetails(APis.ownFundTransferOTP(params)),
-                              );
-                              _referanceNo = await RestAPI().get(
-                                APis.generateRefID("ownBankTransfer"),
-                              );
-
-                              print("REFNO$_referanceNo");
-                            }
+                    return CustomRaisedButton(
+                      loadingValue: snapshot is DetailsLoadingState,
+                      onPressed: () async {
+                        print("accNos.length :: ${accNos.length}");
+                        if (amt.text.isNotEmpty &&
+                            int.parse(amt.text) >= _minTransferAmt &&
+                            double.parse(amt.text) <= _maxTransferAmt &&
+                            double.parse(amt.text) <=
+                                double.parse(userBal ?? "")) {
+                          if (mob.text.isEmpty || !mobVal && accNos.isEmpty) {
+                            GlobalWidgets().showSnackBar(
+                              context,
+                              ("Enter Payer Mobile number and select an account to transfer"),
+                              actions: SnackBarAction(
+                                label: "Okay",
+                                textColor: Colors.white,
+                                onPressed: () {},
+                              ),
+                            );
                           } else {
-                            if (double.parse(amt.text == "" ? "0" : amt.text) >
-                                double.parse(userBal!)) {
-                              GlobalWidgets().showSnackBar(
-                                _scaffoldKey,
-                                "Insufficient Balance",
-                              );
-                            } else
-                              GlobalWidgets().showSnackBar(
-                                _scaffoldKey,
-                                ("Minimum amount is ${StaticValues.rupeeSymbol}$_minTransferAmt and Maximum amount is ${StaticValues.rupeeSymbol}$_maxTransferAmt"),
-                              );
+                            print(
+                              "selectedAccNo :: ${accNos[toGroupValue]["ACCNO"]}",
+                            );
+                            setState(() {
+                              payerName = accNos[toGroupValue]["Cust_Name"];
+                            });
+                            print(
+                              "selectedCUSTNAME :: ${accNos[toGroupValue]["Cust_Name"]}",
+                            );
+                            Map<String, dynamic> params = {
+                              "Customer_AccNo": userAcc,
+                              "BankId": "",
+                              "Customer_Mobileno": "",
+                              "ShopAccno": accNos[toGroupValue]["ACCNO"],
+                              "PayAmount": amt.text,
+                            };
+                            _transferBloc.add(
+                              SendDetails(APis.ownFundTransferOTP(params)),
+                            );
+                            _referanceNo = await RestAPI().get(
+                              APis.generateRefID("ownBankTransfer"),
+                            );
+
+                            print("REFNO$_referanceNo");
                           }
-                        },
-                        buttonText: "PROCEED",
-                      ),
+                        } else {
+                          if (double.parse(amt.text == "" ? "0" : amt.text) >
+                              double.parse(userBal ?? "")) {
+                            GlobalWidgets().showSnackBar(
+                              context,
+                              "Insufficient Balance",
+                            );
+                          } else
+                            GlobalWidgets().showSnackBar(
+                              context,
+                              ("Minimum amount is ${StaticValues.rupeeSymbol}$_minTransferAmt and Maximum amount is ${StaticValues.rupeeSymbol}$_maxTransferAmt"),
+                            );
+                        }
+                      },
+                      buttonText: "PROCEED",
                     );
                   },
                 ),
@@ -594,23 +663,31 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
   }
 
   void loadData() async {
-    preferences = StaticValues.sharedPreferences;
+    preferences = await SharedPreferences.getInstance();
     setState(() {
-      userName = preferences?.getString(StaticValues.accName) ?? "";
-      userId = preferences?.getString(StaticValues.custID) ?? "";
+      userName = preferences.getString(StaticValues.accName) ?? "";
+      userId = preferences.getString(StaticValues.custID) ?? "";
     });
-    Map? balanceResponse = await RestAPI().get(
+    Map balanceResponse = await RestAPI().get(
       APis.fetchFundTransferBal(userId),
     );
+    successPrint("balance Response=$balanceResponse");
     setState(() {
-      userBal = balanceResponse!["Table"][0]["BalAmt"].toString();
+      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
       userAcc = balanceResponse["Table"][0]["AccNo"].toString();
-      custName = balanceResponse["Table"][0]["Cust_FirstName"].toString();
+      acType = balanceResponse["Table"][0]["Types"].toString();
+      fromAc = balanceResponse["Table"];
+      // fromAc.add([
+      //   {
+      //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
+      //   }
+      // ]);
+      warningPrint("UserAcc=$userAcc");
     });
-    Map? transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
-    print("transDailyLimit::: $transDailyLimit");
+    Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
+    alertPrint("transDailyLimit::: $transDailyLimit");
     setState(() {
-      _minTransferAmt = transDailyLimit!["Table"][0]["Min_fundtranbal"];
+      _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
       _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
       //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
     });

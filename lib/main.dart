@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passbook_core_jayant/FundTransfer/FundTransfer.dart';
+import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
 import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/MainScreens/sub_page.dart';
 import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
@@ -43,7 +45,9 @@ class CoreApp extends StatelessWidget {
     StaticValues.titleDecoration = titleDecoration;
     StaticValues.sharedPreferences = sharedPreferences;
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => PassBookBloc())],
+      providers: [BlocProvider(create: (context) => PassBookBloc()),
+      BlocProvider(create: (context) => TransferBloc())
+      ],
       child: MaterialApp(
         builder: (context, child) {
           return MediaQuery(
@@ -61,6 +65,7 @@ class CoreApp extends StatelessWidget {
           "/SubPage": (BuildContext context) => SubPage(),
           //  "/LoginPage": (BuildContext context) => Login(),
           "/LoginPage": (BuildContext context) => LoginNew(),
+          "/FundTransfer": (BuildContext context) => FundTransfer(),
           "/HomePage":
               (BuildContext context) =>
                   HomePage(homePageConfiguration: homePageConfiguration),

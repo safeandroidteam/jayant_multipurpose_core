@@ -115,7 +115,7 @@ class _ChittyListState extends State<ChittyList> {
                                           dense: true,
                                           isThreeLine: true,
                                           contentPadding: EdgeInsets.all(0.0),
-                                          title: TextView(
+                                          title: TextView(text:
                                             transactionList![index].accNo,
                                             color: Colors.white,
                                             size: 16.0,
@@ -126,13 +126,13 @@ class _ChittyListState extends State<ChittyList> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: <Widget>[
-                                              TextView(
+                                              TextView(text:
                                                 transactionList![index].schName,
                                                 color: Colors.white,
                                                 textAlign: TextAlign.start,
                                                 size: 12.0,
                                               ),
-                                              TextView(
+                                              TextView(text:
                                                 transactionList![index]
                                                     .depBranch,
                                                 color: Colors.white,
@@ -142,13 +142,13 @@ class _ChittyListState extends State<ChittyList> {
                                             ],
                                           ),
                                         ),
-                                        TextView(
+                                        TextView(text:
                                           transactionList![index].balance!
                                               .toStringAsFixed(2),
                                           color: Colors.white,
                                           size: 28,
                                         ),
-                                        TextView(
+                                        TextView(text:
                                           "Available Balance",
                                           color: Colors.white,
                                           size: 13,

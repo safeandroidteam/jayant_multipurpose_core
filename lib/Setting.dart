@@ -50,7 +50,7 @@ class _SettingsState extends State<Settings> {
               thickness: 1,
             ),
             SizedBox(height: 10.0),
-            TextView(
+            TextView(text:
               "Settings",
               color: Colors.grey,
               fontWeight: FontWeight.bold,
@@ -63,12 +63,12 @@ class _SettingsState extends State<Settings> {
                 Icons.lock_outline,
                 color: Theme.of(context).focusColor,
               ),
-              title: TextView(
+              title: TextView(text:
                 "Change Password",
                 fontWeight: FontWeight.bold,
                 size: 16.0,
               ),
-              subtitle: TextView("Change security password", size: 12.0),
+              subtitle: TextView(text:"Change security password", size: 12.0),
             ),
             Divider(
               endIndent: 15,
@@ -82,12 +82,12 @@ class _SettingsState extends State<Settings> {
                 Icons.info_outline,
                 color: Theme.of(context).focusColor,
               ),
-              title: TextView(
+              title: TextView(text:
                 "About Us",
                 fontWeight: FontWeight.bold,
                 size: 16.0,
               ),
-              subtitle: TextView("About this App", size: 12.0),
+              subtitle: TextView(text:"About this App", size: 12.0),
             ),
             Divider(
               endIndent: 15,
@@ -108,12 +108,12 @@ class _SettingsState extends State<Settings> {
                   Icons.qr_code,
                   color: Theme.of(context).focusColor,
                 ),
-                title: TextView(
+                title: TextView(text:
                   "QR Code",
                   fontWeight: FontWeight.bold,
                   size: 16.0,
                 ),
-                subtitle: TextView("Get Your QR Code", size: 12.0),
+                subtitle: TextView(text:"Get Your QR Code", size: 12.0),
               ),
             ),
             Divider(
@@ -135,12 +135,12 @@ class _SettingsState extends State<Settings> {
                   Icons.password,
                   color: Theme.of(context).focusColor,
                 ),
-                title: TextView(
+                title: TextView(text:
                   "MPin",
                   fontWeight: FontWeight.bold,
                   size: 16.0,
                 ),
-                subtitle: TextView("Set and Update Mpin", size: 12.0),
+                subtitle: TextView(text:"Set and Update Mpin", size: 12.0),
               ),
             ),
             // Divider(
@@ -162,7 +162,7 @@ class _SettingsState extends State<Settings> {
             //     height: 30.0,
             //     width: 30.0,
             //   ),
-            //   title: TextView(
+            //   title: TextView(text:
             //     "Logout",
             //     fontWeight: FontWeight.bold,
             //     size: 16.0,
@@ -203,7 +203,7 @@ class _SettingsState extends State<Settings> {
                 children: <Widget>[
                   Visibility(
                     visible: isInvalid.length > 0,
-                    child: TextView(isInvalid, color: Colors.red),
+                    child: TextView(text:isInvalid, color: Colors.red),
                   ),
                   SizedBox(height: 10.0),
                   Row(
@@ -222,7 +222,7 @@ class _SettingsState extends State<Settings> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: TextView("Cancel"),
+                          child: TextView(text:"Cancel"),
                         ),
                       ),
                       ElevatedButton(
@@ -256,7 +256,7 @@ class _SettingsState extends State<Settings> {
                                         oldPasCtrl.text = "";
                                         newPassCtrl.text = "";
                                         GlobalWidgets().showSnackBar(
-                                          _scaffoldKey,
+                                          context,
                                           response["Table"][0]["Status"]
                                               .toString(),
                                         );
@@ -275,7 +275,7 @@ class _SettingsState extends State<Settings> {
                                 },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: TextView(
+                          child: TextView(text:
                             "Change Password",
                             color: Colors.white,
                           ),
@@ -356,12 +356,12 @@ class _SettingsState extends State<Settings> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextView(name ?? "", fontWeight: FontWeight.bold, size: 16),
-          TextView(acc ?? "", size: 14.0),
+          TextView(text:name ?? "", fontWeight: FontWeight.bold, size: 16),
+          TextView(text:acc ?? "", size: 14.0),
           SizedBox(height: 5.0),
         ],
       ),
-      subtitle: TextView(address ?? "", size: 12),
+      subtitle: TextView(text:address ?? "", size: 12),
     );
   }
 

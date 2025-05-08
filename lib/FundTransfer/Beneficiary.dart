@@ -68,7 +68,7 @@ class _BeneficiaryState extends State<Beneficiary> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [TextView("Enter OTP", size: 24.0), SizedBox(height: 10.0)],
+        children: [TextView(text: "Enter OTP", size: 24.0), SizedBox(height: 10.0)],
       ),
       actionButton: StatefulBuilder(
         builder:
@@ -124,7 +124,7 @@ class _BeneficiaryState extends State<Beneficiary> {
         Map response = await (RestAPI().get(APis.addBeneficiary(params)));
         _isLoading = true;
         String status = response["Table"][0]["status"];
-        GlobalWidgets().showSnackBar(_scaffoldKey, status);
+        GlobalWidgets().showSnackBar(context, status);
         if (status == "Success") {
           Navigator.of(context).pop(true);
           Navigator.push(
@@ -134,11 +134,11 @@ class _BeneficiaryState extends State<Beneficiary> {
         }
       } on RestException catch (e) {
         print(e.toString());
-        GlobalWidgets().showSnackBar(_scaffoldKey, "Something went wrong");
+        GlobalWidgets().showSnackBar(context, "Something went wrong");
       }
     } else {
       print("FALSE ::::");
-      GlobalWidgets().showSnackBar(_scaffoldKey, "All fields are mandatory");
+      GlobalWidgets().showSnackBar(context, "All fields are mandatory");
     }
   }
 
@@ -316,7 +316,7 @@ class _BeneficiaryState extends State<Beneficiary> {
                 } else {
                   print("FALSE ::::");
                   GlobalWidgets().showSnackBar(
-                    _scaffoldKey,
+                    context,
                     "All fields are mandatory",
                   );
                 }

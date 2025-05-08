@@ -55,14 +55,14 @@ class DepositCardModel extends StatelessWidget {
           children: [
             Column(
               children: [
-                TextView(
+                TextView(text:
                   accountsDeposit!.accType,
                   size: 16.0,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
                 SizedBox(height: 5.0),
-                TextView(
+                TextView(text:
                   accountsDeposit!.accBranch,
                   size: 16.0,
                   color: Colors.white,
@@ -72,7 +72,7 @@ class DepositCardModel extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: TextView(
+              child: TextView(text:
                 //  accountsDeposit.accNo.replaceAllMapped(RegExp(r".{5}"), (match) => "${match.group(0)} "),
                 accountsDeposit!.accNo,
                 size: 22,
@@ -81,7 +81,7 @@ class DepositCardModel extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.bottomRight,
-              child: TextView(
+              child: TextView(text:
                 "${StaticValues.rupeeSymbol}${accountsDeposit!.balance!.toStringAsFixed(2)}",
                 color: Colors.white,
                 size: 20.0,
@@ -99,13 +99,13 @@ class DepositCardModel extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextView(
+                        TextView(text:
                           "Nominee",
                           textAlign: TextAlign.center,
                           color: Colors.white,
                         ),
                         SizedBox(height: 5.0),
-                        TextView(
+                        TextView(text:
                           accountsDeposit!.nominee,
                           textAlign: TextAlign.center,
                           color: Colors.white,
@@ -119,13 +119,13 @@ class DepositCardModel extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextView(
+                        TextView(text:
                           "Maturity Date",
                           textAlign: TextAlign.center,
                           color: Colors.white,
                         ),
                         SizedBox(height: 5.0),
-                        TextView(
+                        TextView(text:
                           accountsDeposit!.dueDate,
                           textAlign: TextAlign.center,
                           color: Colors.white,
@@ -235,7 +235,7 @@ class LoanCardModel extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 3.0),
                         color: Theme.of(context).primaryColor,
-                        child: TextView(
+                        child: TextView(text:
                           "Due Date",
                           size: keySize,
                           color: Colors.white,
@@ -271,16 +271,16 @@ class LoanCardModel extends StatelessWidget {
               ///To give a space between each row
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView(
+                child: TextView(text:
                   "Balance ${StaticValues.rupeeSymbol}",
                   size: keySize,
                   color: Colors.white,
                 ),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.balance!.toStringAsFixed(2)}",
                 size: 16.0,
                 color: Colors.white,
@@ -294,16 +294,16 @@ class LoanCardModel extends StatelessWidget {
             TableCell(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView(
+                child: TextView(text:
                   "Overdue Amount ${StaticValues.rupeeSymbol}",
                   size: keySize,
                   color: Colors.white,
                 ),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.overdueAmnt}",
                 size: valueSize,
                 color: Colors.white,
@@ -316,16 +316,16 @@ class LoanCardModel extends StatelessWidget {
             TableCell(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView(
+                child: TextView(text:
                   "Overdue Interest ${StaticValues.rupeeSymbol}",
                   size: keySize,
                   color: Colors.white,
                 ),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.overdueIntrest}",
                 size: valueSize,
                 color: Colors.white,
@@ -338,16 +338,16 @@ class LoanCardModel extends StatelessWidget {
             TableCell(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView(
+                child: TextView(text:
                   "Interest @${accountsLoanTable.intrestRate}%",
                   size: keySize,
                   color: Colors.white,
                 ),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.intrest}",
                 size: valueSize,
                 color: Colors.white,
@@ -360,12 +360,12 @@ class LoanCardModel extends StatelessWidget {
             TableCell(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView("Loan ID", size: keySize, color: Colors.white),
+                child: TextView(text:"Loan ID", size: keySize, color: Colors.white),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.loanNo}",
                 size: valueSize,
                 color: Colors.white,
@@ -378,16 +378,16 @@ class LoanCardModel extends StatelessWidget {
             TableCell(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView(
+                child: TextView(text:
                   "Loan Type",
                   size: keySize,
                   color: Colors.white,
                 ),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.loanType}",
                 color: Colors.white,
                 size: valueSize,
@@ -400,16 +400,16 @@ class LoanCardModel extends StatelessWidget {
             TableCell(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView(
+                child: TextView(text:
                   "Loan Branch",
                   color: Colors.white,
                   size: keySize,
                 ),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.loanBranch}",
                 size: valueSize,
                 color: Colors.white,
@@ -422,12 +422,12 @@ class LoanCardModel extends StatelessWidget {
             TableCell(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
-                child: TextView("Suerty", size: keySize, color: Colors.white),
+                child: TextView(text:"Suerty", size: keySize, color: Colors.white),
               ),
             ),
-            TableCell(child: TextView(":", color: Colors.white)),
+            TableCell(child: TextView(text:":", color: Colors.white)),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 "${accountsLoanTable.suerty}",
                 color: Colors.white,
                 size: valueSize,
@@ -465,7 +465,7 @@ class ChittyCardModel extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextView(
+                TextView(text:
                   chittyListTable!.schName,
                   size: 16.0,
                   color: Colors.white,
@@ -473,7 +473,7 @@ class ChittyCardModel extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
                 SizedBox(height: 5.0),
-                TextView(
+                TextView(text:
                   chittyListTable!.depBranch,
                   size: 16.0,
                   color: Colors.white,
@@ -484,7 +484,7 @@ class ChittyCardModel extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: TextView(
+              child: TextView(text:
                 //   chittyListTable.accNo.replaceAllMapped(RegExp(r".{5}"), (match) => "${match.group(0)} "),
                 chittyListTable!.accNo,
                 size: 22,
@@ -493,7 +493,7 @@ class ChittyCardModel extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.bottomRight,
-              child: TextView(
+              child: TextView(text:
                 "${StaticValues.rupeeSymbol}${chittyListTable!.balance!.toStringAsFixed(2)}",
                 color: Colors.white,
                 size: 20.0,
@@ -531,7 +531,7 @@ class ShareCardModel extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextView(
+                TextView(text:
                   shareListTable!.schName,
                   size: 16.0,
                   color: Colors.white,
@@ -539,7 +539,7 @@ class ShareCardModel extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
                 SizedBox(height: 5.0),
-                TextView(
+                TextView(text:
                   shareListTable!.depBranch,
                   size: 16.0,
                   color: Colors.white,
@@ -550,7 +550,7 @@ class ShareCardModel extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: TextView(
+              child: TextView(text:
                 //  shareListTable.accNo.replaceAllMapped(RegExp(r".{5}"), (match) => "${match.group(0)} "),
                 shareListTable!.accNo,
                 size: 22,
@@ -559,7 +559,7 @@ class ShareCardModel extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.bottomRight,
-              child: TextView(
+              child: TextView(text:
                 "${StaticValues.rupeeSymbol}${shareListTable!.balance!.toStringAsFixed(2)}",
                 color: Colors.white,
                 size: 20.0,

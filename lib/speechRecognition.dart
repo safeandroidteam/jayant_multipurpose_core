@@ -77,7 +77,7 @@ class _VoiceCommanderState extends State<VoiceCommander> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextView("Try saying"),
+              TextView(text:"Try saying"),
               SizedBox(
                 height: 100.0,
                 child: ListView.builder(
@@ -225,8 +225,8 @@ class HelpList extends StatelessWidget {
           ),
         ),
         child: ListTile(
-          title: TextView(text ?? ""),
-          subtitle: TextView(subText ?? "", color: Colors.grey, size: 10.0),
+          title: TextView(text:text ?? ""),
+          subtitle: TextView(text:subText ?? "", color: Colors.grey, size: 10.0),
         ),
       ),
     );

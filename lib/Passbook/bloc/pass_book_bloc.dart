@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:passbook_core_jayant/Passbook/Model/LoanTransModel.dart';
 import 'package:passbook_core_jayant/Passbook/Model/PassbookListModel.dart';
 import 'package:passbook_core_jayant/Passbook/Model/TransactionModel.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
@@ -15,6 +16,8 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
     on<PassBookDPSHCardEvent>(_onPassBookDPSHCardEvent);
     on<DepositShareTransactionEvent>(_onDepositShareTransactionEvent);
     on<CurrentPageChanged>(_onCurrentPageChanged);
+    on<ChittyLoanEvent>(_onChittyLoanEvent);
+    on<LoanTransEvent>(_onLoanTransEvent);
   }
 
   Future<void> _onPassBookDPSHCardEvent(
@@ -109,6 +112,82 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
   ) {
     emit(CurrentPageState(event.currentPage));
     alertPrint("page changed to ${event.currentPage}");
+  }
+
+  Future<void> _onChittyLoanEvent(
+    ChittyLoanEvent event,
+    Emitter<PassBookState> emit,
+  ) async {
+    emit(ChittyLoanLoading());
+
+    try {
+      final response = await RestAPI().get(
+        "${APis.otherAccListInfo}${event.custID}&Acc_Type=${event.type ?? "LN"}",
+      );
+
+      final chittyLoanList =
+          (response["Table"] as List<dynamic>)
+              .map(
+                (e) => PassbookItem(
+                  custId: e['Cust_Id'],
+                  custName: e['Cust_Name'],
+                  adds: e['Adds'],
+                  brName: e['Br_Name'],
+                  accNo: e['Acc_No'],
+                  address: e["Adds"],
+                  schCode: e['Sch_Code'],
+                  schName: e['Sch_Name'],
+                  brCode: e['Br_Code'],
+                  depBranch: e['Dep_Branch'],
+                  balance: e['Balance'],
+                  module: e['Module'],
+                ),
+              )
+              .toList();
+      emit(ChittyLoanResponse(chittyLoanList));
+
+      successPrint("ChittyLoanResponse =$response");
+      successPrint("CHitty Loan Length =${chittyLoanList.length}");
+    } on RestException catch (e) {
+      emit(ChittyLoanErrorException(e));
+      errorPrint("DPSHCardResponse Error=$e");
+    }
+  }
+
+  Future<void> _onLoanTransEvent(
+    LoanTransEvent event,
+    Emitter<PassBookState> emit,
+  ) async {
+    emit(LoanTransactionLoading());
+
+    try {
+      final response = await RestAPI().get(
+        "${APis.getLoanPassbook}${event.accNo}",
+      );
+
+      final LoanTransList =
+          (response["Table"] as List<dynamic>)
+              .map(
+                (e) => LoanTransTable(
+                   trdate: e["TRDATE"],
+                  amount: e["AMOUNT"],
+                  drcr: e["DRCR"],
+                  interest: e["INTEREST"],
+                  charges: e["CHARGES"],
+                  total: e["TOTAL"],
+                  balance: e["BALANCE"],
+                  narration: e["NARRATION"],
+                ),
+              )
+              .toList();
+      emit(LoanTransactionResponse(LoanTransList));
+
+      successPrint("Loan Trans Response =$response");
+      successPrint("Loan Trans Length =${LoanTransList.length}");
+    } on RestException catch (e) {
+      emit(LoanTransactionErrorException(e));
+      errorPrint("Loan TransResponse Error=$e");
+    }
   }
 
   static PassBookBloc get(context) => BlocProvider.of(context);

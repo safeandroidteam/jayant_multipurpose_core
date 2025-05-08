@@ -16,6 +16,7 @@ class StaticValues {
   static String mobileNo = "Mobile";
   static String ifsc = "Ifsc";
   static String accountNo = "AccountNumber";
+  static String selectedAccNo = "SAccNo";
 
   static Color _primaryColor = Color(0xff005b96);
   static Color _backgroundColor = Color(0xffffffff);

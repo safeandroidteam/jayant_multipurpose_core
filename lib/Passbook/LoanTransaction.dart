@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passbook_core_jayant/Passbook/Model/LoanTransModel.dart';
-import 'package:passbook_core_jayant/REST/RestAPI.dart';
+import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
 
 import '../Util/GlobalWidgets.dart';
 
 class LoanTransaction extends StatefulWidget {
   final String? accNo;
 
-  const LoanTransaction({Key? key, this.accNo}) : super(key: key);
+  const LoanTransaction({super.key, this.accNo});
 
   @override
   _LoanTransactionState createState() => _LoanTransactionState();
 }
 
 class _LoanTransactionState extends State<LoanTransaction> {
-  late LoanTransModel _loanTransModel;
-
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations([
@@ -30,11 +29,20 @@ class _LoanTransactionState extends State<LoanTransaction> {
 
   @override
   void initState() {
+    loadLoanTransactions();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
     super.initState();
+  }
+
+  loadLoanTransactions() async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final passBookBloc = PassBookBloc.get(context);
+
+      passBookBloc.add(LoanTransEvent(widget.accNo ?? ""));
+    });
   }
 
   List<Widget> header() {
@@ -43,7 +51,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
         child: ListTile(
           dense: true,
           contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
-          title: TextView(
+          title: TextView(text:
             "Date",
             textAlign: TextAlign.start,
             color: Colors.white,
@@ -52,7 +60,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Amount",
           textAlign: TextAlign.end,
           color: Colors.white,
@@ -60,7 +68,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Interest",
           textAlign: TextAlign.end,
           color: Colors.white,
@@ -68,7 +76,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Charges",
           textAlign: TextAlign.end,
           color: Colors.white,
@@ -76,7 +84,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Total",
           textAlign: TextAlign.end,
           fontWeight: FontWeight.bold,
@@ -86,7 +94,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
       TableCell(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5.0),
-          child: TextView(
+          child: TextView(text:
             "Balance",
             textAlign: TextAlign.end,
             color: Colors.white,
@@ -112,7 +120,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
                   vertical: 8.0,
                   horizontal: 5.0,
                 ),
-                child: TextView(
+                child: TextView(text:
                   item.trdate!.replaceAll("/", "-"),
                   textAlign: TextAlign.start,
                   size: 14.0,
@@ -120,7 +128,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.amount!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 color:
@@ -131,21 +139,21 @@ class _LoanTransactionState extends State<LoanTransaction> {
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.interest!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 size: 14.0,
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.charges!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 size: 14.0,
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.total!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 size: 14.0,
@@ -157,7 +165,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
                   vertical: 8.0,
                   horizontal: 5.0,
                 ),
-                child: TextView(
+                child: TextView(text:
                   item.balance!.toStringAsFixed(2),
                   textAlign: TextAlign.end,
                   size: 14.0,
@@ -177,54 +185,65 @@ class _LoanTransactionState extends State<LoanTransaction> {
       body: SafeArea(
         top: false,
         maintainBottomViewPadding: true,
-        child: FutureBuilder<Map?>(
-          future: RestAPI().get("${APis.getLoanPassbook}${widget.accNo}"),
+        child: BlocBuilder<PassBookBloc, PassBookState>(
+          buildWhen:
+              (previous, current) =>
+                  current is LoanTransactionLoading ||
+                  current is LoanTransactionResponse ||
+                  current is LoanTransactionErrorException,
           builder: (context, state) {
-            if (!state.hasData || state.hasError) {
+            if (state is PassBookBlocInitial) {
               return Center(child: CircularProgressIndicator());
+            } else if (state is LoanTransactionLoading) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is LoanTransactionResponse) {
+              if (state.loanTransList.isNotEmpty) {
+                return CustomScrollView(
+                  slivers: <Widget>[
+                    SliverAppBar(
+                      centerTitle: true,
+                      title: Text(
+                        "Loan Transaction",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      leading: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 30.0,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      floating: true,
+                      pinned: true,
+                      forceElevated: true,
+                      bottom: PreferredSize(
+                        preferredSize: Size.fromHeight(kToolbarHeight),
+                        child: Table(
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          children: <TableRow>[TableRow(children: header())],
+                        ),
+                      ),
+                    ),
+                    SliverList(
+                      delegate: SliverChildListDelegate([
+                        Table(
+                          defaultVerticalAlignment:
+                              TableCellVerticalAlignment.middle,
+                          children: rows(state.loanTransList),
+                        ),
+                      ]),
+                    ),
+                  ],
+                );
+              } else {
+                return Center(child: Text("No Data Found"));
+              }
+            } else if (state is LoanTransactionErrorException) {
+              return Center(child: Text("Error : ${state.error}"));
             } else {
-              _loanTransModel = LoanTransModel.fromJson(
-                state.data as Map<String, dynamic>,
-              );
-              return CustomScrollView(
-                slivers: <Widget>[
-                  SliverAppBar(
-                    centerTitle: true,
-                    title: Text(
-                      "Loan Transaction",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    leading: IconButton(
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 30.0,
-                      ),
-                      onPressed: () => Navigator.of(context).pop(),
-                    ),
-                    floating: true,
-                    pinned: true,
-                    forceElevated: true,
-                    bottom: PreferredSize(
-                      child: Table(
-                        defaultVerticalAlignment:
-                            TableCellVerticalAlignment.middle,
-                        children: <TableRow>[TableRow(children: header())],
-                      ),
-                      preferredSize: Size.fromHeight(kToolbarHeight),
-                    ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildListDelegate([
-                      Table(
-                        defaultVerticalAlignment:
-                            TableCellVerticalAlignment.middle,
-                        children: rows(_loanTransModel.table!),
-                      ),
-                    ]),
-                  ),
-                ],
-              );
+              return Center(child: Text("Something went Wrong"));
             }
           },
         ),

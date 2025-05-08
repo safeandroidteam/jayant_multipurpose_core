@@ -5,9 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
+import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
+import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KSEBNKWA extends StatefulWidget {
@@ -28,9 +30,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
   bool amtVal = false;
   double amtBoxSize = 70.0;
   String? userName, userId, userBal = "";
-  TransferBloc _transferBloc = TransferBloc(
-    initialState: LoadingTransferState(),
-  );
+  TransferBloc _transferBloc = TransferBloc();
   FocusNode _mobFocusNode = FocusNode();
   SharedPreferences? preferences;
   ScrollController _customScrollController = ScrollController();
@@ -43,7 +43,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
   String? str_OrderId, str_Message, str_Status;
 
   Map<String, dynamic>? _referanceNo = Map();
-
+ 
   @override
   void dispose() {
     _transferBloc.close();
@@ -111,7 +111,8 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                     children: [
                       SizedBox(height: 5.0),
                       TextView(
-                        "Consumer number\n${consumerNo.text.isEmpty ? "____" : consumerNo.text}",
+                        text:
+                            "Consumer number\n${consumerNo.text.isEmpty ? "____" : consumerNo.text}",
                         color: Colors.white,
                         textAlign: TextAlign.center,
                         size: 16.0,
@@ -135,7 +136,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                           textAlign: TextAlign.center,
                           textCapitalization: TextCapitalization.words,
                           prefix: TextView(
-                            StaticValues.rupeeSymbol,
+                            text: StaticValues.rupeeSymbol,
                             size: 24,
                             color: Colors.white,
                           ),
@@ -149,14 +150,19 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                         ),
                       ),
                       TextView(
-                        "Minimum amount ${StaticValues.rupeeSymbol} $_minRechargeAmt",
+                        text:
+                            "Minimum amount ${StaticValues.rupeeSymbol} $_minRechargeAmt",
                         size: 10,
                         color: Colors.white,
                       ),
                       SizedBox(height: 20.0),
-                      TextView(userBal, size: 24, color: Colors.greenAccent),
+                      TextView(
+                        text: userBal ?? "",
+                        size: 24,
+                        color: Colors.greenAccent,
+                      ),
                       SizedBox(height: 10.0),
-                      TextView("Available Balance", color: Colors.white),
+                      TextView(text: "Available Balance", color: Colors.white),
                     ],
                   ),
                 ),
@@ -190,7 +196,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                             keyboardType: TextInputType.text,
                             maxLines: 1,
                             validator: (string) {
-                              return string.isEmpty ? "Invalid name" : null;
+                              return string!.isEmpty ? "Invalid name" : null;
                             },
                           ),
                           SizedBox(height: 20.0),
@@ -214,7 +220,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                             textCapitalization: TextCapitalization.words,
                             keyboardType: TextInputType.number,
                             validator: (string) {
-                              return string.trim().length != 10
+                              return string!.trim().length != 10
                                   ? "Mobile number is invalid"
                                   : null;
                             },
@@ -277,7 +283,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                       }
                     } else {
                       GlobalWidgets().showSnackBar(
-                        _scaffoldKey,
+                        context,
                         ("Minimum amount is ${StaticValues.rupeeSymbol}$_minRechargeAmt and Maximum amount is $_maxRechargeAmt"),
                       );
                     }
@@ -328,15 +334,15 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextView("${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
+          TextView(text: "${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
           SizedBox(height: 10.0),
-          TextView("A/c No : ${accNo.text}", size: 14.0),
+          TextView(text: "A/c No : ${accNo.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("Name : ${name.text}", size: 14.0),
+          TextView(text: "Name : ${name.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("Consumer No: ${consumerNo.text}", size: 14.0),
+          TextView(text: "Consumer No: ${consumerNo.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("Mob no: ${mobNo.text}", size: 14.0),
+          TextView(text: "Mob no: ${mobNo.text}", size: 14.0),
           SizedBox(height: 30.0),
         ],
       ),
@@ -452,7 +458,9 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) => Receipt(
-                                        pushReplacementName: "/HomePage",
+                                        pushReplacementNamed:
+                                        "/HomePage",
+
                                         amount: amt.text,
                                         transID:
                                             response[0]["orderId"].toString(),
@@ -471,7 +479,9 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                   builder:
                                       (context) => Receipt(
                                         isFailure: true,
-                                        pushReplacementName: "/HomePage",
+                                        pushReplacementNamed:
+                                           "/HomePage",
+
                                         amount: amt.text,
                                         paidTo: widget.title,
                                         accTo: "",
@@ -483,10 +493,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                               );
                             }
                           } on RestException catch (e) {
-                            GlobalWidgets().showSnackBar(
-                              _scaffoldKey,
-                              e.message,
-                            );
+                            GlobalWidgets().showSnackBar(context, e.message);
                           }
                         } else {
                           Fluttertoast.showToast(
@@ -519,15 +526,15 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextView("${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
+          TextView(text: "${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
           SizedBox(height: 10.0),
-          TextView("A/c No : ${accNo.text}", size: 14.0),
+          TextView(text: "A/c No : ${accNo.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("Name : ${name.text}", size: 14.0),
+          TextView(text: "Name : ${name.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("Consumer No: ${consumerNo.text}", size: 14.0),
+          TextView(text: "Consumer No: ${consumerNo.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("Mob no: ${mobNo.text}", size: 14.0),
+          TextView(text: "Mob no: ${mobNo.text}", size: 14.0),
           SizedBox(height: 30.0),
         ],
       ),
@@ -577,7 +584,9 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) => Receipt(
-                                        pushReplacementName: "/HomePage",
+                                        pushReplacementNamed:
+                                         "/HomePage",
+
                                         amount: amt.text,
                                         transID:
                                             response["Table"][0]["orderId"]
@@ -597,7 +606,9 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                   builder:
                                       (context) => Receipt(
                                         isFailure: true,
-                                        pushReplacementName: "/HomePage",
+                                        pushReplacementNamed:
+                                          "/HomePage",
+
                                         amount: amt.text,
                                         paidTo: "KWA",
                                         accTo: "",
@@ -609,10 +620,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                               );
                             }
                           } on RestException catch (e) {
-                            GlobalWidgets().showSnackBar(
-                              _scaffoldKey,
-                              e.message,
-                            );
+                            GlobalWidgets().showSnackBar(context, e.message);
                           }
                         } else {
                           Fluttertoast.showToast(

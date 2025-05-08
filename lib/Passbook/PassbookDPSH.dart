@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,9 +6,6 @@ import 'package:passbook_core_jayant/Passbook/depositTransaction.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../REST/RestAPI.dart';
-import 'Model/PassbookListModel.dart';
 
 class PassbookDPSH extends StatefulWidget {
   final String? type;
@@ -80,7 +75,9 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                     current is DPSHCardResponse ||
                     current is DPSHCardErrorException,
             builder: (context, state) {
-              if (state is DPSHCardLoading) {
+              if (state is PassBookBlocInitial) {
+                return Center(child: CircularProgressIndicator());
+              } else if (state is DPSHCardLoading) {
                 return Center(child: CircularProgressIndicator());
               } else if (state is DPSHCardResponse) {
                 if (state.passbookItemList.isNotEmpty) {
@@ -157,7 +154,7 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                             dense: true,
                                             isThreeLine: true,
                                             contentPadding: EdgeInsets.all(0.0),
-                                            title: TextView(
+                                            title: TextView(text:
                                               state
                                                   .passbookItemList[index]
                                                   .accNo,
@@ -170,7 +167,7 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
-                                                TextView(
+                                                TextView(text:
                                                   state
                                                       .passbookItemList[index]
                                                       .schName,
@@ -178,7 +175,7 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                                   textAlign: TextAlign.start,
                                                   size: 12.0,
                                                 ),
-                                                TextView(
+                                                TextView(text:
                                                   state
                                                       .passbookItemList[index]
                                                       .depBranch,
@@ -189,24 +186,24 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                               ],
                                             ),
                                           ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              TextView(
-                                                "sch Code ${state.passbookItemList[index].schCode}",
-                                                color: Colors.white,
-                                                size: 15,
-                                              ),
-                                              TextView(
-                                                "Br Code ${state.passbookItemList[index].brCode}",
-                                                color: Colors.white,
-                                                size: 15,
-                                              ),
-                                            ],
-                                          ),
 
-                                          TextView(
+                                          // Row(
+                                          //   mainAxisAlignment:
+                                          //       MainAxisAlignment.spaceBetween,
+                                          //   children: [
+                                          //     TextView(text:
+                                          //       "sch Code ${state.passbookItemList[index].schCode}",
+                                          //       color: Colors.white,
+                                          //       size: 15,
+                                          //     ),
+                                          //     TextView(text:
+                                          //       "Br Code ${state.passbookItemList[index].brCode}",
+                                          //       color: Colors.white,
+                                          //       size: 15,
+                                          //     ),
+                                          //   ],
+                                          // ),
+                                          TextView(text:
                                             state
                                                 .passbookItemList[index]
                                                 .balance
@@ -214,7 +211,7 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                             color: Colors.white,
                                             size: 28,
                                           ),
-                                          TextView(
+                                          TextView(text:
                                             "Available Balance",
                                             color: Colors.white,
                                             size: 13,
@@ -278,7 +275,7 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                 return Stack(
                   children: [
                     Center(
-                      child: TextView(
+                      child: TextView(text:
                         "You don't have a ${widget.type == "DP" ? 'deposit' : 'share'} in this bank",
                       ),
                     ),

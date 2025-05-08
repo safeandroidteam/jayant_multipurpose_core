@@ -43,7 +43,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
         child: ListTile(
           dense: true,
           contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
-          title: TextView(
+          title: TextView(text:
             "Date",
             textAlign: TextAlign.start,
             color: Colors.white,
@@ -52,7 +52,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Inst No",
           textAlign: TextAlign.end,
           color: Colors.white,
@@ -60,7 +60,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Amount",
           textAlign: TextAlign.end,
           color: Colors.white,
@@ -68,7 +68,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Discount",
           textAlign: TextAlign.end,
           color: Colors.white,
@@ -76,7 +76,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Int Amount",
           textAlign: TextAlign.end,
           fontWeight: FontWeight.bold,
@@ -84,7 +84,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
         ),
       ),
       TableCell(
-        child: TextView(
+        child: TextView(text:
           "Forfeit",
           textAlign: TextAlign.end,
           fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
         child: ListTile(
           dense: true,
           contentPadding: const EdgeInsets.symmetric(horizontal: 5.0),
-          title: TextView(
+          title: TextView(text:
             "Balance",
             textAlign: TextAlign.end,
             color: Colors.white,
@@ -121,7 +121,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
                   vertical: 8.0,
                   horizontal: 5.0,
                 ),
-                child: TextView(
+                child: TextView(text:
                   item.trdate!.replaceAll("/", "-"),
                   textAlign: TextAlign.start,
                   size: 14.0,
@@ -129,14 +129,14 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.amount!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 size: 14.0,
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.amount!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 color:
@@ -147,21 +147,21 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.disc!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 size: 14.0,
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.intamt!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 size: 14.0,
               ),
             ),
             TableCell(
-              child: TextView(
+              child: TextView(text:
                 item.forfeit!.toStringAsFixed(2),
                 textAlign: TextAlign.end,
                 size: 14.0,
@@ -173,7 +173,7 @@ class _ChittyTransactionState extends State<ChittyTransaction> {
                   vertical: 8.0,
                   horizontal: 5.0,
                 ),
-                child: TextView(
+                child: TextView(text:
                   item.balance!.toStringAsFixed(2),
                   textAlign: TextAlign.end,
                   size: 14.0,

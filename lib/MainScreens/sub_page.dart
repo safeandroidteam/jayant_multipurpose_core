@@ -122,7 +122,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(15.0),
-                          child: TextView(
+                          child: TextView(text:
                             "Hello,",
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -135,18 +135,18 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextView(
+                              TextView(text:
                                 name ?? "",
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 size: 16,
                               ),
-                              TextView(
+                              TextView(text:
                                 acc ?? "",
                                 color: Colors.white,
                                 size: 14.0,
                               ),
-                              TextView(
+                              TextView(text:
                                 "Ifsc Code : $ifsc" ?? "",
                                 color: Colors.white,
                                 size: 14.0,
@@ -154,7 +154,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                               SizedBox(height: 5.0),
                             ],
                           ),
-                          subtitle: TextView(
+                          subtitle: TextView(text:
                             address ?? "",
                             color: Colors.white,
                             size: 12,
@@ -172,7 +172,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: ListTile(
-                      title: TextView(
+                      title: TextView(text:
                         StaticValues.titleDecoration!.label!.toUpperCase(),
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -188,7 +188,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
             delegate: SliverChildListDelegate([
               Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: TextView("Banking", fontWeight: FontWeight.bold),
+                child: TextView(text:"Banking", fontWeight: FontWeight.bold),
               ),
               GridView(
                 shrinkWrap: true,
@@ -229,7 +229,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                         ),
                   ),
                   Visibility(
-                    visible: widget.homePageConfiguration!.fundTransferOption,
+                    visible: widget.homePageConfiguration?.fundTransferOption??false,
                     child: GlobalWidgets().btnWithText(
                       icon: Image.asset(
                         'assets/fundTransfer.png',
@@ -250,7 +250,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                     ),
                   ),
                   Visibility(
-                    visible: widget.homePageConfiguration!.search,
+                    visible: widget.homePageConfiguration?.search??false,
                     child: GlobalWidgets().btnWithText(
                       icon: Image.asset(
                         'assets/search.png',
@@ -272,14 +272,14 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                 ],
               ),
               Visibility(
-                visible: widget.homePageConfiguration!.rechargeOption,
+                visible: widget.homePageConfiguration?.rechargeOption??false,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: TextView("Cards", fontWeight: FontWeight.bold),
+                      child: TextView(text:"Cards", fontWeight: FontWeight.bold),
                     ),
                     GridView(
                       shrinkWrap: true,
@@ -363,14 +363,14 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                 ),
               ),
               Visibility(
-                visible: widget.homePageConfiguration!.rechargeOption,
+                visible: widget.homePageConfiguration?.rechargeOption??false,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: TextView(
+                      child: TextView(text:
                         "Recharge & Pay Bills",
                         fontWeight: FontWeight.bold,
                       ),
@@ -476,7 +476,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                                 )))*/
                         ),
                         Visibility(
-                          visible: widget.homePageConfiguration!.shoppingOption,
+                          visible: widget.homePageConfiguration?.shoppingOption??false,
                           child: GlobalWidgets().btnWithText(
                             icon: Image.asset(
                               'assets/shopping.png',
@@ -489,7 +489,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                                 () => GlobalWidgets().shoppingPay(
                                   widget.scaffoldKey!.currentContext!,
                                   setState,
-                                  widget.scaffoldKey,
+                                  widget.scaffoldKey!,
                                   acc,
                                 ),
                           ),
@@ -500,14 +500,14 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                 ),
               ),
               Visibility(
-                visible: widget.homePageConfiguration!.rechargeOption,
+                visible: widget.homePageConfiguration?.rechargeOption??false,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 10.0),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: TextView(
+                      child: TextView(text:
                         "Account Opening",
                         fontWeight: FontWeight.bold,
                       ),
@@ -582,7 +582,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                               ),
                         ),
                         Visibility(
-                          visible: widget.homePageConfiguration!.shoppingOption,
+                          visible: widget.homePageConfiguration?.shoppingOption??false,
                           child: GlobalWidgets().btnWithText(
                             icon: Image.asset(
                               'assets/mis.png',

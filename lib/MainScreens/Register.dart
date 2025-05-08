@@ -82,7 +82,7 @@ class _RegisterUIState extends State<RegisterUI>
                     textCtrl.text = accNos[index]!;
                     Navigator.of(context).pop();
                   },
-                  child: ListTile(title: TextView(accNos[index])),
+                  child: ListTile(title: TextView(text:accNos[index]??"")),
                 );
               }),
             ),
@@ -124,7 +124,7 @@ class _RegisterUIState extends State<RegisterUI>
         Positioned(
           top: MediaQuery.of(context).size.width * .15,
           left: 20.0,
-          child: TextView(
+          child: TextView(text:
             "Sign Up",
             size: 20.0,
             fontWeight: FontWeight.bold,
@@ -319,7 +319,7 @@ class _RegisterUIState extends State<RegisterUI>
           });
 
           if (response["Table"][0]["Result"].toString().toLowerCase() == 'y') {
-            GlobalWidgets().showSnackBar(widget.scaffoldKey, "OTP sent");
+            GlobalWidgets().showSnackBar(context, "OTP sent");
             setState(() {
               isSendOTP = true;
             });
@@ -328,7 +328,7 @@ class _RegisterUIState extends State<RegisterUI>
               isSendOTP = false;
             });
             GlobalWidgets().showSnackBar(
-              widget.scaffoldKey,
+              context,
               "Invalid mobile number",
             );
           }
@@ -337,14 +337,14 @@ class _RegisterUIState extends State<RegisterUI>
             _isLoading = false;
           });
 
-          GlobalWidgets().showSnackBar(widget.scaffoldKey, e.message);
+          GlobalWidgets().showSnackBar(context, e.message);
         }
       } else {
         setState(() {
           isSendOTP = false;
         });
         GlobalWidgets().showSnackBar(
-          widget.scaffoldKey,
+          context,
           "Invalid mobile number",
         );
       }
@@ -358,7 +358,7 @@ class _RegisterUIState extends State<RegisterUI>
           _isLoading = false;
           if (response["Table"][0]["ACCNO"].toString().toLowerCase() == 'n') {
             GlobalWidgets().showSnackBar(
-              widget.scaffoldKey,
+              context,
               "Invalid OTP or Mobile number",
             );
             setState(() {
@@ -379,11 +379,11 @@ class _RegisterUIState extends State<RegisterUI>
           setState(() {
             _isLoading = false;
           });
-          GlobalWidgets().showSnackBar(widget.scaffoldKey, e.message);
+          GlobalWidgets().showSnackBar(context, e.message);
         }
       } else {
         GlobalWidgets().showSnackBar(
-          widget.scaffoldKey,
+          context,
           "Invalid OTP or Mobile number",
         );
         setState(() {
@@ -396,26 +396,26 @@ class _RegisterUIState extends State<RegisterUI>
 
       if (passValue) {
         GlobalWidgets().showSnackBar(
-          widget.scaffoldKey,
+          context,
           "Please include special charcters in password",
         );
       } else if (passCtrl.text != rePassCtrl.text) {
-        GlobalWidgets().showSnackBar(widget.scaffoldKey, "Password Miss match");
+        GlobalWidgets().showSnackBar(context, "Password Miss match");
       } else if (usernameCtrl.text.length <= 3 ||
           usernameCtrl.text.length >= 11) {
         GlobalWidgets().showSnackBar(
-          widget.scaffoldKey,
+          context,
           "Max length for username is 10 and Min is 4",
         );
       } else if (passCtrl.text.length <= 3 || passCtrl.text.length >= 11) {
         GlobalWidgets().showSnackBar(
-          widget.scaffoldKey,
+          context,
           "Max length for password is 10 and Min is 4",
         );
       } else if (passCtrl.text.contains(" ") ||
           usernameCtrl.text.contains(" ")) {
         GlobalWidgets().showSnackBar(
-          widget.scaffoldKey,
+          context,
           "Please remove space from username or password",
         );
       } else {
@@ -439,27 +439,27 @@ class _RegisterUIState extends State<RegisterUI>
           if (response["Table"][0]["Status"].toString() ==
               "Usercode Already Exists") {
             GlobalWidgets().showSnackBar(
-              widget.scaffoldKey,
+              context,
               "Usercode Already Exists",
             );
           } else {
             print(response["Table"][0]["Status"].toString());
             GlobalWidgets().showSnackBar(
-              widget.scaffoldKey,
+              context,
               response["Table"][0]["Status"].toString(),
             );
             widget.onTap!();
           }
         } else {
           GlobalWidgets().showSnackBar(
-            widget.scaffoldKey,
+            context,
             "Please fill the missing fields",
           );
         }
       }
     }
 
-    //   GlobalWidgets().showSnackBar(widget.scaffoldKey, passValue.toString());
+    //   GlobalWidgets().showSnackBar(context, passValue.toString());
 
     /*  if (mobCtrl.text.trim().length == 10 &&
           otpCtrl.text.length >= 4 &&
@@ -478,14 +478,14 @@ class _RegisterUIState extends State<RegisterUI>
         Map response = await RestAPI().post(url);
         _isLoading = false;
         if (response["Table"][0]["Status"].toString() == "Usercode Already Exists") {
-          GlobalWidgets().showSnackBar(widget.scaffoldKey, "Usercode Already Exists");
+          GlobalWidgets().showSnackBar(context, "Usercode Already Exists");
         } else {
           print(response["Table"][0]["Status"].toString());
-          GlobalWidgets().showSnackBar(widget.scaffoldKey, response["Table"][0]["Status"].toString());
+          GlobalWidgets().showSnackBar(context, response["Table"][0]["Status"].toString());
           widget.onTap();
         }
       } else {
-        GlobalWidgets().showSnackBar(widget.scaffoldKey, "Please fill the missing fields");
+        GlobalWidgets().showSnackBar(context, "Please fill the missing fields");
       }
     }*/
   }

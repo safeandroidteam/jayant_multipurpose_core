@@ -1,16 +1,20 @@
 class People {
-  List<PeopleTable>? table;
+  List<PeopleTable> table;
 
-  People({
-    this.table,
-  });
+  People({this.table = const []}); // Ensure an empty list if no data is passed
 
-  factory People.fromJson(Map<String, dynamic> json) => People(
-        table: List<PeopleTable>.from(json["Table"].map((x) => PeopleTable.fromJson(x))),
-      );
+  factory People.fromJson(Map<String, dynamic> json) {
+    // Ensure that "Table" exists and is a List, otherwise an empty list is used
+    return People(
+      table: json["Table"] != null
+          ? List<PeopleTable>.from(
+              json["Table"].map((x) => PeopleTable.fromJson(x)))
+          : [], // Empty list if no "Table" is found
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        "Table": List<dynamic>.from(table!.map((x) => x.toJson())),
+        "Table": List<dynamic>.from(table.map((x) => x.toJson())),
       };
 
   @override
@@ -20,27 +24,30 @@ class People {
 }
 
 class PeopleTable {
-  String? recieverName;
-  String? recieverMob;
-  String? recieverIfsc;
-  String? recieverAccno;
-  double? recieverId;
+  String recieverName;
+  String recieverMob;
+  String recieverIfsc;
+  String recieverAccno;
+  double recieverId;
 
   PeopleTable({
-    this.recieverName,
-    this.recieverMob,
-    this.recieverIfsc,
-    this.recieverAccno,
-    this.recieverId,
+    required this.recieverName,
+    required this.recieverMob,
+    required this.recieverIfsc,
+    required this.recieverAccno,
+    required this.recieverId,
   });
 
-  factory PeopleTable.fromJson(Map<String, dynamic> json) => PeopleTable(
-        recieverName: json["Reciever_Name"],
-        recieverMob: json["Reciever_Mob"],
-        recieverIfsc: json["Reciever_Ifsc"],
-        recieverAccno: json["Reciever_Accno"],
-        recieverId: json["Reciever_Id"],
-      );
+  factory PeopleTable.fromJson(Map<String, dynamic> json) {
+    return PeopleTable(
+      recieverName: json["Reciever_Name"] ?? '',
+      recieverMob: json["Reciever_Mob"] ?? '',
+      recieverIfsc: json["Reciever_Ifsc"] ?? '',
+      recieverAccno: json["Reciever_Accno"] ?? '',
+      recieverId: json["Reciever_Id"]?.toDouble() ??
+          0.0, // Ensure recieverId is a double
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "Reciever_Name": recieverName,

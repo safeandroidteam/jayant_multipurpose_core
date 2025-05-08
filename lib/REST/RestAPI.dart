@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
@@ -29,15 +30,50 @@ class RestAPI {
     }
   }
 
-  Future<T?> get<T>(String url) async {
-    SharedPreferences prefs = StaticValues.sharedPreferences!;
-    String? token = prefs.getString('accessToken');
-    var uri = Uri.parse(url);
-    print('Api Get, url $uri');
-    T? responseJson;
+ Future<T> get<T>(String url, {BuildContext? context}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('accessToken') ?? "";
+    print('Api Get, url $url');
+    T responseJson;
     try {
+      if (context != null) {
+        showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              onWillPop: () async => false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 100.0,
+                    width: 100.0,
+                    child: CircularProgressIndicator(),
+                  ),
+                  SizedBox(height: 16.0),
+                  Text(
+                    "Processing Payment",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 48.0),
+                  Text(
+                    "Please do not press back or close the app",
+                    style: TextStyle(color: Colors.white, fontSize: 14.0),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      }
       Response response = await http.get(
-        uri,
+        Uri.parse(url),
         headers: {
           "Accept": "application/json",
           "Authorization": "Bearer $token",
@@ -45,6 +81,7 @@ class RestAPI {
       );
       print("RESPONSE ${response.body}");
       responseJson = _returnResponse(response);
+      if (context != null) Navigator.of(context).pop();
     } on SocketException {
       print('SocketException');
       throw FetchDataException('Either network issue nor server error');
@@ -52,7 +89,7 @@ class RestAPI {
       print('TimeoutException');
       throw FetchDataException('Time out try again');
     }
-    print('api get received!');
+    print('api get recieved!');
     return responseJson;
   }
 

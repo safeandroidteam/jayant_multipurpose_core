@@ -5,9 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
+import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
+import 'package:passbook_core_jayant/configuration.dart';
+import 'package:passbook_core_jayant/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Recharge extends StatefulWidget {
@@ -37,7 +40,7 @@ class _RechargeState extends State<Recharge> {
   Future<Map?>? _future;
   GlobalKey _mobKey = GlobalKey(), _amtKey = GlobalKey();
   TransferBloc _transferBloc = TransferBloc(
-    initialState: LoadingTransferState(),
+   
   );
   FocusNode _mobFocusNode = FocusNode(), _amtFocusNode = FocusNode();
   SharedPreferences? preferences;
@@ -54,7 +57,6 @@ class _RechargeState extends State<Recharge> {
   String? str_OrderId = "", str_Message = "", str_Status = "", str_Otp = "";
 
   Map<String, dynamic>? _referanceNo = Map();
-
   @override
   void dispose() {
     _transferBloc.close();
@@ -168,13 +170,13 @@ class _RechargeState extends State<Recharge> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        TextView(
+                        TextView(text:
                           "To ${mob.text.isEmpty ? "____" : mob.text}",
                           color: Colors.white,
                           size: 16.0,
                         ),
                         SizedBox(height: 10.0),
-                        TextView(operatorName, color: Colors.white),
+                        TextView(text:operatorName??"", color: Colors.white),
                         SizedBox(
                           key: _amtKey,
                           width: amtBoxSize,
@@ -193,7 +195,7 @@ class _RechargeState extends State<Recharge> {
                             borderColor: Colors.transparent,
                             textAlign: TextAlign.center,
                             textCapitalization: TextCapitalization.words,
-                            prefix: TextView(
+                            prefix: TextView(text:
                               StaticValues.rupeeSymbol,
                               size: 24,
                               color: Colors.white,
@@ -209,15 +211,15 @@ class _RechargeState extends State<Recharge> {
                           ),
                         ),
                         SizedBox(height: 20.0),
-                        TextView(
+                        TextView(text:
                           "Minimum amount ${StaticValues.rupeeSymbol} $_minRechargeAmt",
                           size: 10,
                           color: Colors.white,
                         ),
                         SizedBox(height: 20.0),
-                        TextView(userBal, size: 24, color: Colors.greenAccent),
+                        TextView(text:userBal??"", size: 24, color: Colors.greenAccent),
                         SizedBox(height: 10.0),
-                        TextView("Available Balance", color: Colors.white),
+                        TextView(text:"Available Balance", color: Colors.white),
                       ],
                     ),
                   ),
@@ -256,7 +258,7 @@ class _RechargeState extends State<Recharge> {
                                             ? validateNumber(
                                             operatorName, mob.text)
                                             : null,*/
-                                    hint: _hint,
+                                    hint: _hint??"",
                                     errorText: null,
                                     textCapitalization:
                                         TextCapitalization.words,
@@ -270,7 +272,7 @@ class _RechargeState extends State<Recharge> {
                                     },
                                   ),
                                   SizedBox(height: 20.0),
-                                  TextView(
+                                  TextView(text:
                                     "Select Operator",
                                     size: 22.0,
                                     fontWeight: FontWeight.bold,
@@ -386,12 +388,12 @@ class _RechargeState extends State<Recharge> {
                             return;
                           }*/
                           if (mob.text.isEmpty) {
-                            GlobalWidgets().showSnackBar(_scaffoldKey, _hint!);
+                            GlobalWidgets().showSnackBar(context, _hint!);
                             return;
                           }
                           if (operatorName!.isEmpty) {
                             GlobalWidgets().showSnackBar(
-                              _scaffoldKey,
+                              context,
                               ("Select an Operator"),
                             );
                             return;
@@ -435,7 +437,7 @@ class _RechargeState extends State<Recharge> {
                           _amtFocusNode.requestFocus();
 
                           GlobalWidgets().showSnackBar(
-                            _scaffoldKey,
+                            context,
                             ("Minimum amount is ${StaticValues.rupeeSymbol}$_minRechargeAmt and Maximum amount is $_maxRechargeAmt"),
                           );
                         }
@@ -448,7 +450,7 @@ class _RechargeState extends State<Recharge> {
                         _amtFocusNode.requestFocus();
 
                         GlobalWidgets().showSnackBar(
-                          _scaffoldKey,
+                          context,
                           ("Insufficient Balance"),
                         );
                       }
@@ -633,13 +635,13 @@ class _RechargeState extends State<Recharge> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextView("${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
+          TextView(text:"${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
           SizedBox(height: 10.0),
-          TextView("Pay from : $userAcc", size: 14.0),
+          TextView(text:"Pay from : $userAcc", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("${_hint!.substring(6)}: ${mob.text}", size: 14.0),
+          TextView(text:"${_hint!.substring(6)}: ${mob.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView("Operator : $operatorName", size: 14.0),
+          TextView(text:"Operator : $operatorName", size: 14.0),
           SizedBox(height: 30.0),
         ],
       ),
@@ -715,14 +717,14 @@ class _RechargeState extends State<Recharge> {
                                     MaterialPageRoute(
                                       builder:
                                           (context) => Receipt(
-                                            pushReplacementName: "/HomePage",
+                                pushReplacementNamed:  "/HomePage",
                                             amount: amt.text,
                                             transID:
                                                 response[0]["orderId"]
                                                     .toString(),
-                                            paidTo: operatorName,
+                                            paidTo: operatorName??"",
                                             accTo: "",
-                                            accFrom: userAcc,
+                                            accFrom: userAcc??"",
                                             message:
                                                 ("${response[0]["status"]} : ${response[0]["message"]}"),
                                           ),
@@ -735,11 +737,13 @@ class _RechargeState extends State<Recharge> {
                                       builder:
                                           (context) => Receipt(
                                             isFailure: true,
-                                            pushReplacementName: "/HomePage",
+                                                                            pushReplacementNamed:
+                                                "/HomePage",
+
                                             amount: amt.text,
-                                            paidTo: operatorName,
+                                            paidTo: operatorName??"",
                                             accTo: "",
-                                            accFrom: userAcc,
+                                            accFrom: userAcc??"",
                                             message:
                                                 ("${response[0]["status"]} : ${response[0]["message"]}"),
                                           ),
@@ -748,7 +752,7 @@ class _RechargeState extends State<Recharge> {
                                 }
                               } on RestException catch (e) {
                                 GlobalWidgets().showSnackBar(
-                                  _scaffoldKey,
+                                  context,
                                   e.message,
                                 );
                               }
@@ -790,15 +794,15 @@ class _RechargeState extends State<Recharge> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextView(
+            TextView(text:
               "${StaticValues.rupeeSymbol}${amt.text}",
               size: 24.0,
             ),
-            TextView(
+            TextView(text:
               mob.text,
               size: 18.0,
             ),
-            TextView(
+            TextView(text:
               operatorName,
               size: 18.0,
             ),
@@ -807,7 +811,7 @@ class _RechargeState extends State<Recharge> {
         actions: [
           FlatButton(
               onPressed: () => Navigator.pop(context),
-              child: TextView(
+              child: TextView(text:
                 "Cancel",
                 color: Theme.of(context).primaryColor,
               )),
@@ -854,22 +858,22 @@ class _RechargeState extends State<Recharge> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextView(
+            TextView(text:
               "${StaticValues.rupeeSymbol}${amt.text}",
               size: 24.0,
             ),
-            TextView(
+            TextView(text:
               mob.text,
               size: 18.0,
             ),
-            TextView(
+            TextView(text:
               operatorName,
               size: 18.0,
             ),
             SizedBox(
               height: 10.0,
             ),
-            TextView(
+            TextView(text:
               response["Table"][0]["message"],
             ),
           ],

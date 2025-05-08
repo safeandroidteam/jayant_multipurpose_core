@@ -1,21 +1,29 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:passbook_core_jayant/MainScreens/home_page.dart';
+import 'package:passbook_core_jayant/passbook_core.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:passbook_core_jayant/FundTransfer/Beneficiary.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/PeopleModel.dart';
 import 'package:passbook_core_jayant/FundTransfer/OtherBankTransfer.dart';
 import 'package:passbook_core_jayant/FundTransfer/OwnBankTransfer.dart';
-import 'package:passbook_core_jayant/QRCodeGen/AccountNoModel.dart';
-import 'package:passbook_core_jayant/QRCodeGen/QrCodeModel.dart';
+import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
+import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
+import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
+import 'package:passbook_core_jayant/REST/app_exceptions.dart';
+import 'package:passbook_core_jayant/Util/QRScan.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
+import 'package:passbook_core_jayant/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FundTransfer extends StatefulWidget {
-  const FundTransfer({Key? key}) : super(key: key);
+  const FundTransfer({super.key});
 
   @override
   _FundTransferState createState() => _FundTransferState();
@@ -29,50 +37,61 @@ class _FundTransferState extends State<FundTransfer>
   String acc = "", name = "";
   GlobalKey<ScaffoldState>? scaffoldKey;
   final _peopleKey = GlobalKey();
-  Uint8List? _bytesImage;
-  List accNo = [];
-  List<AccNoModel> accountList = [];
-  late String imgBase64;
 
-  ScrollController _customScrollController = ScrollController();
-  SharedPreferences? preferences;
+  final ScrollController _customScrollController = ScrollController();
+  late SharedPreferences preferences;
   People people = People();
+  String _amount = "", userBal = "";
+  String userName = "", userAcc = "", userId = "";
+  double _minTransferAmt = 0.0, _maxTransferAmt = 0.0;
+
+  /*  void loadData() async {
+    preferences = await SharedPreferences.getInstance();
+    setState(() {
+	    acc = preferences?.getString(StaticValues.accNumber) ?? "";
+	    name = preferences?.getString(StaticValues.accName) ?? "";
+    });
+
+
+ 
+  }*/
 
   void loadData() async {
-    preferences = StaticValues.sharedPreferences;
+    preferences = await SharedPreferences.getInstance();
     setState(() {
-      acc = preferences?.getString(StaticValues.accNumber) ?? "";
-      name = preferences?.getString(StaticValues.accName) ?? "";
+      acc = preferences.getString(StaticValues.accNumber) ?? "";
+      name = preferences.getString(StaticValues.accName) ?? "";
+      userName = preferences.getString(StaticValues.accName) ?? "";
+      userId = preferences.getString(StaticValues.custID) ?? "";
+    });
+    Map balanceResponse = await RestAPI().get(
+      APis.fetchFundTransferBal(userId),
+    );
+    //await preferences.setString(StaticValues.userBalance,balanceResponse["Table"][0]["BalAmt"].toString());
+    setState(() {
+      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+      userAcc = balanceResponse["Table"][0]["AccNo"].toString();
+    });
+    Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
+    print("transDailyLimit::: $transDailyLimit");
+    setState(() {
+      _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
+      _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
+      //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+    });
+    fetchBeneficiary();
+  }
 
-      accNo.add(acc);
+  fetchBeneficiary() async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final transferBloc = TransferBloc.get(context);
+      var id = preferences.getString(StaticValues.custID) ?? "";
+      transferBloc.add(FetchBenificiaryevent(id));
     });
   }
 
-  Future<Map?> fetchBeneficiary() async {
-    var id = preferences?.getString(StaticValues.custID);
-    print("ID :: $id");
-    return await RestAPI().get(APis.fetchBeneficiary(id));
-  }
-
-  Future<Map?> deleteBeneficiary(String recieverId) async {
+  Future<Map> deleteBeneficiary(String recieverId) async {
     return await RestAPI().get(APis.deleteBeneficiary(recieverId));
-  }
-
-  Future<QrCodeModel> getQrList() async {
-    var response1 = await RestAPI().post(
-      APis.upiQrCode,
-      params: {"Acc_No": acc},
-    );
-
-    List<QrCodeModel> qrCodeList = qrCodeModelFromJson(json.encode(response1));
-
-    imgBase64 = qrCodeList[0].qrCode!.split(",")[1];
-    //  print("LIJU${snapshot.data.qrCode}");
-
-    _bytesImage = Base64Decoder().convert(imgBase64);
-    print("QRCODE : ${_bytesImage.toString()}");
-
-    return qrCodeList[0];
   }
 
   @override
@@ -84,7 +103,7 @@ class _FundTransferState extends State<FundTransfer>
   void initState() {
     scaffoldKey = GlobalKey();
     loadData();
-    //   getQrList();
+    successPrint("initstate executing fund transfer");
 
     super.initState();
   }
@@ -125,8 +144,6 @@ class _FundTransferState extends State<FundTransfer>
                 context,
               ).push(MaterialPageRoute(builder: (context) => Beneficiary()));
               print("RESULT ::: $result");
-              fetchBeneficiary();
-              setState(() {});
             },
           ),
           GlobalWidgets().btnWithText(
@@ -151,12 +168,10 @@ class _FundTransferState extends State<FundTransfer>
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop:
-          () async {
-                return Navigator.of(context).pushReplacementNamed("/HomePage")
-                    as FutureOr<bool>;
-              }
-              as Future<bool> Function()?,
+      onWillPop: () async {
+        Navigator.of(context).pushReplacementNamed("/HomePage");
+        return false; // Prevent default pop behavior
+      },
       child: Scaffold(
         key: scaffoldKey,
         body: Stack(
@@ -169,16 +184,9 @@ class _FundTransferState extends State<FundTransfer>
                   expandedHeight: MediaQuery.of(context).size.width * 1.30,
                   pinned: true,
                   centerTitle: true,
-                  title: Text(
-                    "Fund Transfer",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  title: Text("Fund Transfer"),
                   leading: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 30.0,
-                    ),
+                    icon: Icon(Icons.arrow_back, size: 30.0),
                     onPressed:
                         () => Navigator.of(
                           context,
@@ -200,43 +208,24 @@ class _FundTransferState extends State<FundTransfer>
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              /*     QrImage(
+                              QrImageView(
                                 data: acc,
                                 version: QrVersions.auto,
                                 size: 200.0,
-                                foregroundColor: Colors.white,
-                              ),*/
-                              FutureBuilder<QrCodeModel>(
-                                future: getQrList(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    String imgBase64 =
-                                        snapshot.data!.qrCode!.split(",")[1];
-                                    print("LIJU${snapshot.data!.qrCode}");
-
-                                    Uint8List _bytesImage = Base64Decoder()
-                                        .convert(imgBase64);
-                                    print("LIJU${_bytesImage.toString()}");
-
-                                    return Container(
-                                      height: 200.0,
-                                      width: 200.0,
-                                      child: Image.memory(_bytesImage),
-                                    );
-                                  } else {
-                                    return Container(
-                                      // child: Text("Please Select AccNo"),
-                                    );
-                                  }
-                                },
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
                               ),
-
-                              //  _bytesImage = Base64Decoder().convert(_imgString);
-
-                              //   Image.memory(_bytesImage)
                               SizedBox(height: 10.0),
-                              TextView(name, color: Colors.white, size: 18),
-                              TextView(acc, size: 16.0, color: Colors.white),
+                              TextView(
+                                text: name,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              TextView(
+                                text: acc,
+                                size: 16.0,
+                                color: Colors.white,
+                              ),
                             ],
                           ),
                         ),
@@ -249,19 +238,12 @@ class _FundTransferState extends State<FundTransfer>
                               "assets/qr-code.png",
                               color: Colors.white,
                             ),
-                            /* onPressed: () {
-                                  GlobalWidgets().shoppingPay(
-                                      scaffoldKey.currentContext,
-                                      setState,
-                                      scaffoldKey,
-                                      acc);
-                                }*/
                             onPressed: () {
                               GlobalWidgets().shoppingPay(
                                 scaffoldKey!.currentContext!,
                                 setState,
-                                scaffoldKey,
-                                acc,
+                                scaffoldKey!,
+                                userBal,
                               );
                             },
                           ),
@@ -299,155 +281,178 @@ class _FundTransferState extends State<FundTransfer>
                               left: 12.0,
                             ),
                             child: TextView(
-                              "People",
+                              text: "People",
                               size: 20.0,
                               textAlign: TextAlign.start,
                             ),
                           ),
-                          FutureBuilder<Map?>(
-                            future: fetchBeneficiary(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                people = People.fromJson(
-                                  snapshot.data as Map<String, dynamic>,
+                          BlocBuilder<TransferBloc, TransferState>(
+                            buildWhen:
+                                (previous, current) =>
+                                    current is FetchBenificiaryLoading ||
+                                    current is FetchBenificiaryResponse ||
+                                    CurveTween is FetchBenificiaryError,
+                            builder: (context, state) {
+                              if (state is FetchBenificiaryLoading) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
                                 );
-                                return GridView.builder(
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
-                                        mainAxisSpacing: 10.0,
-                                      ),
-                                  physics: NeverScrollableScrollPhysics(),
-                                  primary: true,
-                                  shrinkWrap: true,
-                                  itemCount: people.table!.length,
-                                  itemBuilder: (context, index) {
-                                    return InkWell(
-                                      onLongPress: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: Text("Are you sure?"),
-                                              content: TextView(
-                                                "Do you want delete ${people.table![index].recieverName} beneficiary",
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              actions: <Widget>[
-                                                ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                        backgroundColor:
-                                                            Theme.of(
-                                                              context,
-                                                            ).primaryColor,
+                              } else if (state is FetchBenificiaryResponse) {
+                                if (state.beneficiaryList.isNotEmpty) {
+                                  return GridView.builder(
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                          mainAxisSpacing: 10.0,
+                                        ),
+                                    physics: NeverScrollableScrollPhysics(),
+                                    primary: true,
+                                    shrinkWrap: true,
+                                    itemCount: state.beneficiaryList.length,
+                                    itemBuilder: (context, index) {
+                                      return InkWell(
+                                        onLongPress: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: Text("Are you sure?"),
+                                                content: TextView(
+                                                  text:
+                                                      "Do you want delete ${state.beneficiaryList[index].recieverName} beneficiary",
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        10.0,
                                                       ),
-                                                  onPressed:
-                                                      () =>
-                                                          Navigator.of(
+                                                ),
+                                                actions: <Widget>[
+                                                  ElevatedButton(
+                                                    onPressed:
+                                                        () =>
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop(),
+                                                    child: TextView(
+                                                      text: "No",
+                                                      size: 14.0,
+                                                    ),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () async {
+                                                      await deleteBeneficiary(
+                                                        state
+                                                            .beneficiaryList[index]
+                                                            .recieverId
+                                                            .round()
+                                                            .toString(),
+                                                      );
+                                                      fetchBeneficiary();
+                                                      Navigator.pop(context);
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10.0,
+                                                            ),
+                                                      ),
+                                                      backgroundColor:
+                                                          Theme.of(
                                                             context,
-                                                          ).pop(),
-                                                  child: TextView(
-                                                    "No",
-                                                    size: 14.0,
-                                                  ),
-                                                ),
-                                                ElevatedButton(
-                                                  style: ElevatedButton.styleFrom(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            10.0,
-                                                          ),
+                                                          ).cardColor,
+                                                      padding: EdgeInsets.all(
+                                                        5.0,
+                                                      ),
                                                     ),
-                                                    backgroundColor:
-                                                        Theme.of(
-                                                          context,
-                                                        ).cardColor,
-                                                    padding: EdgeInsets.all(
-                                                      5.0,
+                                                    child: TextView(
+                                                      text: "Yes",
+                                                      size: 12.0,
+                                                      color: Colors.white,
                                                     ),
                                                   ),
-                                                  onPressed: () async {
-                                                    await deleteBeneficiary(
-                                                      people
-                                                          .table![index]
-                                                          .recieverId!
-                                                          .round()
-                                                          .toString(),
-                                                    );
-                                                    fetchBeneficiary();
-                                                    setState(() {});
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: TextView(
-                                                    "Yes",
-                                                    size: 12.0,
-                                                    color: Colors.white,
-                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            SizeRoute(
+                                              page: OtherBankTransfer(
+                                                peopleTable:
+                                                    state
+                                                        .beneficiaryList[index],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Card(
+                                              elevation: 6.0,
+                                              shape: CircleBorder(),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(
+                                                  15.0,
                                                 ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          SizeRoute(
-                                            page: OtherBankTransfer(
-                                              peopleTable: people.table![index],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Card(
-                                            elevation: 6.0,
-                                            shape: CircleBorder(),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(
-                                                15.0,
-                                              ),
-                                              child: Image.asset(
-                                                "assets/otherBankTransfer.png",
-                                                height: 30.0,
-                                                width: 30.0,
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).primaryColor,
+                                                child: Image.asset(
+                                                  "assets/otherBankTransfer.png",
+                                                  height: 30.0,
+                                                  width: 30.0,
+                                                  color:
+                                                      Theme.of(
+                                                        context,
+                                                      ).primaryColor,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(height: 5.0),
-                                          TextView(
-                                            toBeginningOfSentenceCase(
-                                              people.table![index].recieverName,
+                                            SizedBox(height: 5.0),
+                                            TextView(
+                                              text: toBeginningOfSentenceCase(
+                                                state
+                                                    .beneficiaryList[index]
+                                                    .recieverName,
+                                              ),
                                             ),
-                                          ),
-                                          TextView(
-                                            toBeginningOfSentenceCase(
-                                              people
-                                                  .table![index]
-                                                  .recieverAccno,
+                                            TextView(
+                                              text: toBeginningOfSentenceCase(
+                                                state
+                                                    .beneficiaryList[index]
+                                                    .recieverAccno,
+                                              ),
+                                              size: 10.0,
                                             ),
-                                            size: 10.0,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Text(
+                                      "No Data Found",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  );
+                                }
+                              } else if (state is FetchBenificiaryError) {
+                                return Center(
+                                  child: Text(
+                                    "Error: ${state.error}",
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
                                 );
                               } else {
                                 return Center(
-                                  child: CircularProgressIndicator(),
+                                  child: Text(
+                                    "Something went Wrong",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
                                 );
                               }
                             },

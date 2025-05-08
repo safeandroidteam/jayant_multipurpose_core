@@ -324,6 +324,7 @@ class _CardTopupState extends State<CardTopup> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextView(
+            text: 
             "Enter OTP",
             size: 24.0,
           ),

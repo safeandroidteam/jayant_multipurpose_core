@@ -35,8 +35,8 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
 
     isShare = widget.depositTransaction.module.toLowerCase() == "share";
     if (!hasFetchedTransactions) {
-     // getTransactions(isInitial: true);
-      hasFetchedTransactions = true; 
+      // getTransactions(isInitial: true);
+      hasFetchedTransactions = true;
     }
     super.initState();
   }
@@ -47,18 +47,17 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final passBookBloc = PassBookBloc.get(context);
       var id = preferences.getString(StaticValues.custID) ?? "";
-   
-        passBookBloc.add(
-          DepositShareTransactionEvent(
-            id,
-            isShare,
-            widget.depositTransaction.accNo,
-            widget.depositTransaction.schCode,
-            widget.depositTransaction.brCode,
-          ),
-        );
-        hasFetchedTransactions = true;
-      
+
+      passBookBloc.add(
+        DepositShareTransactionEvent(
+          id,
+          isShare,
+          widget.depositTransaction.accNo,
+          widget.depositTransaction.schCode,
+          widget.depositTransaction.brCode,
+        ),
+      );
+      hasFetchedTransactions = true;
     });
   }
 
@@ -72,7 +71,9 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
               current is DepositShareTransactionResponse ||
               CurveTween is DepositShareTransactionErrorException,
       builder: (context, state) {
-        if (state is DepositShareTransactionLoading) {
+        if (state is PassBookBlocInitial) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is DepositShareTransactionLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is DepositShareTransactionResponse) {
           if (state.transactionList.isEmpty) {
@@ -94,7 +95,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                       TableRow(
                         children: [
                           TableCell(
-                            child: TextView(
+                            child: TextView(text:
                               "Date",
                               fontWeight: FontWeight.bold,
                               textAlign: TextAlign.start,
@@ -103,7 +104,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                           ),
                           isShare
                               ? TableCell(
-                                child: TextView(
+                                child: TextView(text:
                                   "Type",
                                   fontWeight: FontWeight.bold,
                                   textAlign: TextAlign.center,
@@ -153,7 +154,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                         ),
                                       ],
                                     )
-                                    : TextView(
+                                    : TextView(text:
                                       "Balance",
                                       fontWeight: FontWeight.bold,
                                       textAlign: TextAlign.end,
@@ -199,7 +200,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: <Widget>[
-                                          TextView(
+                                          TextView(text:
                                             DateFormat("dd-MM-yyyy").format(
                                               state
                                                   .transactionList[index]
@@ -209,7 +210,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                             size: 12,
                                             textAlign: TextAlign.start,
                                           ),
-                                          TextView(
+                                          TextView(text:
                                             state
                                                 .transactionList[index]
                                                 .narration,
@@ -223,7 +224,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                   TableCell(
                                     child:
                                         isShare
-                                            ? TextView(
+                                            ? TextView(text:
                                               toBeginningOfSentenceCase(
                                                 state
                                                     .transactionList[index]
@@ -234,7 +235,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                               size: 12,
                                               fontWeight: FontWeight.bold,
                                             )
-                                            : TextView(
+                                            : TextView(text:
                                               state
                                                   .transactionList[index]
                                                   .amount!
@@ -252,7 +253,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                             ),
                                   ),
                                   TableCell(
-                                    child: TextView(
+                                    child: TextView(text:
                                       isShare
                                           ? state.transactionList[index].amount!
                                               .toStringAsFixed(2)

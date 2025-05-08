@@ -556,7 +556,7 @@ class _LoginUIState extends State<LoginUI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              TextView(
+              TextView(text:
                 "Sign In",
                 size: 20.0,
                 fontWeight: FontWeight.bold,
@@ -606,8 +606,8 @@ class _LoginUIState extends State<LoginUI> {
                 visible: MPin == null ? false : true,
                 child: Column(
                   children: [
-                    TextView(
-                      strCustName,
+                    TextView(text:
+                      strCustName??"",
                       size: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -635,7 +635,7 @@ class _LoginUIState extends State<LoginUI> {
                   children: [
                     InkWell(
                       onTap: widget.onTap,
-                      child: TextView(
+                      child: TextView(text:
                         "Forgot password?",
                         color: Theme.of(context).focusColor,
                       ),
@@ -643,7 +643,7 @@ class _LoginUIState extends State<LoginUI> {
                     SizedBox(height: 8),
                     InkWell(
                       onTap: widget.forgotUser,
-                      child: TextView(
+                      child: TextView(text:
                         "Forgot user?",
                         color: Theme.of(context).focusColor,
                       ),
@@ -688,7 +688,7 @@ class _LoginUIState extends State<LoginUI> {
                       });
                       print("LIJITH");
                       GlobalWidgets().showSnackBar(
-                        widget.scaffold,
+                        context,
                         response!["Table"][0]["Msg"],
                       );
                     }
@@ -699,7 +699,7 @@ class _LoginUIState extends State<LoginUI> {
                       //  if (response["Table"][0]["Cust_id"] == "Invalid"){
                       print("Blocked");
                       GlobalWidgets().showSnackBar(
-                        widget.scaffold,
+                     context,
                         response!["Table"][0]["Msg"],
                       );
                     } else {
@@ -745,7 +745,7 @@ class _LoginUIState extends State<LoginUI> {
                     _isLoading = false;
                   });
 
-                  GlobalWidgets().showSnackBar(widget.scaffold, e.message);
+                  GlobalWidgets().showSnackBar(context, e.message);
                 }
               }
             } else {
@@ -784,7 +784,7 @@ class _LoginUIState extends State<LoginUI> {
                         _isLoading = false;
                       });
                       GlobalWidgets().showSnackBar(
-                        widget.scaffold,
+                       context,
                         response!["Table"][0]["Msg"],
                       );
                     }
@@ -795,7 +795,7 @@ class _LoginUIState extends State<LoginUI> {
                       });
                       print("Blocked");
                       GlobalWidgets().showSnackBar(
-                        widget.scaffold,
+                       context,
                         response!["Table"][0]["Msg"],
                       );
                     } else {
@@ -835,7 +835,7 @@ class _LoginUIState extends State<LoginUI> {
                     _isLoading = false;
                   });
 
-                  GlobalWidgets().showSnackBar(widget.scaffold, e.message);
+                  GlobalWidgets().showSnackBar(context, e.message);
                 }
               }
             }
@@ -887,7 +887,7 @@ class _LoginUIState extends State<LoginUI> {
                     valueColor: AlwaysStoppedAnimation(Colors.white),
                     semanticsLabel: "Loading",
                   ))
-              : TextView(
+              : TextView(text:
                   "Login",
                   color: Colors.white,
                   size: 18.0,
@@ -912,7 +912,7 @@ class _LoginUIState extends State<LoginUI> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [TextView("Enter OTP", size: 16.0), SizedBox(height: 10.0)],
+        children: [TextView(text:"Enter OTP", size: 16.0), SizedBox(height: 10.0)],
       ),
       actionButton: StatefulBuilder(
         builder:
@@ -1013,7 +1013,7 @@ class _ForgotUIState extends State<ForgotUI> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextView(
+              TextView(text:
                 "Forgot Password",
                 size: 20.0,
                 fontWeight: FontWeight.bold,
@@ -1098,7 +1098,7 @@ class _ForgotUIState extends State<ForgotUI> {
                   if (response["Table"][0]["statuscode"] == 1) {
                     strOtp = response["Table"][0]["OTP"];
                     GlobalWidgets().showSnackBar(
-                      widget.scaffoldKey,
+                      context,
                       "OTP sent",
                     );
                     setState(() {
@@ -1106,13 +1106,13 @@ class _ForgotUIState extends State<ForgotUI> {
                     });
                   } else {
                     GlobalWidgets().showSnackBar(
-                      widget.scaffoldKey,
+                     context,
                       "Invalid User ID",
                     );
                   }
                 } else {
                   GlobalWidgets().showSnackBar(
-                    widget.scaffoldKey,
+                    context,
                     "Invalid User ID",
                   );
                 }
@@ -1122,22 +1122,22 @@ class _ForgotUIState extends State<ForgotUI> {
                 );
                 if (passValue) {
                   GlobalWidgets().showSnackBar(
-                    widget.scaffoldKey,
+                    context,
                     "Please include special characters in password",
                   );
                 } else if (strOtp != otpCtrl.text) {
                   GlobalWidgets().showSnackBar(
-                    widget.scaffoldKey,
+                    context,
                     "OTP miss match",
                   );
                 } else if (passCtrl.text != rePassCtrl.text) {
                   GlobalWidgets().showSnackBar(
-                    widget.scaffoldKey,
+                    context,
                     "Password miss match",
                   );
                 } else if (passCtrl.text.contains(" ")) {
                   GlobalWidgets().showSnackBar(
-                    widget.scaffoldKey,
+                    context,
                     "Please remove space from password",
                   );
                 } else {
@@ -1145,7 +1145,7 @@ class _ForgotUIState extends State<ForgotUI> {
                       otpCtrl.text.length < 4 &&
                       passCtrl.text.length < 4) {
                     GlobalWidgets().showSnackBar(
-                      widget.scaffoldKey,
+                      context,
                       "Please fill the missing fields",
                     );
                   } else {
@@ -1160,13 +1160,13 @@ class _ForgotUIState extends State<ForgotUI> {
                       if (response["Table"][0]["Column1"] ==
                           "Password Updated Successfully") {
                         GlobalWidgets().showSnackBar(
-                          widget.scaffoldKey,
+                          context,
                           "Password changed successfully",
                         );
                         widget.onTap!();
                       } else {
                         GlobalWidgets().showSnackBar(
-                          widget.scaffoldKey,
+                          context,
                           "Something went wrong",
                         );
                       }
@@ -1177,7 +1177,7 @@ class _ForgotUIState extends State<ForgotUI> {
                       });
 
                       GlobalWidgets().showSnackBar(
-                        widget.scaffoldKey,
+                        context,
                         e.message,
                       );
                     }

@@ -3,7 +3,6 @@ import 'package:passbook_core_jayant/MainScreens/ChittyLoan.dart';
 import 'package:passbook_core_jayant/Passbook/PassbookDPSH.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 
-
 class PassbookMenus extends StatefulWidget {
   const PassbookMenus({super.key});
 
@@ -72,14 +71,15 @@ class _PassbookMenusState extends State<PassbookMenus> {
                       imageName: 'assets/share.png',
                       name: "Share",
                       onPressed:
-                          () => ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Please Contact Branch")),
+                          () =>
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text("Please Contact Branch")),
+                          // ),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PassbookDPSH(type: "SH"),
+                            ),
                           ),
-
-                      /*Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => PassbookDPSH(
-                                    type: "SH",
-                                  )))*/
                     ),
                   ],
                 ),

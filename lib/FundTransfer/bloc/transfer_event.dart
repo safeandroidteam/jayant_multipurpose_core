@@ -14,3 +14,19 @@ class FetchCustomerAccNo extends TransferEvent {
 
   FetchCustomerAccNo(this.mobileNo);
 }
+
+class FetchCustomerFromAccNo extends TransferEvent {
+  final String userId;
+
+  FetchCustomerFromAccNo(this.userId);
+}
+
+class FetchFundTransferType extends TransferEvent {
+  FetchFundTransferType();
+}
+
+class FetchBenificiaryevent extends TransferEvent {
+  final String id;
+
+  FetchBenificiaryevent(this.id);
+}
