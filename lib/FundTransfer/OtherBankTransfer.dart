@@ -407,7 +407,8 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                                                         .peopleTable
                                                         .recieverId
                                                         .toString(),
-                                                "PaymentMode": "N",
+                                                "PaymentMode":
+                                                    selectedPaymentMode,
                                                 "PayAmount": amt.text,
                                                 "OTP": otp,
                                                 "RefNo":
@@ -481,8 +482,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                                                           (context) => Receipt(
                                                             isFailure: true,
                                                             pushReplacementNamed:
-                                                                
-                                                                    "/FundTransfer",
+                                                                "/FundTransfer",
                                                             amount: amt.text,
                                                             transID: "",
                                                             paidTo:

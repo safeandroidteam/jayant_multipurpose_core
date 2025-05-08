@@ -30,6 +30,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
   String userName = "", userAcc = "", userId = "", userBal = "";
   bool mobVal = false, accNoVal = false, nameVal = false, amtVal = false;
   List fromAc = [];
+  bool fromAcLoading = false;
   String acType = "";
   List accNos = [];
   String payerName = "";
@@ -323,7 +324,9 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                             fontWeight: FontWeight.bold,
                             color: Colors.grey,
                           ),
-                          if (fromAc.isEmpty)
+                          if (fromAcLoading == true)
+                            Center(child: CircularProgressIndicator()),
+                          if (fromAcLoading == false && fromAc.isEmpty)
                             Center(child: Text("NO Account Found")),
                           ListView.builder(
                             shrinkWrap: true,
@@ -473,7 +476,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                                                   builder:
                                                       (context) => Receipt(
                                                         pushReplacementNamed:
-                                                           "/FundTransfer",
+                                                            "/FundTransfer",
                                                         amount: amt.text,
                                                         transID:
                                                             response["Table"][0]["TranNO"]
@@ -499,7 +502,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                                                       (context) => Receipt(
                                                         isFailure: true,
                                                         pushReplacementNamed:
-"/FundTransfer",
+                                                            "/FundTransfer",
                                                         amount: amt.text,
                                                         transID: "",
                                                         paidTo:
@@ -665,6 +668,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
   void loadData() async {
     preferences = await SharedPreferences.getInstance();
     setState(() {
+      fromAcLoading = true;
       userName = preferences.getString(StaticValues.accName) ?? "";
       userId = preferences.getString(StaticValues.custID) ?? "";
     });
@@ -677,6 +681,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
       userAcc = balanceResponse["Table"][0]["AccNo"].toString();
       acType = balanceResponse["Table"][0]["Types"].toString();
       fromAc = balanceResponse["Table"];
+      fromAcLoading = false;
       // fromAc.add([
       //   {
       //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
