@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Settings/SaveMpinModel.dart';
 
 class RegisterUI extends StatefulWidget {
   final GestureTapCallback? onTap;
@@ -23,6 +28,8 @@ class _RegisterUIState extends State<RegisterUI>
       accCtrl = TextEditingController(),
       passCtrl = TextEditingController(),
       rePassCtrl = TextEditingController(),
+      mpinCtrl = TextEditingController(),
+      reMpinCtrl = TextEditingController(),
       usernameCtrl = TextEditingController();
   List<String?> accNos = [];
   FocusNode chapass = FocusNode();
@@ -30,6 +37,8 @@ class _RegisterUIState extends State<RegisterUI>
   bool mobVal = false,
       passVal = false,
       rePassVal = false,
+      mpinVal = false,
+      reMpinVal = false,
       accVal = false,
       userNameVal = false,
       otpVal = false;
@@ -40,6 +49,11 @@ class _RegisterUIState extends State<RegisterUI>
   bool _isLoading = false;
 
   final _listController = ScrollController();
+
+  SharedPreferences? pref;
+  List<SaveMpin> mPinResponse = [];
+  String? str_Ststus;
+  int? strStatusCode;
 
   void saveData(LoginModel loginModel) async {
     SharedPreferences preferences = StaticValues.sharedPreferences!;
@@ -82,7 +96,7 @@ class _RegisterUIState extends State<RegisterUI>
                     textCtrl.text = accNos[index]!;
                     Navigator.of(context).pop();
                   },
-                  child: ListTile(title: TextView(text:accNos[index]??"")),
+                  child: ListTile(title: TextView(text: accNos[index] ?? "")),
                 );
               }),
             ),
@@ -100,6 +114,36 @@ class _RegisterUIState extends State<RegisterUI>
     );
     _fadeIn = Tween(begin: 0.5, end: 1.0).animate(_controller);
     super.initState();
+  }
+
+  Future<List<SaveMpin>?> saveMpin() async {
+    pref = StaticValues.sharedPreferences;
+    var response = await RestAPI().post(
+      APis.saveMpin,
+      params: {
+        "CustID": pref!.getString(StaticValues.custID),
+        "MPIN": mpinCtrl.text,
+      },
+    );
+    setState(() {
+      mPinResponse = saveMpinFromJson(json.encode(response));
+      str_Ststus = mPinResponse[0].status;
+      strStatusCode = mPinResponse[0].statuscode;
+      print("LJT$str_Ststus");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(str_Ststus!)));
+
+      if (strStatusCode == 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("MPIN added successfully. Please login")),
+        );
+        // Navigator.of(
+        //   context,
+        // ).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
+      }
+    });
+    return null;
   }
 
   @override
@@ -124,8 +168,8 @@ class _RegisterUIState extends State<RegisterUI>
         Positioned(
           top: MediaQuery.of(context).size.width * .15,
           left: 20.0,
-          child: TextView(text:
-            "Sign Up",
+          child: TextView(
+            text: "Sign Up",
             size: 20.0,
             fontWeight: FontWeight.bold,
             color: Theme.of(context).focusColor,
@@ -269,6 +313,51 @@ class _RegisterUIState extends State<RegisterUI>
                               });
                             },
                           ),
+                          SizedBox(height: 20.0),
+
+                          ///MPIN
+                          EditTextBordered(
+                            controller: mpinCtrl,
+                            hint: "MPIN",
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(4),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            obscureText: true,
+                            showObscureIcon: true,
+                            textInputAction: TextInputAction.next,
+                            onSubmitted: (_) {
+                              FocusScope.of(context).nextFocus();
+                            },
+                            onChange: (value) {
+                              setState(() {
+                                mpinVal = RegExp(r"^[0-9]{4}$").hasMatch(value);
+                              });
+                            },
+                          ),
+                          SizedBox(height: 20.0),
+                          EditTextBordered(
+                            controller: reMpinCtrl,
+                            hint: "Confirm MPIN",
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(4),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            textInputAction: TextInputAction.done,
+                            errorText: reMpinVal ? "MPIN not matching" : null,
+                            obscureText: true,
+                            showObscureIcon: true,
+                            onChange: (value) {
+                              setState(() {
+                                reMpinVal = RegExp(
+                                  r"^[0-9]{4}$",
+                                ).hasMatch(value);
+                                reMpinVal = reMpinCtrl.text != mpinCtrl.text;
+                              });
+                            },
+                          ),
                           SizedBox(height: 120.0),
                         ],
                       ),
@@ -308,7 +397,8 @@ class _RegisterUIState extends State<RegisterUI>
 
   void onRegister() async {
     if (!isSendOTP && !isOtpValid) {
-      if (mobCtrl.text.trim().length == 10) {
+      if (mobCtrl.text.trim().length == 10 &&
+          mpinCtrl.text.trim().length == 4) {
         _isLoading = true;
         try {
           Map response = await (RestAPI().post(
@@ -327,10 +417,7 @@ class _RegisterUIState extends State<RegisterUI>
             setState(() {
               isSendOTP = false;
             });
-            GlobalWidgets().showSnackBar(
-              context,
-              "Invalid mobile number",
-            );
+            GlobalWidgets().showSnackBar(context, "Invalid mobile number");
           }
         } on RestException catch (e) {
           setState(() {
@@ -343,10 +430,7 @@ class _RegisterUIState extends State<RegisterUI>
         setState(() {
           isSendOTP = false;
         });
-        GlobalWidgets().showSnackBar(
-          context,
-          "Invalid mobile number",
-        );
+        GlobalWidgets().showSnackBar(context, "Invalid mobile number");
       }
     } else if (isSendOTP && !isOtpValid) {
       if (mobCtrl.text.trim().length == 10 && otpCtrl.text.length >= 4) {
@@ -382,10 +466,7 @@ class _RegisterUIState extends State<RegisterUI>
           GlobalWidgets().showSnackBar(context, e.message);
         }
       } else {
-        GlobalWidgets().showSnackBar(
-          context,
-          "Invalid OTP or Mobile number",
-        );
+        GlobalWidgets().showSnackBar(context, "Invalid OTP or Mobile number");
         setState(() {
           isOtpValid = false;
           isSendOTP = true;
@@ -397,7 +478,7 @@ class _RegisterUIState extends State<RegisterUI>
       if (passValue) {
         GlobalWidgets().showSnackBar(
           context,
-          "Please include special charcters in password",
+          "Please include special characters in password",
         );
       } else if (passCtrl.text != rePassCtrl.text) {
         GlobalWidgets().showSnackBar(context, "Password Miss match");
@@ -413,11 +494,14 @@ class _RegisterUIState extends State<RegisterUI>
           "Max length for password is 10 and Min is 4",
         );
       } else if (passCtrl.text.contains(" ") ||
-          usernameCtrl.text.contains(" ")) {
+          usernameCtrl.text.contains(" ") ||
+          mpinCtrl.text.contains(" ")) {
         GlobalWidgets().showSnackBar(
           context,
           "Please remove space from username or password",
         );
+      } else if (mpinCtrl.text != reMpinCtrl.text) {
+        GlobalWidgets().showSnackBar(context, "MPIN Mismatch");
       } else {
         if (mobCtrl.text.trim().length == 10 &&
                 otpCtrl.text.length >= 4 &&
@@ -435,13 +519,11 @@ class _RegisterUIState extends State<RegisterUI>
               "&MobileNo=${mobCtrl.text}&Accno=${accCtrl.text}";
           _isLoading = true;
           Map response = await (RestAPI().post(url));
+          // saveMpin();
           _isLoading = false;
           if (response["Table"][0]["Status"].toString() ==
               "Usercode Already Exists") {
-            GlobalWidgets().showSnackBar(
-              context,
-              "Usercode Already Exists",
-            );
+            GlobalWidgets().showSnackBar(context, "Usercode Already Exists");
           } else {
             print(response["Table"][0]["Status"].toString());
             GlobalWidgets().showSnackBar(

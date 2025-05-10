@@ -471,6 +471,7 @@ class _LoginUIState extends State<LoginUI> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   LoginModel login = LoginModel();
   bool _isLoading = false;
+  bool isLoginWithUsername = false;
   String? MPin, strCustName;
   Map? response;
   String? str_Otp;
@@ -556,16 +557,18 @@ class _LoginUIState extends State<LoginUI> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              TextView(text:
-                "Sign In",
+              TextView(
+                text: "Sign In",
                 size: 20.0,
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).focusColor,
               ),
               SizedBox(height: 30.0),
-              Visibility(
-                visible: MPin == null ? true : false,
-                child: Column(
+              if (isLoginWithUsername || MPin == null)
+                // Visibility(
+                //   visible: MPin == null ? true : false,
+                //   child:
+                Column(
                   children: [
                     EditTextBordered(
                       controller: usernameCtrl,
@@ -601,13 +604,16 @@ class _LoginUIState extends State<LoginUI> {
                     SizedBox(height: 20.0),
                   ],
                 ),
-              ),
-              Visibility(
-                visible: MPin == null ? false : true,
-                child: Column(
+
+              // ),
+              if (!isLoginWithUsername && MPin != null)
+                // Visibility(
+                //   visible: MPin == null ? false : true,
+                //   child:
+                Column(
                   children: [
-                    TextView(text:
-                      strCustName??"",
+                    TextView(
+                      text: strCustName ?? "",
                       size: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -617,6 +623,10 @@ class _LoginUIState extends State<LoginUI> {
                       hint: "MPin",
                       errorText: mpinVal ? "MPin length should be 4" : null,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(4),
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       // obscureText: true,
                       // showObscureIcon: true,
                       onChange: (value) {
@@ -628,23 +638,37 @@ class _LoginUIState extends State<LoginUI> {
                     SizedBox(height: 20.0),
                   ],
                 ),
-              ),
+              // ),
+              if (MPin != null)
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      mpinCtrl.clear();
+                      isLoginWithUsername = !isLoginWithUsername;
+                    });
+                  },
+                  child: Text(
+                    isLoginWithUsername
+                        ? "Login with MPIN"
+                        : "Login with Username",
+                  ),
+                ),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Column(
                   children: [
                     InkWell(
                       onTap: widget.onTap,
-                      child: TextView(text:
-                        "Forgot password?",
+                      child: TextView(
+                        text: "Forgot password?",
                         color: Theme.of(context).focusColor,
                       ),
                     ),
                     SizedBox(height: 8),
                     InkWell(
                       onTap: widget.forgotUser,
-                      child: TextView(text:
-                        "Forgot user?",
+                      child: TextView(
+                        text: "Forgot user?",
                         color: Theme.of(context).focusColor,
                       ),
                     ),
@@ -669,7 +693,8 @@ class _LoginUIState extends State<LoginUI> {
               mobVal = usernameCtrl.text.trim().length == 0;
             });
 
-            if (MPin == null) {
+            // if (MPin == null) {
+            if (isLoginWithUsername || MPin == null) {
               if (!passVal && !mobVal) {
                 print("ALL true");
                 _isLoading = true;
@@ -689,7 +714,8 @@ class _LoginUIState extends State<LoginUI> {
                       print("LIJITH");
                       GlobalWidgets().showSnackBar(
                         context,
-                        response!["Table"][0]["Cust_id"],
+                        // response!["Table"][0]["Cust_id"],
+                        response!["Table"][0]["Msg"],
                       );
                     }
                     if (response!["Table"][0]["Cust_id"] == "Blocked") {
@@ -699,7 +725,7 @@ class _LoginUIState extends State<LoginUI> {
                       //  if (response["Table"][0]["Cust_id"] == "Invalid"){
                       print("Blocked");
                       GlobalWidgets().showSnackBar(
-                     context,
+                        context,
                         response!["Table"][0]["Msg"],
                       );
                     } else {
@@ -749,7 +775,8 @@ class _LoginUIState extends State<LoginUI> {
                 }
               }
             } else {
-              if (!mpinVal) {
+              // if (!mpinVal) {
+              if (!isLoginWithUsername && MPin != null) {
                 print("ALL true");
                 _isLoading = true;
                 try {
@@ -784,8 +811,8 @@ class _LoginUIState extends State<LoginUI> {
                         _isLoading = false;
                       });
                       GlobalWidgets().showSnackBar(
-                       context,
-                        response!["Table"][0]["Msg"],
+                        context,
+                        response!["Table"][0]["Cust_id"],
                       );
                     }
                     if (response!["Table"][0]["Cust_id"] == "Blocked") {
@@ -795,7 +822,7 @@ class _LoginUIState extends State<LoginUI> {
                       });
                       print("Blocked");
                       GlobalWidgets().showSnackBar(
-                       context,
+                        context,
                         response!["Table"][0]["Msg"],
                       );
                     } else {
@@ -912,7 +939,10 @@ class _LoginUIState extends State<LoginUI> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [TextView(text:"Enter OTP", size: 16.0), SizedBox(height: 10.0)],
+        children: [
+          TextView(text: "Enter OTP", size: 16.0),
+          SizedBox(height: 10.0),
+        ],
       ),
       actionButton: StatefulBuilder(
         builder:
@@ -1013,8 +1043,8 @@ class _ForgotUIState extends State<ForgotUI> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextView(text:
-                "Forgot Password",
+              TextView(
+                text: "Forgot Password",
                 size: 20.0,
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).focusColor,
@@ -1097,24 +1127,15 @@ class _ForgotUIState extends State<ForgotUI> {
                   _isLoading = false;
                   if (response["Table"][0]["statuscode"] == 1) {
                     strOtp = response["Table"][0]["OTP"];
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "OTP sent",
-                    );
+                    GlobalWidgets().showSnackBar(context, "OTP sent");
                     setState(() {
                       isGetOTP = true;
                     });
                   } else {
-                    GlobalWidgets().showSnackBar(
-                     context,
-                      "Invalid User ID",
-                    );
+                    GlobalWidgets().showSnackBar(context, "Invalid User ID");
                   }
                 } else {
-                  GlobalWidgets().showSnackBar(
-                    context,
-                    "Invalid User ID",
-                  );
+                  GlobalWidgets().showSnackBar(context, "Invalid User ID");
                 }
               } else {
                 bool passValue = passCtrl.text.contains(
@@ -1126,15 +1147,9 @@ class _ForgotUIState extends State<ForgotUI> {
                     "Please include special characters in password",
                   );
                 } else if (strOtp != otpCtrl.text) {
-                  GlobalWidgets().showSnackBar(
-                    context,
-                    "OTP miss match",
-                  );
+                  GlobalWidgets().showSnackBar(context, "OTP miss match");
                 } else if (passCtrl.text != rePassCtrl.text) {
-                  GlobalWidgets().showSnackBar(
-                    context,
-                    "Password miss match",
-                  );
+                  GlobalWidgets().showSnackBar(context, "Password miss match");
                 } else if (passCtrl.text.contains(" ")) {
                   GlobalWidgets().showSnackBar(
                     context,
@@ -1176,10 +1191,7 @@ class _ForgotUIState extends State<ForgotUI> {
                         _isLoading = false;
                       });
 
-                      GlobalWidgets().showSnackBar(
-                        context,
-                        e.message,
-                      );
+                      GlobalWidgets().showSnackBar(context, e.message);
                     }
                   }
                 }

@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_event.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_state.dart';
-import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/QRScan.dart';
@@ -14,7 +12,6 @@ import 'package:passbook_core_jayant/Util/StaticValue.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../FundTransfer/bloc/transfer_bloc.dart';
@@ -1072,6 +1069,7 @@ class EditTextBordered extends StatefulWidget {
   final bool? setBorder, setDecoration;
   final bool? showObscureIcon;
   final FocusNode? focusNode;
+  final List<TextInputFormatter>? inputFormatters;
   final TextInputAction? textInputAction;
   final TextAlign? textAlign;
   final TextInputType? keyboardType;
@@ -1097,6 +1095,7 @@ class EditTextBordered extends StatefulWidget {
     this.onSubmitted,
     this.onEditingComplete,
     this.focusNode,
+    this.inputFormatters,
     this.textInputAction,
     this.borderColor,
     this.controller,
@@ -1133,6 +1132,7 @@ class EditTextBorderedState extends State<EditTextBordered> {
           onEditingComplete: widget.onEditingComplete,
           maxLength: widget.maxLength,
           maxLines: widget.maxLines,
+          inputFormatters: widget.inputFormatters,
           textInputAction: widget.textInputAction,
           focusNode: widget.focusNode,
           autofocus: widget.autoFocus ?? false,
