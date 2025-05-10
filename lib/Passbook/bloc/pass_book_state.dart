@@ -9,7 +9,7 @@ abstract class PassBookState extends Equatable {
 
 class PassBookBlocInitial extends PassBookState {}
 
-class InitialHomeState extends PassBookState {
+class InitialPassBookState extends PassBookState {
   @override
   List<Object> get props => [];
 }

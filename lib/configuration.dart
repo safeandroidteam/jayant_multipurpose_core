@@ -5,6 +5,7 @@ class HomePageConfiguration {
   final bool fundTransferOption;
   final bool rechargeOption;
   final bool shoppingOption;
+  final bool cardOption;
 
   final bool search;
 
@@ -13,14 +14,14 @@ class HomePageConfiguration {
     this.fundTransferOption = false,
     this.rechargeOption = false,
     this.shoppingOption = false,
-
+    this.cardOption = false,
     this.search = false,
   });
 
   @override
   String toString() {
     return 'HomePageConfiguration{baseOption: $baseOption, fundTransferOption: $fundTransferOption, '
-        'rechargeOption: $rechargeOption, shoppingOption: $shoppingOption}';
+        'rechargeOption: $rechargeOption, shoppingOption: $shoppingOption, cardOption:$cardOption , search: $search}';
   }
 }
 

@@ -689,7 +689,7 @@ class _LoginUIState extends State<LoginUI> {
                       print("LIJITH");
                       GlobalWidgets().showSnackBar(
                         context,
-                        response!["Table"][0]["Msg"],
+                        response!["Table"][0]["Cust_id"],
                       );
                     }
                     if (response!["Table"][0]["Cust_id"] == "Blocked") {

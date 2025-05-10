@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
+import 'package:passbook_core_jayant/Search/bloc/search_bloc.dart';
 import 'package:passbook_core_jayant/Util/StaticValue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'AccNoModel.dart';
+import 'modal/AccNoModel.dart';
 import 'DepositSearchModel.dart';
 
 class AccountSearch extends StatefulWidget {
   final String accType;
 
-  AccountSearch(this.accType) : super();
+  const AccountSearch(this.accType, {super.key});
 
   @override
   _AccountSearchState createState() => _AccountSearchState();
 }
 
 class _AccountSearchState extends State<AccountSearch> {
-  var _fruits = <AccTable>[];
-  var _selectedAccNo;
   String? str_accNo;
   String? str_accType;
-  List<AccTable>? accTable = [];
   String? _mySelection;
-  bool _isAccNo = false;
+
   bool _isAccSearch = false;
+  bool _isDepositTableEmpty = false;
   DateTime selectedFromDate = DateTime.now();
   DateTime selectedToDate = DateTime.now();
   TextEditingController fromDateController = TextEditingController();
@@ -32,18 +32,12 @@ class _AccountSearchState extends State<AccountSearch> {
   List<DepositTable>? depositTable = [];
   SharedPreferences? preferences;
   String? userId, schemeCode1, branchCode1;
-  String url =
-      "http://perumannascb.safeandsmartbank.com:6550/Api/Values/get_DepositSearch?Cust_id=31125&Acc_no=0020070001785&Sch_code=007&Br_code=2&Frm_Date=2020-05-14&Todate=2020-11-05";
 
-  var _forkKey = GlobalKey<FormState>();
+  final _forkKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
-    // getSerchList();
-
     if (widget.accType == "Account") {
       str_accType = "DP";
     } else if (widget.accType == "Loan") {
@@ -53,47 +47,25 @@ class _AccountSearchState extends State<AccountSearch> {
     getAccDeposit();
   }
 
-  Future<void> getAccDeposit() async {
+  getAccDeposit() async {
     preferences = StaticValues.sharedPreferences;
-    setState(() {
-      _isAccNo = true;
-      userId = preferences?.getString(StaticValues.custID) ?? "";
-      schemeCode1 = preferences?.getString(StaticValues.schemeCode) ?? "";
-      branchCode1 = preferences?.getString(StaticValues.branchCode) ?? "";
-    });
-    var response = await RestAPI().get(
-      APis.getAccNoDeposit({"Cust_id": userId, "Acc_Type": str_accType}),
-    );
-    GetAccNo _getAccNo = GetAccNo.fromJson(response);
 
-    accTable = _getAccNo.accTable;
+    userId = preferences?.getString(StaticValues.custID) ?? "";
+    schemeCode1 = preferences?.getString(StaticValues.schemeCode) ?? "";
+    branchCode1 = preferences?.getString(StaticValues.branchCode) ?? "";
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final searchBloc = SearchBloc.get(context);
 
-    setState(() {
-      _isAccNo = false;
+      searchBloc.add(AccNoDepositEvent(userId ?? "", str_accType ?? ""));
     });
-    return;
   }
-
-  /*  Future<void> getSerchList() async{
-
-    var response = await RestAPI().get(url);
-    DepositSearchModel _depositList = DepositSearchModel.fromJson(response);
-
-
-    print("Lijith: $depositTable");
-
-    setState(() {
-      depositTable = _depositList.depositTable;
-    });
-    return;
-  }*/
 
   void _selectFromDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedFromDate, // Refer step 1
       firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
+      lastDate: DateTime.now(),
     );
     if (picked != null && picked != selectedFromDate)
       setState(() {
@@ -102,6 +74,7 @@ class _AccountSearchState extends State<AccountSearch> {
         fromDateController.text = DateFormat(
           "yyyy-MM-dd",
         ).format(selectedFromDate);
+        depositTable?.clear();
       });
   }
 
@@ -110,13 +83,14 @@ class _AccountSearchState extends State<AccountSearch> {
       context: context,
       initialDate: selectedToDate, // Refer step 1
       firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
+      lastDate: DateTime.now(),
     );
     if (picked != null && picked != selectedToDate)
       setState(() {
         selectedToDate = picked;
 
         toDateController.text = DateFormat("yyyy-MM-dd").format(selectedToDate);
+        depositTable?.clear();
       });
   }
 
@@ -148,17 +122,22 @@ class _AccountSearchState extends State<AccountSearch> {
                   borderRadius: BorderRadius.all(Radius.circular(8)),
                 ),
                 child: DropdownButtonHideUnderline(
-                  child:
-                      _isAccNo
-                          ? Center(child: CircularProgressIndicator())
-                          : DropdownButton(
+                  child: BlocBuilder<SearchBloc, SearchState>(
+                    builder: (context, state) {
+                      if (state is SearchInitial) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (state is AccDepositLoading) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (state is AccDepositResponse) {
+                        if (state.accTable.isNotEmpty) {
+                          return DropdownButton(
                             hint: Text("Account No"),
                             value: _mySelection,
                             items:
-                                accTable!.map((item) {
-                                  return new DropdownMenuItem(
-                                    child: new Text(item.accNo!),
+                                state.accTable.map((item) {
+                                  return DropdownMenuItem(
                                     value: item.accNo,
+                                    child: Text(item.accNo!),
                                   );
                                 }).toList(),
                             onChanged: (dynamic newVal) {
@@ -166,7 +145,17 @@ class _AccountSearchState extends State<AccountSearch> {
                                 _mySelection = newVal;
                               });
                             },
-                          ),
+                          );
+                        } else {
+                          return Center(child: Text("No Account Found"));
+                        }
+                      } else if (state is AccDepositErrorException) {
+                        return Text("Error ${state.error}");
+                      } else {
+                        return Text("Something went Wrong");
+                      }
+                    },
+                  ),
                 ),
               ),
               SizedBox(height: 12.0),
@@ -177,7 +166,7 @@ class _AccountSearchState extends State<AccountSearch> {
                       onTap: () {
                         _selectFromDate(context);
                       },
-                      child: Container(
+                      child: SizedBox(
                         height: 40.0,
                         child: TextFormField(
                           enabled: false,
@@ -205,7 +194,7 @@ class _AccountSearchState extends State<AccountSearch> {
                       onTap: () {
                         _selectedToDate(context);
                       },
-                      child: Container(
+                      child: SizedBox(
                         height: 40.0,
                         child: TextFormField(
                           enabled: false,
@@ -228,7 +217,7 @@ class _AccountSearchState extends State<AccountSearch> {
                 ],
               ),
               SizedBox(height: 12.0),
-              Container(
+              SizedBox(
                 height: 40.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -241,7 +230,11 @@ class _AccountSearchState extends State<AccountSearch> {
                   ),
                   onPressed: () async {
                     if (_forkKey.currentState!.validate()) {
-                      _isAccSearch = true;
+                      setState(() {
+                        _isAccSearch = true;
+                        _isDepositTableEmpty = false;
+                      });
+
                       // var response = await RestAPI().get(url);
                       var response = await RestAPI().get(
                         APis.getDepositTransactionList({
@@ -253,13 +246,19 @@ class _AccountSearchState extends State<AccountSearch> {
                           "Todate": toDateController.text,
                         }),
                       );
-                      DepositSearchModel _depositList =
+                      DepositSearchModel depositList =
                           DepositSearchModel.fromJson(response);
 
-                      print("Lijith: $depositTable");
+                      print("deposit List : $depositTable");
 
                       setState(() {
-                        depositTable = _depositList.depositTable;
+                        depositTable = depositList.depositTable;
+                        if (depositTable!.isEmpty) {
+                          _isDepositTableEmpty = true;
+                        } else {
+                          _isDepositTableEmpty = false;
+                        }
+
                         _isAccSearch = false;
                       });
                       return;
@@ -272,7 +271,10 @@ class _AccountSearchState extends State<AccountSearch> {
                   },*/
                   child:
                       _isAccSearch
-                          ? CircularProgressIndicator()
+                          ? CircularProgressIndicator(
+                            backgroundColor: Colors.white,
+                            color: Colors.white,
+                          )
                           : Text(
                             "Fetch Data",
                             style: TextStyle(color: Colors.white),
@@ -280,41 +282,52 @@ class _AccountSearchState extends State<AccountSearch> {
                 ),
               ),
               SizedBox(height: 15.0),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: depositTable!.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    String s = depositTable![index].trDate.toString().substring(
-                      0,
-                      depositTable![index].trDate.toString().indexOf(' '),
-                    );
-                    return Card(
-                      child: ListTile(
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            //   Text(depositTable[index].trDate.toString()),
-                            Text(s),
-                            Text(
-                              depositTable![index].amount.toString(),
-                              style: TextStyle(
-                                color:
-                                    depositTable![index].tranType.toString() ==
-                                            "C"
-                                        ? Colors.red
-                                        : Colors.green,
+              _isAccSearch
+                  ? SizedBox.shrink()
+                  : ((_isDepositTableEmpty))
+                  ? Center(child: Text("No Data Found"))
+                  : Expanded(
+                    child: ListView.builder(
+                      itemCount: depositTable!.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        String s = depositTable![index].trDate
+                            .toString()
+                            .substring(
+                              0,
+                              depositTable![index].trDate.toString().indexOf(
+                                ' ',
                               ),
+                            );
+                        return Card(
+                          child: ListTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                //   Text(depositTable[index].trDate.toString()),
+                                Text(s),
+                                Text(
+                                  depositTable![index].amount.toString(),
+                                  style: TextStyle(
+                                    color:
+                                        depositTable![index].tranType
+                                                    .toString() ==
+                                                "C"
+                                            ? Colors.red
+                                            : Colors.green,
+                                  ),
+                                ),
+                                Text(
+                                  depositTable![index].tranBalance.toString(),
+                                ),
+                              ],
                             ),
-                            Text(depositTable![index].tranBalance.toString()),
-                          ],
-                        ),
-                        subtitle: Text(depositTable![index].narration!),
-                      ),
-                    );
-                  },
-                ),
-              ),
+                            subtitle: Text(depositTable![index].narration!),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
             ],
           ),
         ),

@@ -6,6 +6,7 @@ import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
 import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/MainScreens/sub_page.dart';
 import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
+import 'package:passbook_core_jayant/Search/bloc/search_bloc.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,8 +46,10 @@ class CoreApp extends StatelessWidget {
     StaticValues.titleDecoration = titleDecoration;
     StaticValues.sharedPreferences = sharedPreferences;
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => PassBookBloc()),
-      BlocProvider(create: (context) => TransferBloc())
+      providers: [
+        BlocProvider(create: (context) => PassBookBloc()),
+        BlocProvider(create: (context) => TransferBloc()),
+        BlocProvider(create: (context) => SearchBloc()),
       ],
       child: MaterialApp(
         builder: (context, child) {

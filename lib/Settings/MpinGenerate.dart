@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:passbook_core_jayant/MainScreens/Login.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'SaveMpinModel.dart';
 
 class MpinGenerate extends StatefulWidget {
-  const MpinGenerate({Key? key}) : super(key: key);
+  const MpinGenerate({super.key});
 
   @override
   _MpinGenerateState createState() => _MpinGenerateState();
@@ -34,10 +35,10 @@ class _MpinGenerateState extends State<MpinGenerate> {
       print("MPIN : $MPin");
       /*usernameCtrl.text = "nira";
       passCtrl.text = "1234";*/
-//      usernameCtrl.text = "vidya";
-//      passCtrl.text = "123456";
-//      usernameCtrl.text = "9895564690";
-//      passCtrl.text = "123456";
+      //      usernameCtrl.text = "vidya";
+      //      passCtrl.text = "123456";
+      //      usernameCtrl.text = "9895564690";
+      //      passCtrl.text = "123456";
     });
 
     super.initState();
@@ -45,22 +46,30 @@ class _MpinGenerateState extends State<MpinGenerate> {
 
   Future<List<SaveMpin>?> saveMpin() async {
     pref = StaticValues.sharedPreferences;
-    var response = await RestAPI().post(APis.saveMpin, params: {
-      "CustID": pref!.getString(StaticValues.custID),
-      "MPIN": mpinCtrl.text
-    });
+    var response = await RestAPI().post(
+      APis.saveMpin,
+      params: {
+        "CustID": pref!.getString(StaticValues.custID),
+        "MPIN": mpinCtrl.text,
+      },
+    );
     setState(() {
       //  mPinResponse = saveMpinFromJson(json.encode(response));
       mPinResponse = saveMpinFromJson(json.encode(response));
       str_Ststus = mPinResponse[0].status;
       strStatusCode = mPinResponse[0].statuscode;
       print("LJT$str_Ststus");
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(str_Ststus!)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(str_Ststus!)));
 
       if (strStatusCode == 1) {
-        Navigator.of(context)
-            .pushNamedAndRemoveUntil("/LoginPage", (_) => false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Mpin Changed. Please login again")),
+        );
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
       }
     });
     return null;
@@ -73,27 +82,19 @@ class _MpinGenerateState extends State<MpinGenerate> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              "Set MPin",
-              style: TextStyle(color: Colors.white),
-            ),
+            Text("Set MPin", style: TextStyle(color: Colors.white)),
             InkWell(
-                onTap: () {
-                  showAlertDialog(context);
-                },
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                ))
+              onTap: () {
+                showAlertDialog(context);
+              },
+              child: Icon(Icons.delete, color: Colors.white),
+            ),
           ],
         ),
         leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-              size: 30.0,
-            ),
-            onPressed: () => Navigator.of(context).pop()),
+          icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -113,9 +114,7 @@ class _MpinGenerateState extends State<MpinGenerate> {
                 });
               },
             ),
-            SizedBox(
-              height: 16.0,
-            ),
+            SizedBox(height: 16.0),
             EditTextBordered(
               controller: reMpinCtrl,
               hint: "Re-enter MPin",
@@ -129,10 +128,8 @@ class _MpinGenerateState extends State<MpinGenerate> {
                 });
               },
             ),
+            SizedBox(height: 16.0),
             SizedBox(
-              height: 16.0,
-            ),
-            Container(
               height: 40.0,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -147,8 +144,9 @@ class _MpinGenerateState extends State<MpinGenerate> {
                     // await pref.setString(StaticValues.Mpin, "1111");
                     saveMpin();
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Mpin Miss Match")));
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text("Mpin Miss Match")));
                   }
 
                   /*  if(MPin == null){
@@ -187,7 +185,7 @@ class _MpinGenerateState extends State<MpinGenerate> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -202,28 +200,33 @@ class _MpinGenerateState extends State<MpinGenerate> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           InkWell(
-              onTap: () async {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                if (prefs.getString(StaticValues.Mpin) == null) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text("No MPin Set")));
-                } else {
-                  prefs.remove(StaticValues.Mpin);
+            onTap: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              if (prefs.getString(StaticValues.Mpin) == null) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("No MPin Set")));
+              } else {
+                prefs.remove(StaticValues.Mpin);
 
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text("MPin Deleted")));
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("MPin Deleted")));
 
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil("/LoginPage", (_) => false);
-                }
-                // prefs.setString(StaticValues.Mpin, "");
-              },
-              child: Text("YES")),
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil("/LoginPage", (_) => false);
+              }
+              // prefs.setString(StaticValues.Mpin, "");
+            },
+            child: Text("YES"),
+          ),
           InkWell(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("NO")),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("NO"),
+          ),
         ],
       ),
     );
@@ -232,9 +235,7 @@ class _MpinGenerateState extends State<MpinGenerate> {
     AlertDialog alert = AlertDialog(
       title: Text("Delete MPin"),
       content: Text("Are you sure want to delete MPin."),
-      actions: [
-        okButton,
-      ],
+      actions: [okButton],
     );
 
     // show the dialog
