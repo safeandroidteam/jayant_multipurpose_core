@@ -209,7 +209,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     checkVersionCompatible();
     SharedPreferences pref = StaticValues.sharedPreferences!;
     MPin = pref.getString(StaticValues.Mpin);
-    //   print("MPIN : $MPin");
+    //   debugPrint("MPIN : $MPin");
     /*  Future.delayed(Duration.zero, () {
       termsAndConditions();
     });*/
@@ -285,165 +285,168 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             )
             as FutureOr<bool>);
       },
-      child: Scaffold(
-        key: _scaffoldKey,
-        resizeToAvoidBottomInset: false,
-        body: WillPopScope(
-          onWillPop: () async {
-            if (_pageController.page == 0 || _pageController.page == 2) {
-              _pageController.animateToPage(
-                1,
-                duration: Duration(milliseconds: pageCtrlTime),
-                curve: _pageCurves,
-              );
-              reverseAnimate();
-              return false;
-            } else {
-              return true;
-            }
-          },
-          child: Stack(
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).cardColor,
-                      Theme.of(context).focusColor,
-                      Theme.of(context).primaryColor,
-                    ],
-                    tileMode: TileMode.repeated,
-                    begin: Alignment(0.0, 0.5),
-                    stops: [0.0, 0.5, 1.0],
+      child: SafeArea(
+        child: Scaffold(
+          key: _scaffoldKey,
+          resizeToAvoidBottomInset: false,
+          body: WillPopScope(
+            onWillPop: () async {
+              if (_pageController.page == 0 || _pageController.page == 2) {
+                _pageController.animateToPage(
+                  1,
+                  duration: Duration(milliseconds: pageCtrlTime),
+                  curve: _pageCurves,
+                );
+                reverseAnimate();
+                return false;
+              } else {
+                return true;
+              }
+            },
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).cardColor,
+                        Theme.of(context).focusColor,
+                        Theme.of(context).primaryColor,
+                      ],
+                      tileMode: TileMode.repeated,
+                      begin: Alignment(0.0, 0.5),
+                      stops: [0.0, 0.5, 1.0],
+                    ),
                   ),
                 ),
-              ),
-              /*    Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Image.asset(
-                    "assets/safesoftware_logo.png",
-                    width: 200,
-                  )),*/
-              Align(
-                alignment: Alignment.center,
+                /*    Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Image.asset(
+                      "assets/safesoftware_logo.png",
+                      width: 200,
+                    )),*/
+                Align(
+                  alignment: Alignment.center,
 
-                ///this SingleChildScrollView set to visible TextField when SoftKeyboard appears
-                child: SingleChildScrollView(
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: pageCtrlTime),
-                    curve: Curves.easeIn,
-                    width: MediaQuery.of(context).size.width * .8,
-                    // height:
-                    //     MediaQuery.of(context).size.width * _animation!.value,
-                    height:
-                        (MediaQuery.of(context).size.width * _animation!.value +
-                            MediaQuery.of(context).size.height * .05),
-                    // height: MediaQuery.of(context).size.height * .8,
-                    //onRegister .83
-                    child: Card(
-                      elevation: 0.0,
-                      borderOnForeground: true,
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: PageView(
-                        physics: NeverScrollableScrollPhysics(),
-                        controller: _pageController,
-                        children: <Widget>[
-                          ForgotUI(
-                            scaffoldKey: _scaffoldKey,
-                            onTap: () {
-                              setState(() {
-                                _pageController.nextPage(
-                                  duration: Duration(
-                                    milliseconds: pageCtrlTime,
-                                  ),
-                                  curve: _pageCurves,
-                                );
-                              });
-                            },
-                          ),
-                          LoginUI(
-                            scaffold: _scaffoldKey,
-                            onTap: () {
-                              setState(() {
-                                _pageController.previousPage(
-                                  duration: Duration(
-                                    milliseconds: pageCtrlTime,
-                                  ),
-                                  curve: _pageCurves,
-                                );
-                              });
-                            },
-                            forgotUser: () {
-                              setState(() {
-                                _pageController.nextPage(
-                                  duration: Duration(
-                                    milliseconds: pageCtrlTime,
-                                  ),
-                                  curve: _pageCurves,
-                                );
-                              });
-                            },
-                          ),
-                          RegisterUI(
-                            onTap: () {
-                              setState(() {
-                                _pageController.animateToPage(
-                                  1,
-                                  duration: Duration(
-                                    milliseconds: pageCtrlTime,
-                                  ),
-                                  curve: _pageCurves,
-                                );
-                                reverseAnimate();
-                              });
-                            },
-                            scaffoldKey: _scaffoldKey,
-                          ),
-                        ],
+                  ///this SingleChildScrollView set to visible TextField when SoftKeyboard appears
+                  child: SingleChildScrollView(
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: pageCtrlTime),
+                      curve: Curves.easeIn,
+                      width: MediaQuery.of(context).size.width * .8,
+                      // height:
+                      //     MediaQuery.of(context).size.width * _animation!.value,
+                      height:
+                          (MediaQuery.of(context).size.width *
+                                  _animation!.value +
+                              MediaQuery.of(context).size.height * .05),
+                      // height: MediaQuery.of(context).size.height * .8,
+                      //onRegister .83
+                      child: Card(
+                        elevation: 0.0,
+                        borderOnForeground: true,
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: PageView(
+                          physics: NeverScrollableScrollPhysics(),
+                          controller: _pageController,
+                          children: <Widget>[
+                            ForgotUI(
+                              scaffoldKey: _scaffoldKey,
+                              onTap: () {
+                                setState(() {
+                                  _pageController.nextPage(
+                                    duration: Duration(
+                                      milliseconds: pageCtrlTime,
+                                    ),
+                                    curve: _pageCurves,
+                                  );
+                                });
+                              },
+                            ),
+                            LoginUI(
+                              scaffold: _scaffoldKey,
+                              onTap: () {
+                                setState(() {
+                                  _pageController.previousPage(
+                                    duration: Duration(
+                                      milliseconds: pageCtrlTime,
+                                    ),
+                                    curve: _pageCurves,
+                                  );
+                                });
+                              },
+                              forgotUser: () {
+                                setState(() {
+                                  _pageController.nextPage(
+                                    duration: Duration(
+                                      milliseconds: pageCtrlTime,
+                                    ),
+                                    curve: _pageCurves,
+                                  );
+                                });
+                              },
+                            ),
+                            RegisterUI(
+                              onTap: () {
+                                setState(() {
+                                  _pageController.animateToPage(
+                                    1,
+                                    duration: Duration(
+                                      milliseconds: pageCtrlTime,
+                                    ),
+                                    curve: _pageCurves,
+                                  );
+                                  reverseAnimate();
+                                });
+                              },
+                              scaffoldKey: _scaffoldKey,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              AnimatedPositioned(
-                duration: Duration(milliseconds: pageCtrlTime),
-                right: MediaQuery.of(context).size.width * .035,
-                curve: _animationCurves,
-                top:
-                    MediaQuery.of(context).size.width *
-                    _floatingAnimation!.value,
-                //onRegister .03
-                child: Tooltip(
-                  key: _regToolTipKey,
-                  message: "To register click here",
-                  preferBelow: false,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).focusColor,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  padding: EdgeInsets.all(8.0),
-                  margin: EdgeInsets.all(8.0),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      _pageController.nextPage(
-                        duration: Duration(milliseconds: pageCtrlTime),
-                        curve: _pageCurves,
-                      );
-                      //                      _animationController.forward();
-                      //                      _floatingAnimationController.forward();
-                    },
-                    disabledElevation: 1.0,
-                    isExtended: true,
-                    backgroundColor: Theme.of(context).cardColor,
-                    child: Icon(Icons.add, color: Colors.white),
-                    elevation: 8.0,
+                AnimatedPositioned(
+                  duration: Duration(milliseconds: pageCtrlTime),
+                  right: MediaQuery.of(context).size.width * .035,
+                  curve: _animationCurves,
+                  top:
+                      MediaQuery.of(context).size.width *
+                      _floatingAnimation!.value,
+                  //onRegister .03
+                  child: Tooltip(
+                    key: _regToolTipKey,
+                    message: "To register click here",
+                    preferBelow: false,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).focusColor,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    padding: EdgeInsets.all(8.0),
+                    margin: EdgeInsets.all(8.0),
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        _pageController.nextPage(
+                          duration: Duration(milliseconds: pageCtrlTime),
+                          curve: _pageCurves,
+                        );
+                        //                      _animationController.forward();
+                        //                      _floatingAnimationController.forward();
+                      },
+                      disabledElevation: 1.0,
+                      isExtended: true,
+                      backgroundColor: Theme.of(context).cardColor,
+                      child: Icon(Icons.add, color: Colors.white),
+                      elevation: 8.0,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -463,15 +466,22 @@ class LoginUI extends StatefulWidget {
   _LoginUIState createState() => _LoginUIState();
 }
 
-class _LoginUIState extends State<LoginUI> {
+class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   TextEditingController usernameCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
   TextEditingController mpinCtrl = TextEditingController();
+  TextEditingController mPinCtrl1 = TextEditingController();
+  TextEditingController mPinCtrl2 = TextEditingController();
+  TextEditingController mPinCtrl3 = TextEditingController();
+  TextEditingController mPinCtrl4 = TextEditingController();
+  TextEditingController allMpinCtrl = TextEditingController();
   bool mobVal = false, passVal = false, mpinVal = false;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   LoginModel login = LoginModel();
   bool _isLoading = false;
   bool isLoginWithUsername = false;
+  bool isMPinEmpty = true;
   String? MPin, strCustName;
   Map? response;
   String? str_Otp;
@@ -527,13 +537,22 @@ class _LoginUIState extends State<LoginUI> {
     Navigator.of(context).pushReplacementNamed("/HomePage");
   }
 
+  mergeMPinCtrlValues() {
+    allMpinCtrl.clear();
+    allMpinCtrl.text =
+        mPinCtrl1.text + mPinCtrl2.text + mPinCtrl3.text + mPinCtrl4.text;
+    debugPrint("MPIN : ${allMpinCtrl.text}");
+  }
+
   @override
   void initState() {
+    super.initState();
     setState(() {
       SharedPreferences pref = StaticValues.sharedPreferences!;
       MPin = pref.getString(StaticValues.Mpin);
       strCustName = pref.getString(StaticValues.accName);
-      print("MPIN : $MPin");
+      debugPrint("MPIN : $MPin");
+      isMPinEmpty = false;
       /*usernameCtrl.text = "nira";
       passCtrl.text = "1234";*/
       //      usernameCtrl.text = "vidya";
@@ -541,12 +560,13 @@ class _LoginUIState extends State<LoginUI> {
       //      usernameCtrl.text = "9895564690";
       //      passCtrl.text = "123456";
     });
-
-    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -563,11 +583,137 @@ class _LoginUIState extends State<LoginUI> {
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).focusColor,
               ),
-              SizedBox(height: 30.0),
-              if (isLoginWithUsername || MPin == null)
-                // Visibility(
-                //   visible: MPin == null ? true : false,
-                //   child:
+              (!isLoginWithUsername && MPin != null)
+                  ? SizedBox(height: 10.0)
+                  : SizedBox(height: 30.0),
+              (isLoginWithUsername || MPin == null)
+                  ? SizedBox.shrink()
+                  : TabBar(
+                    controller: _tabController,
+                    tabs: [Tab(text: "MPIN"), Tab(text: "Username")],
+                  ),
+              if (!isLoginWithUsername && MPin != null) SizedBox(height: 10.0),
+              if (MPin != null)
+                Container(
+                  height: height * 0.23,
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      ///MPIN
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // SizedBox(height: 20.0),
+                          TextView(
+                            text: strCustName ?? "",
+                            size: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          SizedBox(height: 20),
+
+                          // EditTextBordered(
+                          //   controller: mpinCtrl,
+                          //   hint: "MPin",
+                          //   errorText:
+                          //       mpinVal ? "MPin length should be 4" : null,
+                          //   keyboardType: TextInputType.number,
+                          //   inputFormatters: [
+                          //     LengthLimitingTextInputFormatter(4),
+                          //     FilteringTextInputFormatter.digitsOnly,
+                          //   ],
+                          //   // obscureText: true,
+                          //   // showObscureIcon: true,
+                          //   onChange: (value) {
+                          //     setState(() {
+                          //       mpinVal = value.trim().length < 4;
+                          //     });
+                          //   },
+                          // ),
+                          SizedBox(
+                            width: width * 0.6,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SingleDigitTextField(
+                                  controller: mPinCtrl1,
+                                  autoFocus: false,
+                                  obscureText: true,
+                                ),
+                                SingleDigitTextField(
+                                  controller: mPinCtrl2,
+                                  autoFocus: false,
+                                  obscureText: true,
+                                ),
+                                SingleDigitTextField(
+                                  controller: mPinCtrl3,
+                                  autoFocus: false,
+                                  obscureText: true,
+                                ),
+                                SingleDigitTextField(
+                                  controller: mPinCtrl4,
+                                  autoFocus: false,
+                                  obscureText: true,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 20.0),
+                          Visibility(
+                            visible: isMPinEmpty,
+                            child: Text(
+                              "Enter 4 digit MPIN",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                        ],
+                      ),
+
+                      ///UN & PW
+                      Column(
+                        children: [
+                          SizedBox(height: 10.0),
+                          EditTextBordered(
+                            controller: usernameCtrl,
+                            hint: "Username",
+                            errorText: mobVal ? "Username is invalid" : null,
+                            setBorder: true,
+                            keyboardType: TextInputType.text,
+                            textCapitalization: TextCapitalization.none,
+                            textInputAction: TextInputAction.next,
+                            setDecoration: true,
+                            onChange: (value) {
+                              setState(() {
+                                mobVal = value.trim().length == 0;
+                              });
+                            },
+                            onSubmitted: (_) {
+                              FocusScope.of(context).nextFocus();
+                            },
+                          ),
+                          SizedBox(height: 20.0),
+                          EditTextBordered(
+                            controller: passCtrl,
+                            hint: "Password",
+                            errorText:
+                                passVal ? "Password length should be 4" : null,
+                            obscureText: true,
+                            showObscureIcon: true,
+                            onChange: (value) {
+                              setState(() {
+                                passVal = value.trim().length < 4;
+                              });
+                            },
+                          ),
+                          SizedBox(height: 20.0),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+              if (MPin == null)
                 Column(
                   children: [
                     EditTextBordered(
@@ -605,54 +751,21 @@ class _LoginUIState extends State<LoginUI> {
                   ],
                 ),
 
-              // ),
-              if (!isLoginWithUsername && MPin != null)
-                // Visibility(
-                //   visible: MPin == null ? false : true,
-                //   child:
-                Column(
-                  children: [
-                    TextView(
-                      text: strCustName ?? "",
-                      size: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    SizedBox(height: 20),
-                    EditTextBordered(
-                      controller: mpinCtrl,
-                      hint: "MPin",
-                      errorText: mpinVal ? "MPin length should be 4" : null,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(4),
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      // obscureText: true,
-                      // showObscureIcon: true,
-                      onChange: (value) {
-                        setState(() {
-                          mpinVal = value.trim().length < 4;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 20.0),
-                  ],
-                ),
-              // ),
-              if (MPin != null)
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      mpinCtrl.clear();
-                      isLoginWithUsername = !isLoginWithUsername;
-                    });
-                  },
-                  child: Text(
-                    isLoginWithUsername
-                        ? "Login with MPIN"
-                        : "Login with Username",
-                  ),
-                ),
+              ///Toogle To Login with MPIN or Username
+              // if (MPin != null)
+              //   TextButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         mpinCtrl.clear();
+              //         isLoginWithUsername = !isLoginWithUsername;
+              //       });
+              //     },
+              //     child: Text(
+              //       isLoginWithUsername
+              //           ? "Login with MPIN"
+              //           : "Login with Username",
+              //     ),
+              //   ),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Column(
@@ -687,16 +800,23 @@ class _LoginUIState extends State<LoginUI> {
             ),
           ),
           onPressed: () async {
-            print(usernameCtrl.text);
+            debugPrint(usernameCtrl.text);
+            mergeMPinCtrlValues();
             setState(() {
               passVal = passCtrl.text.trim().length < 4;
               mobVal = usernameCtrl.text.trim().length == 0;
+              mpinVal = mpinCtrl.text.trim().length < 4;
+              if (allMpinCtrl.text.trim().length < 4) {
+                isMPinEmpty = true;
+              }
             });
 
-            // if (MPin == null) {
-            if (isLoginWithUsername || MPin == null) {
+            ///Login with UN & PW
+            if (isLoginWithUsername ||
+                MPin == null ||
+                _tabController.index == 1) {
               if (!passVal && !mobVal) {
-                print("ALL true");
+                debugPrint("Login UN & PW > ALL true");
                 _isLoading = true;
                 try {
                   response = await RestAPI().get(
@@ -774,26 +894,36 @@ class _LoginUIState extends State<LoginUI> {
                   GlobalWidgets().showSnackBar(context, e.message);
                 }
               }
-            } else {
-              // if (!mpinVal) {
-              if (!isLoginWithUsername && MPin != null) {
-                print("ALL true");
-                _isLoading = true;
-                try {
-                  SharedPreferences pref = StaticValues.sharedPreferences!;
 
-                  response = await RestAPI().get(
-                    "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${mpinCtrl.text}",
-                  );
-                  /*   response = await RestAPI().post(APis.loginMpin,params: {
+              ///Login with MPIN
+            } else if (!isLoginWithUsername &&
+                MPin != null &&
+                _tabController.index == 0 &&
+                allMpinCtrl.text.isNotEmpty &&
+                allMpinCtrl.text.trim().length == 4) {
+              debugPrint("Login MPIN > ALL true");
+              setState(() {
+                isMPinEmpty = false;
+              });
+              _isLoading = true;
+              try {
+                SharedPreferences pref = StaticValues.sharedPreferences!;
+
+                // getMPinCtrlValues();
+
+                response = await RestAPI().get(
+                  // "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${mpinCtrl.text}",
+                  "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${allMpinCtrl.text}",
+                );
+                /*   response = await RestAPI().post(APis.loginMpin,params: {
 
                       "CustID": "1010001",
                       "MPIN": mpinCtrl.text
                     });*/
 
-                  setState(() async {
-                    _isLoading = false;
-                    /*     if ((response["Table"][0] as Map).containsKey("Invalid")) {
+                setState(() async {
+                  _isLoading = false;
+                  /*     if ((response["Table"][0] as Map).containsKey("Invalid")) {
                     //  if (response["Table"][0]["Cust_id"] == "Invalid"){
                         print("Invalis");
                         GlobalWidgets()
@@ -805,67 +935,67 @@ class _LoginUIState extends State<LoginUI> {
                         GlobalWidgets()
                             .showSnackBar(widget.scaffold, "Your Account is Blocked");
                       }*/
-                    if ((response!["Table"][0]["Cust_id"]) == "Invalid") {
-                      print("LIJITH");
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      GlobalWidgets().showSnackBar(
-                        context,
-                        response!["Table"][0]["Cust_id"],
-                      );
-                    }
-                    if (response!["Table"][0]["Cust_id"] == "Blocked") {
-                      //  if (response["Table"][0]["Cust_id"] == "Invalid"){
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      print("Blocked");
-                      GlobalWidgets().showSnackBar(
-                        context,
-                        response!["Table"][0]["Msg"],
-                      );
-                    } else {
-                      var response1 = await RestAPI().post(
-                        APis.GenerateOTP,
-                        params: {
-                          "MobileNo": response!["Table"][0]["Mobile"],
-                          "Amt": "0",
-                          "SMS_Module": "GENERAL",
-                          "SMS_Type": "GENERAL_OTP",
-                          "OTP_Return": "Y",
-                        },
-                      );
-                      print("rechargeResponse::: $response1");
-                      str_Otp = response1[0]["OTP"];
+                  if ((response!["Table"][0]["Cust_id"]) == "Invalid") {
+                    print("LIJITH");
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      response!["Table"][0]["Cust_id"],
+                    );
+                  }
+                  if (response!["Table"][0]["Cust_id"] == "Blocked") {
+                    //  if (response["Table"][0]["Cust_id"] == "Invalid"){
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    print("Blocked");
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      response!["Table"][0]["Msg"],
+                    );
+                  } else {
+                    var response1 = await RestAPI().post(
+                      APis.GenerateOTP,
+                      params: {
+                        "MobileNo": response!["Table"][0]["Mobile"],
+                        "Amt": "0",
+                        "SMS_Module": "GENERAL",
+                        "SMS_Type": "GENERAL_OTP",
+                        "OTP_Return": "Y",
+                      },
+                    );
+                    print("rechargeResponse::: $response1");
+                    str_Otp = response1[0]["OTP"];
 
-                      //   getMobileRecharge();
-                      setState(() {
-                        //     isLoading = false;
+                    //   getMobileRecharge();
+                    setState(() {
+                      //     isLoading = false;
 
-                        Timer(Duration(minutes: 5), () {
-                          setState(() {
-                            str_Otp = "";
-                          });
+                      Timer(Duration(minutes: 5), () {
+                        setState(() {
+                          str_Otp = "";
                         });
                       });
+                    });
 
-                      ///TODO  for otp while login
-                      _loginConfirmation();
+                    ///TODO  for otp while login
+                    _loginConfirmation();
 
-                      /* LoginModel login = LoginModel.fromJson(response);
+                    /* LoginModel login = LoginModel.fromJson(response);
                         saveData(login);*/
-                    }
-                  });
-                } on RestException catch (e) {
-                  setState(() {
-                    _isLoading = false;
-                  });
+                  }
+                });
+              } on RestException catch (e) {
+                setState(() {
+                  _isLoading = false;
+                });
 
-                  GlobalWidgets().showSnackBar(context, e.message);
-                }
+                GlobalWidgets().showSnackBar(context, e.message);
               }
             }
+            // }
           },
           buttonText: "Login",
         ),

@@ -18,6 +18,18 @@ class MpinGenerate extends StatefulWidget {
 class _MpinGenerateState extends State<MpinGenerate> {
   TextEditingController mpinCtrl = TextEditingController();
   TextEditingController reMpinCtrl = TextEditingController();
+  TextEditingController setMPinCtrl1 = TextEditingController();
+  TextEditingController setMPinCtrl2 = TextEditingController();
+  TextEditingController setMPinCtrl3 = TextEditingController();
+  TextEditingController setMPinCtrl4 = TextEditingController();
+  TextEditingController allSetMpinCtrl = TextEditingController();
+
+  TextEditingController confirmMPinCtrl1 = TextEditingController();
+  TextEditingController confirmMPinCtrl2 = TextEditingController();
+  TextEditingController confirmMPinCtrl3 = TextEditingController();
+  TextEditingController confirmMPinCtrl4 = TextEditingController();
+  TextEditingController allConfirmMpinCtrl = TextEditingController();
+
   bool mPin = false;
   bool reMpin = false;
   bool currentMpin = false;
@@ -27,12 +39,31 @@ class _MpinGenerateState extends State<MpinGenerate> {
   SharedPreferences? pref;
   String? MPin;
 
+  mergeMPinCtrlValues() {
+    allSetMpinCtrl.clear();
+    allConfirmMpinCtrl.clear();
+
+    allSetMpinCtrl.text =
+        setMPinCtrl1.text +
+        setMPinCtrl2.text +
+        setMPinCtrl3.text +
+        setMPinCtrl4.text;
+    debugPrint("Set MPIN : ${allSetMpinCtrl.text}");
+
+    allConfirmMpinCtrl.text =
+        confirmMPinCtrl1.text +
+        confirmMPinCtrl2.text +
+        confirmMPinCtrl3.text +
+        confirmMPinCtrl4.text;
+    debugPrint("Confirm MPIN : ${allConfirmMpinCtrl.text}");
+  }
+
   @override
   void initState() {
     setState(() {
       SharedPreferences pref = StaticValues.sharedPreferences!;
       MPin = pref.getString(StaticValues.Mpin);
-      print("MPIN : $MPin");
+      debugPrint("MPIN : $MPin");
       /*usernameCtrl.text = "nira";
       passCtrl.text = "1234";*/
       //      usernameCtrl.text = "vidya";
@@ -45,12 +76,14 @@ class _MpinGenerateState extends State<MpinGenerate> {
   }
 
   Future<List<SaveMpin>?> saveMpin() async {
+    mergeMPinCtrlValues();
     pref = StaticValues.sharedPreferences;
     var response = await RestAPI().post(
       APis.saveMpin,
       params: {
         "CustID": pref!.getString(StaticValues.custID),
-        "MPIN": mpinCtrl.text,
+        // "MPIN": mpinCtrl.text,
+        "MPIN": allConfirmMpinCtrl.text,
       },
     );
     setState(() {
@@ -65,7 +98,7 @@ class _MpinGenerateState extends State<MpinGenerate> {
 
       if (strStatusCode == 1) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Mpin Changed. Please login again")),
+          SnackBar(content: Text("MPin Changed. Please login again")),
         );
         Navigator.of(
           context,
@@ -77,97 +110,171 @@ class _MpinGenerateState extends State<MpinGenerate> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Set MPin", style: TextStyle(color: Colors.white)),
-            InkWell(
-              onTap: () {
-                showAlertDialog(context);
-              },
-              child: Icon(Icons.delete, color: Colors.white),
-            ),
-          ],
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Set MPin", style: TextStyle(color: Colors.white)),
+              InkWell(
+                onTap: () {
+                  showAlertDialog(context);
+                },
+                child: Icon(Icons.delete, color: Colors.white),
+              ),
+            ],
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            EditTextBordered(
-              controller: mpinCtrl,
-              hint: "MPin",
-              keyboardType: TextInputType.number,
-              errorText: mPin ? "Password length should be 4" : null,
-              //   obscureText: true,
-              //  showObscureIcon: true,
-              onChange: (value) {
-                setState(() {
-                  mPin = value.trim().length < 4;
-                });
-              },
-            ),
-            SizedBox(height: 16.0),
-            EditTextBordered(
-              controller: reMpinCtrl,
-              hint: "Re-enter MPin",
-              keyboardType: TextInputType.number,
-              errorText: reMpin ? "Password length should be 4" : null,
-              //   obscureText: true,
-              //   showObscureIcon: true,
-              onChange: (value) {
-                setState(() {
-                  reMpin = value.trim().length < 4;
-                });
-              },
-            ),
-            SizedBox(height: 16.0),
-            SizedBox(
-              height: 40.0,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // EditTextBordered(
+              //   controller: mpinCtrl,
+              //   hint: "MPin",
+              //   keyboardType: TextInputType.number,
+              //   errorText: mPin ? "Password length should be 4" : null,
+              //   //   obscureText: true,
+              //   //  showObscureIcon: true,
+              //   onChange: (value) {
+              //     setState(() {
+              //       mPin = value.trim().length < 4;
+              //     });
+              //   },
+              // ),
+              Text(
+                "Set MPIN",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              SizedBox(height: height * 0.025),
+              SizedBox(
+                width: width * 0.8,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SingleDigitTextField(
+                      controller: setMPinCtrl1,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                    SingleDigitTextField(
+                      controller: setMPinCtrl2,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                    SingleDigitTextField(
+                      controller: setMPinCtrl3,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                    SingleDigitTextField(
+                      controller: setMPinCtrl4,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                  ],
                 ),
-                onPressed: () async {
-                  if (mpinCtrl.text == reMpinCtrl.text) {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    prefs.setString(StaticValues.Mpin, mpinCtrl.text);
+              ),
+              SizedBox(height: height * 0.05),
+              // EditTextBordered(
+              //   controller: reMpinCtrl,
+              //   hint: "Re-enter MPin",
+              //   keyboardType: TextInputType.number,
+              //   errorText: reMpin ? "Password length should be 4" : null,
+              //   //   obscureText: true,
+              //   //   showObscureIcon: true,
+              //   onChange: (value) {
+              //     setState(() {
+              //       reMpin = value.trim().length < 4;
+              //     });
+              //   },
+              // ),
+              Text(
+                "Confirm MPIN",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              SizedBox(height: height * 0.025),
+              SizedBox(
+                width: width * 0.8,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SingleDigitTextField(
+                      controller: confirmMPinCtrl1,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                    SingleDigitTextField(
+                      controller: confirmMPinCtrl2,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                    SingleDigitTextField(
+                      controller: confirmMPinCtrl3,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                    SingleDigitTextField(
+                      controller: confirmMPinCtrl4,
+                      autoFocus: false,
+                      obscureText: true,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: height * 0.05),
+              SizedBox(
+                height: 40.0,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  onPressed: () async {
+                    mergeMPinCtrlValues();
+                    if (allSetMpinCtrl.text.trim().length < 4 ||
+                        allConfirmMpinCtrl.text.trim().length < 4) {
+                      // isMPinEmpty = true;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Enter 4 digit MPIN on both fields."),
+                        ),
+                      );
+                    } else if (allSetMpinCtrl.text.trim() !=
+                        allConfirmMpinCtrl.text.trim()) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text("MPIN Mismatch")));
+                    } else {
+                      // if (mpinCtrl.text == reMpinCtrl.text) {
+                      if (allSetMpinCtrl.text == allConfirmMpinCtrl.text) {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        // prefs.setString(StaticValues.Mpin, mpinCtrl.text);
+                        prefs.setString(
+                          StaticValues.Mpin,
+                          allConfirmMpinCtrl.text,
+                        );
 
-                    // await pref.setString(StaticValues.Mpin, "1111");
-                    saveMpin();
-                  } else {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text("Mpin Miss Match")));
-                  }
+                        // await pref.setString(StaticValues.Mpin, "1111");
+                        saveMpin();
+                      }
+                    }
 
-                  /*  if(MPin == null){
-                  if(mpinCtrl.text == reMpinCtrl.text){
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                    prefs.setString(StaticValues.Mpin, mpinCtrl.text);
-
-                    // await pref.setString(StaticValues.Mpin, "1111");
-                    saveMpin();
-                  }
-                  else{
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Mpin Miss Match")));
-                  }
-                }
-                else{
-                  if(MPin == currentMpinCtrl.text){
+                    /*  if(MPin == null){
                     if(mpinCtrl.text == reMpinCtrl.text){
-
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
                       prefs.setString(StaticValues.Mpin, mpinCtrl.text);
-
+      
                       // await pref.setString(StaticValues.Mpin, "1111");
                       saveMpin();
                     }
@@ -176,17 +283,32 @@ class _MpinGenerateState extends State<MpinGenerate> {
                     }
                   }
                   else{
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Current MPin Missmatch")));
-                  }
-                }*/
-                },
-                child: Text(
-                  MPin == null ? "Save" : "Update",
-                  style: TextStyle(color: Colors.white),
+                    if(MPin == currentMpinCtrl.text){
+                      if(mpinCtrl.text == reMpinCtrl.text){
+      
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        prefs.setString(StaticValues.Mpin, mpinCtrl.text);
+      
+                        // await pref.setString(StaticValues.Mpin, "1111");
+                        saveMpin();
+                      }
+                      else{
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Mpin Miss Match")));
+                      }
+                    }
+                    else{
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Current MPin Missmatch")));
+                    }
+                  }*/
+                  },
+                  child: Text(
+                    MPin == null ? "Save" : "Update",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -206,6 +328,7 @@ class _MpinGenerateState extends State<MpinGenerate> {
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text("No MPin Set")));
+                Navigator.of(context).pop();
               } else {
                 prefs.remove(StaticValues.Mpin);
 
@@ -213,9 +336,13 @@ class _MpinGenerateState extends State<MpinGenerate> {
                   context,
                 ).showSnackBar(SnackBar(content: Text("MPin Deleted")));
 
-                Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil("/LoginPage", (_) => false);
+                // Navigator.of(
+                //   context,
+                // ).pushNamedAndRemoveUntil("/LoginPage", (_) => false);
+
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => Login()),
+                );
               }
               // prefs.setString(StaticValues.Mpin, "");
             },
