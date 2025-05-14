@@ -50,8 +50,8 @@ class _SettingsState extends State<Settings> {
               thickness: 1,
             ),
             SizedBox(height: 10.0),
-            TextView(text:
-              "Settings",
+            TextView(
+              text: "Settings",
               color: Colors.grey,
               fontWeight: FontWeight.bold,
               size: 24.0,
@@ -63,12 +63,12 @@ class _SettingsState extends State<Settings> {
                 Icons.lock_outline,
                 color: Theme.of(context).focusColor,
               ),
-              title: TextView(text:
-                "Change Password",
+              title: TextView(
+                text: "Change Password",
                 fontWeight: FontWeight.bold,
                 size: 16.0,
               ),
-              subtitle: TextView(text:"Change security password", size: 12.0),
+              subtitle: TextView(text: "Change security password", size: 12.0),
             ),
             Divider(
               endIndent: 15,
@@ -82,12 +82,12 @@ class _SettingsState extends State<Settings> {
                 Icons.info_outline,
                 color: Theme.of(context).focusColor,
               ),
-              title: TextView(text:
-                "About Us",
+              title: TextView(
+                text: "About Us",
                 fontWeight: FontWeight.bold,
                 size: 16.0,
               ),
-              subtitle: TextView(text:"About this App", size: 12.0),
+              subtitle: TextView(text: "About this App", size: 12.0),
             ),
             Divider(
               endIndent: 15,
@@ -108,12 +108,12 @@ class _SettingsState extends State<Settings> {
                   Icons.qr_code,
                   color: Theme.of(context).focusColor,
                 ),
-                title: TextView(text:
-                  "QR Code",
+                title: TextView(
+                  text: "QR Code",
                   fontWeight: FontWeight.bold,
                   size: 16.0,
                 ),
-                subtitle: TextView(text:"Get Your QR Code", size: 12.0),
+                subtitle: TextView(text: "Get Your QR Code", size: 12.0),
               ),
             ),
             Divider(
@@ -135,12 +135,12 @@ class _SettingsState extends State<Settings> {
                   Icons.password,
                   color: Theme.of(context).focusColor,
                 ),
-                title: TextView(text:
-                  "MPin",
+                title: TextView(
+                  text: "MPin",
                   fontWeight: FontWeight.bold,
                   size: 16.0,
                 ),
-                subtitle: TextView(text:"Set and Update Mpin", size: 12.0),
+                subtitle: TextView(text: "Set and Update Mpin", size: 12.0),
               ),
             ),
             // Divider(
@@ -203,7 +203,7 @@ class _SettingsState extends State<Settings> {
                 children: <Widget>[
                   Visibility(
                     visible: isInvalid.length > 0,
-                    child: TextView(text:isInvalid, color: Colors.red),
+                    child: TextView(text: isInvalid, color: Colors.red),
                   ),
                   SizedBox(height: 10.0),
                   Row(
@@ -222,7 +222,7 @@ class _SettingsState extends State<Settings> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: TextView(text:"Cancel"),
+                          child: TextView(text: "Cancel"),
                         ),
                       ),
                       ElevatedButton(
@@ -275,8 +275,8 @@ class _SettingsState extends State<Settings> {
                                 },
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: TextView(text:
-                            "Change Password",
+                          child: TextView(
+                            text: "Change Password",
                             color: Colors.white,
                           ),
                         ),
@@ -356,12 +356,12 @@ class _SettingsState extends State<Settings> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextView(text:name ?? "", fontWeight: FontWeight.bold, size: 16),
-          TextView(text:acc ?? "", size: 14.0),
+          TextView(text: name ?? "", fontWeight: FontWeight.bold, size: 16),
+          TextView(text: acc ?? "", size: 14.0),
           SizedBox(height: 5.0),
         ],
       ),
-      subtitle: TextView(text:address ?? "", size: 12),
+      subtitle: TextView(text: address ?? "", size: 12),
     );
   }
 

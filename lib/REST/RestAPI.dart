@@ -23,17 +23,17 @@ class RestAPI {
       final result = await InternetAddress.lookup(APis._superLink);
 
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('Internet connected');
+        debugPrint('Internet connected');
       }
     } on SocketException catch (_) {
-      print('Internet not connected');
+      debugPrint('Internet not connected');
     }
   }
 
- Future<T> get<T>(String url, {BuildContext? context}) async {
+  Future<T> get<T>(String url, {BuildContext? context}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('accessToken') ?? "";
-    print('Api Get, url $url');
+    debugPrint('Api Get, url $url');
     T responseJson;
     try {
       if (context != null) {
@@ -79,17 +79,17 @@ class RestAPI {
           "Authorization": "Bearer $token",
         },
       );
-      print("RESPONSE ${response.body}");
+      debugPrint("RESPONSE ${response.body}");
       responseJson = _returnResponse(response);
       if (context != null) Navigator.of(context).pop();
     } on SocketException {
-      print('SocketException');
+      debugPrint('SocketException');
       throw FetchDataException('Either network issue nor server error');
     } on TimeoutException {
-      print('TimeoutException');
+      debugPrint('TimeoutException');
       throw FetchDataException('Time out try again');
     }
-    print('api get recieved!');
+    debugPrint('api get recieved!');
     return responseJson;
   }
 
@@ -97,7 +97,7 @@ class RestAPI {
     SharedPreferences prefs = StaticValues.sharedPreferences!;
     String? token = prefs.getString('accessToken');
     var uri = Uri.parse(url);
-    print('Api Post, url $uri  and $params');
+    debugPrint('Api Post, url $uri  and $params');
     T? responseJson;
     try {
       final response = await http.post(
@@ -109,30 +109,30 @@ class RestAPI {
           "Authorization": "Bearer $token",
         },
       );
-      print("POST RESPONSE : ${response.statusCode} ${response.body}");
+      debugPrint("POST RESPONSE : ${response.statusCode} ${response.body}");
       responseJson = _returnResponse(response);
       //      throw Exception('Testing');
       //      print("RESPONSEJSON : $responseJson");
     } on SocketException {
-      print('SocketException');
+      debugPrint('SocketException');
       throw FetchDataException('Either network issue nor server error');
     } on TimeoutException {
-      print('TimeoutException');
+      debugPrint('TimeoutException');
       throw FetchDataException('Time out try again');
     }
-    print('api post.');
+    debugPrint('api post.');
     return responseJson;
   }
 }
 
 dynamic _returnResponse<T>(T response) {
-  print('response-------------- $T');
+  debugPrint('response-------------- $T');
   if (response is http.Response) {
-    // print(response.body);
+    // debugPrint(response.body);
     switch (response.statusCode) {
       case 200:
         var responseJson = json.decode(response.body);
-        print("responseJson : $responseJson");
+        debugPrint("responseJson : $responseJson");
         return responseJson;
       case 404:
       case 400:
@@ -147,12 +147,12 @@ dynamic _returnResponse<T>(T response) {
         );
     }
   } else if (response is Map<String, dynamic>) {
-    print("MAP :::");
-    print(response);
+    debugPrint("MAP :::");
+    debugPrint("$response");
     switch (response["code"]) {
       case 200:
         var responseJson = response["response"];
-        print("responseJson : $responseJson");
+        debugPrint("responseJson : $responseJson");
         return responseJson;
       case 404:
       case 400:
@@ -183,8 +183,15 @@ class APis {
 
   static String _superLink = 'http://${StaticValues.apiGateway}/Api/Values';
   //  static String _superLinkJayant = 'http://Azure-demo2.safeandsmartbank.com:6544';
-  static String _superLinkJayant = 'http://apirbl.jayantindia.com:6395';
-  static String _superLinkJayant1 = 'http://apirbl.jayantindia.com:6393';
+
+  /// Production API
+  // static String _superLinkJayant = 'http://apirbl.jayantindia.com:6395';
+  // static String _superLinkJayant1 = 'http://apirbl.jayantindia.com:6393';
+
+  /// Test API
+  static String _superLinkJayant = 'http://apirbl.jayantindia.com:6389';
+  static String _superLinkJayant1 = 'https://sec2pay.jayantindia.com:6390';
+
   static String loginUrl = "$_superLink/get_AccountInfo1?";
   static String loginMPin = "$_superLink/get_MpinLogin?";
   static String mobileGetVersion = "$_superLink/Mobile_Get_Version";

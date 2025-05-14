@@ -45,11 +45,26 @@ class _LogoutState extends State<Logout> {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       // backgroundColor: Color(0xffE8696E),
       backgroundColor: Colors.grey[300],
       body: Stack(
         children: [
+          Opacity(
+            opacity: 0.07,
+            child: Container(
+              height: height,
+              width: width,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/mini-logo.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
           Center(
             child: Container(
               height: 350,

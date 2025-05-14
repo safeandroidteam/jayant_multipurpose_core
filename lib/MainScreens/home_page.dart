@@ -64,45 +64,49 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
         ));
       },
-      child: Scaffold(
-        key: _scaffoldKey,
-        resizeToAvoidBottomInset: true,
-        bottomNavigationBar: BottomNavigationBar(
-          unselectedItemColor: Colors.black,
-          selectedItemColor: Theme.of(context).primaryColor,
-          showUnselectedLabels: true,
-          onTap: (index) {
-            setState(() {
-              bottomNavigationIndex = index;
-            });
-          },
-          currentIndex: bottomNavigationIndex,
-          elevation: 6.0,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
-          items: _bottomNavigationItem(),
-        ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            heyBank();
-            //				    Navigator.of(context).push(MaterialPageRoute(builder: (context) => VoiceCommander()));
-          },
-          mini: true,
-          child: Icon(Icons.mic),
-        ),
-        body: SafeArea(
-          child: IndexedStack(
-            index: bottomNavigationIndex,
-            children: [
-              Settings(),
-              SubPage(
-                scaffoldKey: _scaffoldKey,
-                homePageConfiguration: widget.homePageConfiguration,
-              ),
-              // Container()
-              Logout(),
-            ],
+      child: SafeArea(
+        child: Scaffold(
+          key: _scaffoldKey,
+          resizeToAvoidBottomInset: true,
+          bottomNavigationBar: BottomNavigationBar(
+            unselectedItemColor: Colors.black,
+            selectedItemColor: Theme.of(context).primaryColor,
+            showUnselectedLabels: true,
+            onTap: (index) {
+              setState(() {
+                bottomNavigationIndex = index;
+              });
+            },
+            currentIndex: bottomNavigationIndex,
+            elevation: 6.0,
+            type: BottomNavigationBarType.fixed,
+            selectedLabelStyle: TextStyle(
+              color: Theme.of(context).primaryColor,
+            ),
+            items: _bottomNavigationItem(),
+          ),
+          // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              heyBank();
+              //				    Navigator.of(context).push(MaterialPageRoute(builder: (context) => VoiceCommander()));
+            },
+            mini: true,
+            child: Icon(Icons.mic),
+          ),
+          body: SafeArea(
+            child: IndexedStack(
+              index: bottomNavigationIndex,
+              children: [
+                Settings(),
+                SubPage(
+                  scaffoldKey: _scaffoldKey,
+                  homePageConfiguration: widget.homePageConfiguration,
+                ),
+                // Container()
+                Logout(),
+              ],
+            ),
           ),
         ),
       ),

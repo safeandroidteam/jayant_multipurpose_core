@@ -825,7 +825,15 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
 
                   setState(() async {
                     _isLoading = false;
-
+                    if (response!.toString().length == 0 ||
+                        response == null ||
+                        response!.isEmpty) {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "Something went wrong",
+                      );
+                      return;
+                    }
                     //   if ((response["Table"][0] as Map).containsKey("Invalid")) {
                     if (response!["Table"][0]["Cust_id"] == "Invalid") {
                       setState(() {
@@ -837,8 +845,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         // response!["Table"][0]["Cust_id"],
                         response!["Table"][0]["Msg"],
                       );
-                    }
-                    if (response!["Table"][0]["Cust_id"] == "Blocked") {
+                    } else if (response!["Table"][0]["Cust_id"] == "Blocked") {
                       setState(() {
                         _isLoading = false;
                       });
@@ -861,7 +868,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                           "OTP_Return": "Y",
                         },
                       );
-                      print("rechargeResponse::: $response1");
+                      debugPrint("rechargeResponse::: $response1");
                       str_Otp = response1[0]["OTP"];
 
                       //    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(str_Message)));
