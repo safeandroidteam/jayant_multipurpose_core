@@ -7,11 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/Search/bloc/search_bloc.dart';
 import 'package:passbook_core_jayant/Util/StaticValue.dart';
-import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
 
 import 'DepositSearchModel.dart';
 
@@ -105,7 +105,7 @@ class _AccountSearchState extends State<AccountSearch> {
         toDateController.text = DateFormat("yyyy-MM-dd").format(selectedToDate);
         toDateFormattedCtrl.text = DateFormat(
           'dd MMM yyyy',
-        ).format(selectedFromDate);
+        ).format(selectedToDate);
         depositTable?.clear();
       });
   }
@@ -125,6 +125,15 @@ class _AccountSearchState extends State<AccountSearch> {
         transactionDetails.isNotEmpty && transactionDetails.first.accNo != null
             ? transactionDetails.first.accNo.toString()
             : 'N/A';
+
+    String? last4Digits =
+        transactionDetails.first.accNo!.length >= 4
+            ? transactionDetails.first.accNo!.substring(
+              transactionDetails.first.accNo!.length - 4,
+            )
+            : transactionDetails
+                .first
+                .accNo; // fallback if accNo has fewer than 4 digits
 
     /// Can't add image directly in pdf, need to convert it to bytes
     final imageBytes = await rootBundle.load('assets/mini-logo.png');
@@ -278,6 +287,27 @@ class _AccountSearchState extends State<AccountSearch> {
       "Transactions: ${transactionDetails.map((t) => t.toString()).toList()}",
     );
 
+    final pdfBytes = await pdf.save();
+
+    // Add password protection using Syncfusion
+    final doc = sf.PdfDocument(inputBytes: pdfBytes);
+
+    //Add security to the document.
+    final sf.PdfSecurity security = doc.security;
+
+    //Set password.
+    // security.userPassword = 'a@123';
+    security.userPassword = last4Digits!;
+    security.ownerPassword = 'owner@$last4Digits';
+
+    //Set the encryption algorithm.
+    security.algorithm = sf.PdfEncryptionAlgorithm.aesx256Bit;
+
+    // final dir =
+    //     Platform.isAndroid
+    //         ? Directory('/storage/emulated/0/Download')
+    //         : await getApplicationDocumentsDirectory();
+
     // Get the Downloads directory
     Directory? downloadsDirectory;
     if (Platform.isAndroid) {
@@ -290,14 +320,39 @@ class _AccountSearchState extends State<AccountSearch> {
       downloadsDirectory = await getDownloadsDirectory();
     }
 
-    ///Store in cache directory of app
-    // final output = await getTemporaryDirectory();
-    // final file = File("${output.path}/transactions_$searchedDate.pdf");
+    //Save the document.
+    final protectedBytes = await doc.save();
     final file = File(
-      path.join(downloadsDirectory!.path, "transactions_$searchedDate.pdf"),
+      "${downloadsDirectory!.path}/transactions_$searchedDate.pdf",
     );
-    await file.writeAsBytes(await pdf.save());
-    debugPrint("PDF saved at ${file.path}");
+    await file.writeAsBytes(protectedBytes);
+
+    debugPrint("Password-protected PDF saved at ${file.path}");
+
+    //Dispose the document.
+    doc.dispose();
+
+    ///Without password protected file using pdf package
+    // Get the Downloads directory
+    // Directory? downloadsDirectory;
+    // if (Platform.isAndroid) {
+    //   downloadsDirectory = Directory('/storage/emulated/0/Download');
+    // } else if (Platform.isIOS) {
+    //   // iOS doesn't have a direct Downloads folder
+    //   downloadsDirectory = await getApplicationDocumentsDirectory();
+    // } else {
+    //   // For other platforms
+    //   downloadsDirectory = await getDownloadsDirectory();
+    // }
+    //
+    // ///Store in cache directory of app
+    // // final output = await getTemporaryDirectory();
+    // // final file = File("${output.path}/transactions_$searchedDate.pdf");
+    // final file = File(
+    //   path.join(downloadsDirectory!.path, "transactions_$searchedDate.pdf"),
+    // );
+    // await file.writeAsBytes(await pdf.save());
+    // debugPrint("PDF saved at ${file.path}");
   }
 
   @override
