@@ -541,7 +541,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
     allMpinCtrl.clear();
     allMpinCtrl.text =
         mPinCtrl1.text + mPinCtrl2.text + mPinCtrl3.text + mPinCtrl4.text;
-    debugPrint("MPIN : ${allMpinCtrl.text}");
+    debugPrint("mergeMPinCtrlValues() - MPIN : ${allMpinCtrl.text}");
   }
 
   @override
@@ -800,7 +800,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
             ),
           ),
           onPressed: () async {
-            debugPrint(usernameCtrl.text);
+            debugPrint(
+              "Login Button : UN from usernameCtrl - ${usernameCtrl.text}",
+            );
             mergeMPinCtrlValues();
             setState(() {
               passVal = passCtrl.text.trim().length < 4;
@@ -1091,14 +1093,55 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   isLoading
                       ? () {}
                       : () async {
+                        SharedPreferences preferences =
+                            StaticValues.sharedPreferences!;
+
+                        /// New user login then remove old user MPIN
+                        String? userNameValue = preferences.getString(
+                          StaticValues.userName,
+                        );
+
+                        debugPrint(
+                          "MPin == null | Username get from SharedPref1 : $userNameValue",
+                        );
+
+                        if (userNameValue != null) {
+                          if (usernameCtrl.text != userNameValue) {
+                            debugPrint(
+                              "MPin == null | Username in SharedPref1 : $userNameValue",
+                            );
+                            debugPrint(
+                              "MPin == null | Username in usernameCtrl1 : ${usernameCtrl.text}",
+                            );
+                            preferences.remove(StaticValues.Mpin);
+                            debugPrint(
+                              "MPin == null | Mpin in SharedPref1 : ${preferences.getString(StaticValues.Mpin)}",
+                            );
+                          }
+                        }
+
+                        if (usernameCtrl.text.isNotEmpty) {
+                          preferences.setString(
+                            StaticValues.userName,
+                            usernameCtrl.text,
+                          );
+                        }
+
+                        debugPrint(
+                          "userNameValue get to SharedPref1 : $userNameValue",
+                        );
+
+                        debugPrint(
+                          "Username get after new set to SharedPref1 : ${preferences.getString(StaticValues.userName)}",
+                        );
+
                         if (_pass == str_Otp) {
                           if (MPin == null) {
-                            SharedPreferences preferences =
-                                StaticValues.sharedPreferences!;
                             preferences.setString(
                               StaticValues.userPass,
                               passCtrl.text,
                             );
+
                             LoginModel login = LoginModel.fromJson(
                               response as Map<String, dynamic>,
                             );

@@ -9,6 +9,7 @@ import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Settings/SaveMpinModel.dart';
+import 'Login.dart';
 
 class RegisterUI extends StatefulWidget {
   final GestureTapCallback? onTap;
@@ -54,6 +55,36 @@ class _RegisterUIState extends State<RegisterUI>
   List<SaveMpin> mPinResponse = [];
   String? str_Ststus;
   int? strStatusCode;
+
+  Future<List<SaveMpin>?> saveMpin() async {
+    pref = StaticValues.sharedPreferences;
+    var response = await RestAPI().post(
+      APis.saveMpin,
+      params: {
+        "CustID": pref!.getString(StaticValues.custID),
+        "MPIN": reMpinCtrl.text,
+      },
+    );
+    setState(() {
+      mPinResponse = saveMpinFromJson(json.encode(response));
+      str_Ststus = mPinResponse[0].status;
+      strStatusCode = mPinResponse[0].statuscode;
+      print("LJT$str_Ststus");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(str_Ststus!)));
+
+      if (strStatusCode == 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("MPIN added successfully. Please login")),
+        );
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
+      }
+    });
+    return null;
+  }
 
   void saveData(LoginModel loginModel) async {
     SharedPreferences preferences = StaticValues.sharedPreferences!;
@@ -114,36 +145,6 @@ class _RegisterUIState extends State<RegisterUI>
     );
     _fadeIn = Tween(begin: 0.5, end: 1.0).animate(_controller);
     super.initState();
-  }
-
-  Future<List<SaveMpin>?> saveMpin() async {
-    pref = StaticValues.sharedPreferences;
-    var response = await RestAPI().post(
-      APis.saveMpin,
-      params: {
-        "CustID": pref!.getString(StaticValues.custID),
-        "MPIN": mpinCtrl.text,
-      },
-    );
-    setState(() {
-      mPinResponse = saveMpinFromJson(json.encode(response));
-      str_Ststus = mPinResponse[0].status;
-      strStatusCode = mPinResponse[0].statuscode;
-      print("LJT$str_Ststus");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(str_Ststus!)));
-
-      if (strStatusCode == 1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("MPIN added successfully. Please login")),
-        );
-        // Navigator.of(
-        //   context,
-        // ).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
-      }
-    });
-    return null;
   }
 
   @override
@@ -513,7 +514,8 @@ class _RegisterUIState extends State<RegisterUI>
                 //  passCtrl.text.length>=6 && !passCtrl.text.contains(RegExp(r'\W')) && RegExp(r'\d+\w*\d+').hasMatch(passCtrl.text) &&
                 //  passCtrl.text.length>=4 && !passCtrl.text.contains(RegExp(r'\W')) && RegExp(r'\d+\w*\d+').hasMatch(passCtrl.text) &&
                 //  passCtrl.text.length>=4 && passCtrl.text.contains(RegExp(r"^[a-zA-Z0-9]+$")) && RegExp(r"^[a-zA-Z0-9]+$").hasMatch(passCtrl.text) &&
-                passCtrl.text == rePassCtrl.text) {
+                passCtrl.text == rePassCtrl.text &&
+                mpinCtrl.text == reMpinCtrl.text) {
           String url =
               "${APis.registerAcc}?userid=${usernameCtrl.text}&password=${passCtrl.text}"
               "&MobileNo=${mobCtrl.text}&Accno=${accCtrl.text}";
@@ -531,6 +533,7 @@ class _RegisterUIState extends State<RegisterUI>
               response["Table"][0]["Status"].toString(),
             );
             widget.onTap!();
+            saveMpin();
           }
         } else {
           GlobalWidgets().showSnackBar(
