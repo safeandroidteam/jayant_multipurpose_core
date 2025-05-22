@@ -14,6 +14,7 @@ class StaticValues {
   static String schemeCode = "Sch_Code";
   static String branchCode = "Br_Code";
   static String Mpin = "Mpin";
+  static String fullMpin = "fullMpin";
   static String mobileNo = "Mobile";
   static String ifsc = "Ifsc";
   static String accountNo = "AccountNumber";

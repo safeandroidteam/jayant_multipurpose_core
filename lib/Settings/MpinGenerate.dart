@@ -236,7 +236,10 @@ class _MpinGenerateState extends State<MpinGenerate> {
                           // allConfirmMpinCtrl.text,
                           "Y",
                         );
-
+                        await prefs.setString(
+                          StaticValues.fullMpin,
+                          allConfirmMpinCtrl.text,
+                        );
                         // await pref.setString(StaticValues.Mpin, "1111");
                         saveMpin();
                       }
