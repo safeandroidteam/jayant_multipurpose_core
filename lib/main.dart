@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passbook_core_jayant/FundTransfer/FundTransfer.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
+import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
 import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/MainScreens/sub_page.dart';
 import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
@@ -50,6 +51,7 @@ class CoreApp extends StatelessWidget {
         BlocProvider(create: (context) => PassBookBloc()),
         BlocProvider(create: (context) => TransferBloc()),
         BlocProvider(create: (context) => SearchBloc()),
+        BlocProvider(create: (context) => UserBloc(),),
       ],
       child: MaterialApp(
         builder: (context, child) {

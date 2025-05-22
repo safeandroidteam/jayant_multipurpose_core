@@ -8,7 +8,7 @@ import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 
-import './bloc.dart';
+import 'bloc.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(InitialHomeState()) {

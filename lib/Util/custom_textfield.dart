@@ -1,11 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
-
-
-
 
 class LabelCustomTextField extends StatefulWidget {
   const LabelCustomTextField({
@@ -93,7 +89,7 @@ class _LabelCustomTextField extends State<LabelCustomTextField> {
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
-    final primaryColor= Theme.of(context).primaryColor;
+    final primaryColor = Colors.black;
     return Padding(
       padding:
           widget.padding ??
@@ -140,7 +136,7 @@ class _LabelCustomTextField extends State<LabelCustomTextField> {
             textInputAction: widget.textInputAction ?? TextInputAction.done,
             maxLines: widget.passwordfield == true ? 1 : widget.lines,
             decoration: InputDecoration(
-              filled: false,
+              filled: true,
               label: widget.label,
               labelText: widget.labelText,
               labelStyle: const TextStyle(),
@@ -167,32 +163,31 @@ class _LabelCustomTextField extends State<LabelCustomTextField> {
                                 ? Icon(
                                   Ionicons.eye_off,
                                   size: 20,
-                                  color:
-                                      _hasFocus
-                                          ? Colors.black
-                                          : Colors.grey,
+                                  color: _hasFocus ? Colors.black : Colors.grey,
                                 )
                                 : Icon(
                                   Icons.remove_red_eye,
-                                  color:
-                                      _hasFocus
-                                          ? Colors.black
-                                          : Colors.grey,
+                                  color: _hasFocus ? Colors.black : Colors.grey,
                                 ),
                       )
                       : widget.suffix,
-              border:  UnderlineInputBorder(
-                borderSide: BorderSide(color: primaryColor, width: 0.5),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey, width: 0.3),
               ),
               hintText: widget.hintText,
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: primaryColor, width: 0.5),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderSide: BorderSide(color: Colors.grey, width: 0.3),
               ),
-              enabledBorder:  UnderlineInputBorder(
-                borderSide: BorderSide(color: primaryColor, width: 0.5),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderSide: BorderSide(color: Colors.grey, width: 0.3),
               ),
-              disabledBorder: const UnderlineInputBorder(),
-              contentPadding: const EdgeInsets.all(15),
+              disabledBorder: const OutlineInputBorder(),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 15,
+              ),
               hintStyle:
                   widget.hintstyle ??
                   TextStyle(color: _hasFocus ? primaryColor : Colors.grey),
