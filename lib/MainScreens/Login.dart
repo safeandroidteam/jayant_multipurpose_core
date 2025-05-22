@@ -7,13 +7,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
 import 'package:passbook_core_jayant/MainScreens/Register.dart';
+import 'package:passbook_core_jayant/MainScreens/new_user.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -24,14 +28,14 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
   ///Password = 1982
 
   int indexPage = 0;
-  PageController _pageController = PageController(initialPage: 1);
+  final PageController _pageController = PageController(initialPage: 1);
   AnimationController? _animationController, _floatingAnimationController;
   Animation<double>? _animation, _floatingAnimation;
   static const int pageCtrlTime = 550;
   static const _animationCurves = Curves.fastLinearToSlowEaseIn;
   static const _pageCurves = Curves.easeIn;
-  GlobalKey _regToolTipKey = GlobalKey();
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  final GlobalKey _regToolTipKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   String? MPin;
   String? strOtp, str_Otp;
 
@@ -120,13 +124,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           throw 'Could not launch $url';
                         }
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Text("Update"),
-                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Text("Update"),
                       ),
                     ),
                   ],
@@ -440,8 +444,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       disabledElevation: 1.0,
                       isExtended: true,
                       backgroundColor: Theme.of(context).cardColor,
-                      child: Icon(Icons.add, color: Colors.white),
                       elevation: 8.0,
+                      child: Icon(Icons.add, color: Colors.white),
                     ),
                   ),
                 ),
@@ -459,8 +463,12 @@ class LoginUI extends StatefulWidget {
   final GestureTapCallback? forgotUser;
   final GlobalKey<ScaffoldState> scaffold;
 
-  const LoginUI({Key? key, this.onTap, required this.scaffold, this.forgotUser})
-    : super(key: key);
+  const LoginUI({
+    super.key,
+    this.onTap,
+    required this.scaffold,
+    this.forgotUser,
+  });
 
   @override
   _LoginUIState createState() => _LoginUIState();
@@ -541,7 +549,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
     allMpinCtrl.clear();
     allMpinCtrl.text =
         mPinCtrl1.text + mPinCtrl2.text + mPinCtrl3.text + mPinCtrl4.text;
-    debugPrint("MPIN : ${allMpinCtrl.text}");
+    debugPrint("mergeMPinCtrlValues() - MPIN : ${allMpinCtrl.text}");
   }
 
   @override
@@ -594,7 +602,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   ),
               if (!isLoginWithUsername && MPin != null) SizedBox(height: 10.0),
               if (MPin != null)
-                Container(
+                SizedBox(
                   height: height * 0.23,
                   child: TabBarView(
                     controller: _tabController,
@@ -685,7 +693,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             setDecoration: true,
                             onChange: (value) {
                               setState(() {
-                                mobVal = value.trim().length == 0;
+                                mobVal = value.trim().isEmpty;
                               });
                             },
                             onSubmitted: (_) {
@@ -727,7 +735,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       setDecoration: true,
                       onChange: (value) {
                         setState(() {
-                          mobVal = value.trim().length == 0;
+                          mobVal = value.trim().isEmpty;
                         });
                       },
                       onSubmitted: (_) {
@@ -769,6 +777,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
               Align(
                 alignment: Alignment.bottomRight,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     InkWell(
                       onTap: widget.onTap,
@@ -782,6 +792,18 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       onTap: widget.forgotUser,
                       child: TextView(
                         text: "Forgot user?",
+                        color: Theme.of(context).focusColor,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => NewUser()),
+                        );
+                      },
+                      child: TextView(
+                        text: "New User?",
                         color: Theme.of(context).focusColor,
                       ),
                     ),
@@ -800,11 +822,13 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
             ),
           ),
           onPressed: () async {
-            debugPrint(usernameCtrl.text);
+            debugPrint(
+              "Login Button : UN from usernameCtrl - ${usernameCtrl.text}",
+            );
             mergeMPinCtrlValues();
             setState(() {
               passVal = passCtrl.text.trim().length < 4;
-              mobVal = usernameCtrl.text.trim().length == 0;
+              mobVal = usernameCtrl.text.trim().isEmpty;
               mpinVal = mpinCtrl.text.trim().length < 4;
               if (allMpinCtrl.text.trim().length < 4) {
                 isMPinEmpty = true;
@@ -825,7 +849,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
 
                   setState(() async {
                     _isLoading = false;
-                    if (response!.toString().length == 0 ||
+                    if (response!.toString().isEmpty ||
                         response == null ||
                         response!.isEmpty) {
                       GlobalWidgets().showSnackBar(
@@ -887,7 +911,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       });
 
                       ///TODO  for otp while login
-                      _loginConfirmation();
+                      _loginConfirmation("1");
 
                       /*LoginModel login = LoginModel.fromJson(response);
                         saveData(login);*/
@@ -916,21 +940,33 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
               try {
                 SharedPreferences pref = StaticValues.sharedPreferences!;
 
-                // getMPinCtrlValues();
+                String? storedMpin = pref.getString(StaticValues.fullMpin);
 
-                response = await RestAPI().get(
-                  // "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${mpinCtrl.text}",
-                  "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${allMpinCtrl.text}",
-                );
-                /*   response = await RestAPI().post(APis.loginMpin,params: {
+                customPrint("stored mpin=$storedMpin");
+
+                if (storedMpin != null && storedMpin.isNotEmpty) {
+                  if (storedMpin != allMpinCtrl.text) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Mpin Mismatch Please use Login with username&password Method",
+                    );
+                    _isLoading = false;
+                  } else {
+                    // getMPinCtrlValues();
+
+                    response = await RestAPI().get(
+                      // "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${mpinCtrl.text}",
+                      "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${allMpinCtrl.text}",
+                    );
+                    /*   response = await RestAPI().post(APis.loginMpin,params: {
 
                       "CustID": "1010001",
                       "MPIN": mpinCtrl.text
                     });*/
 
-                setState(() async {
-                  _isLoading = false;
-                  /*     if ((response["Table"][0] as Map).containsKey("Invalid")) {
+                    setState(() async {
+                      _isLoading = false;
+                      /*     if ((response["Table"][0] as Map).containsKey("Invalid")) {
                     //  if (response["Table"][0]["Cust_id"] == "Invalid"){
                         print("Invalis");
                         GlobalWidgets()
@@ -942,58 +978,60 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         GlobalWidgets()
                             .showSnackBar(widget.scaffold, "Your Account is Blocked");
                       }*/
-                  if ((response!["Table"][0]["Cust_id"]) == "Invalid") {
-                    print("LIJITH");
-                    setState(() {
-                      _isLoading = false;
-                    });
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      response!["Table"][0]["Cust_id"],
-                    );
-                  }
-                  if (response!["Table"][0]["Cust_id"] == "Blocked") {
-                    //  if (response["Table"][0]["Cust_id"] == "Invalid"){
-                    setState(() {
-                      _isLoading = false;
-                    });
-                    print("Blocked");
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      response!["Table"][0]["Msg"],
-                    );
-                  } else {
-                    var response1 = await RestAPI().post(
-                      APis.GenerateOTP,
-                      params: {
-                        "MobileNo": response!["Table"][0]["Mobile"],
-                        "Amt": "0",
-                        "SMS_Module": "GENERAL",
-                        "SMS_Type": "GENERAL_OTP",
-                        "OTP_Return": "Y",
-                      },
-                    );
-                    print("rechargeResponse::: $response1");
-                    str_Otp = response1[0]["OTP"];
-
-                    //   getMobileRecharge();
-                    setState(() {
-                      //     isLoading = false;
-
-                      Timer(Duration(minutes: 5), () {
+                      if ((response!["Table"][0]["Cust_id"]) == "Invalid") {
+                        print("LIJITH");
                         setState(() {
-                          str_Otp = "";
+                          _isLoading = false;
                         });
-                      });
-                    });
+                        GlobalWidgets().showSnackBar(
+                          context,
+                          response!["Table"][0]["Cust_id"],
+                        );
+                      }
+                      if (response!["Table"][0]["Cust_id"] == "Blocked") {
+                        //  if (response["Table"][0]["Cust_id"] == "Invalid"){
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        print("Blocked");
+                        GlobalWidgets().showSnackBar(
+                          context,
+                          response!["Table"][0]["Msg"],
+                        );
+                      } else {
+                        var response1 = await RestAPI().post(
+                          APis.GenerateOTP,
+                          params: {
+                            "MobileNo": response!["Table"][0]["Mobile"],
+                            "Amt": "0",
+                            "SMS_Module": "GENERAL",
+                            "SMS_Type": "GENERAL_OTP",
+                            "OTP_Return": "Y",
+                          },
+                        );
+                        print("rechargeResponse::: $response1");
+                        str_Otp = response1[0]["OTP"];
 
-                    ///TODO  for otp while login
-                    _loginConfirmation();
+                        //   getMobileRecharge();
+                        setState(() {
+                          //     isLoading = false;
 
-                    /* LoginModel login = LoginModel.fromJson(response);
+                          Timer(Duration(minutes: 5), () {
+                            setState(() {
+                              str_Otp = "";
+                            });
+                          });
+                        });
+
+                        ///TODO  for otp while login
+                        _loginConfirmation("0");
+
+                        /* LoginModel login = LoginModel.fromJson(response);
                         saveData(login);*/
+                      }
+                    });
                   }
-                });
+                }
               } on RestException catch (e) {
                 setState(() {
                   _isLoading = false;
@@ -1062,14 +1100,14 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
     );
   }
 
-  void _loginConfirmation() {
+  void _loginConfirmation(String loginType) {
     isLoading = false;
-    var _pass;
+    String? pass;
     GlobalWidgets().validateOTP(
       context,
       getValue: (passVal) {
         setState(() {
-          _pass = passVal;
+          pass = passVal;
         });
       },
       content: Column(
@@ -1091,16 +1129,51 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   isLoading
                       ? () {}
                       : () async {
-                        if (_pass == str_Otp) {
-                          if (MPin == null) {
-                            SharedPreferences preferences =
-                                StaticValues.sharedPreferences!;
+                        SharedPreferences preferences =
+                            StaticValues.sharedPreferences!;
+
+                        if (pass == str_Otp) {
+                          if (loginType == "0") {
                             preferences.setString(
                               StaticValues.userPass,
                               passCtrl.text,
                             );
+
                             LoginModel login = LoginModel.fromJson(
                               response as Map<String, dynamic>,
+                            );
+                            String? storedMpin = preferences.getString(
+                              StaticValues.fullMpin,
+                            );
+
+                            warningPrint(
+                              "MPin == null | mpin get from SharedPref1 : $storedMpin",
+                            );
+
+                            if (storedMpin != null && storedMpin.isNotEmpty) {
+                              if (allMpinCtrl.text != storedMpin) {
+                                warningPrint(
+                                  "mpin in SharedPref1 : $storedMpin",
+                                );
+                                alertPrint(
+                                  "mpin in all mpin Ctrl1 : ${allMpinCtrl.text}",
+                                );
+                                GlobalWidgets().showSnackBar(
+                                  context,
+                                  "Mpin Mismatch",
+                                );
+                              }
+                            }
+
+                            if (usernameCtrl.text.isNotEmpty) {
+                              await preferences.setString(
+                                StaticValues.userName,
+                                usernameCtrl.text,
+                              );
+                            }
+
+                            customPrint(
+                              "Username get after new set to SharedPref1 : ${preferences.getString(StaticValues.userName)}",
                             );
                             saveData(login);
                             print("LIJU");
@@ -1108,6 +1181,44 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             LoginModel login = LoginModel.fromJson(
                               response as Map<String, dynamic>,
                             );
+
+                            /// New user login then remove old user MPIN
+                            String? userNameValue = preferences.getString(
+                              StaticValues.userName,
+                            );
+
+                            warningPrint(
+                              "MPin == null | Username get from SharedPref1 : $userNameValue",
+                            );
+
+                            if (userNameValue != null &&
+                                userNameValue.isNotEmpty) {
+                              if (usernameCtrl.text != userNameValue) {
+                                warningPrint(
+                                  "Username in SharedPref1 : $userNameValue",
+                                );
+                                alertPrint(
+                                  "Username in usernameCtrl1 : ${usernameCtrl.text}",
+                                );
+                                await preferences.remove(StaticValues.Mpin);
+
+                                successPrint(
+                                  "Mpin in SharedPref1 : ${preferences.getString(StaticValues.Mpin)}",
+                                );
+                              }
+                            }
+
+                            if (usernameCtrl.text.isNotEmpty) {
+                              await preferences.setString(
+                                StaticValues.userName,
+                                usernameCtrl.text,
+                              );
+                            }
+
+                            customPrint(
+                              "Username get after new set to SharedPref1 : ${preferences.getString(StaticValues.userName)}",
+                            );
+
                             saveData(login);
                             // usernameCtrl.clear();
                             // passCtrl.clear();
@@ -1134,8 +1245,7 @@ class ForgotUI extends StatefulWidget {
   final Function? onTap;
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const ForgotUI({Key? key, this.onTap, required this.scaffoldKey})
-    : super(key: key);
+  const ForgotUI({super.key, this.onTap, required this.scaffoldKey});
 
   @override
   _ForgotUIState createState() => _ForgotUIState();
@@ -1256,7 +1366,7 @@ class _ForgotUIState extends State<ForgotUI> {
             ),
             onPressed: () async {
               if (!isGetOTP) {
-                if (userIdCtrl.text.length > 0) {
+                if (userIdCtrl.text.isNotEmpty) {
                   _isLoading = true;
                   Map response = await (RestAPI().get(
                     "${APis.getPassChangeOTP}UserId=${userIdCtrl.text}",
@@ -1276,7 +1386,7 @@ class _ForgotUIState extends State<ForgotUI> {
                 }
               } else {
                 bool passValue = passCtrl.text.contains(
-                  new RegExp(r"^[a-zA-Z0-9]+$"),
+                  RegExp(r"^[a-zA-Z0-9]+$"),
                 );
                 if (passValue) {
                   GlobalWidgets().showSnackBar(
@@ -1293,7 +1403,7 @@ class _ForgotUIState extends State<ForgotUI> {
                     "Please remove space from password",
                   );
                 } else {
-                  if (userIdCtrl.text.length <= 0 &&
+                  if (userIdCtrl.text.isEmpty &&
                       otpCtrl.text.length < 4 &&
                       passCtrl.text.length < 4) {
                     GlobalWidgets().showSnackBar(

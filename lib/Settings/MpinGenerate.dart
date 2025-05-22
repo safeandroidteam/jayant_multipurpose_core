@@ -87,7 +87,6 @@ class _MpinGenerateState extends State<MpinGenerate> {
       },
     );
     setState(() {
-      //  mPinResponse = saveMpinFromJson(json.encode(response));
       mPinResponse = saveMpinFromJson(json.encode(response));
       str_Ststus = mPinResponse[0].status;
       strStatusCode = mPinResponse[0].statuscode;
@@ -137,19 +136,6 @@ class _MpinGenerateState extends State<MpinGenerate> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // EditTextBordered(
-              //   controller: mpinCtrl,
-              //   hint: "MPin",
-              //   keyboardType: TextInputType.number,
-              //   errorText: mPin ? "Password length should be 4" : null,
-              //   //   obscureText: true,
-              //   //  showObscureIcon: true,
-              //   onChange: (value) {
-              //     setState(() {
-              //       mPin = value.trim().length < 4;
-              //     });
-              //   },
-              // ),
               Text(
                 "Set MPIN",
                 textAlign: TextAlign.center,
@@ -185,19 +171,6 @@ class _MpinGenerateState extends State<MpinGenerate> {
                 ),
               ),
               SizedBox(height: height * 0.05),
-              // EditTextBordered(
-              //   controller: reMpinCtrl,
-              //   hint: "Re-enter MPin",
-              //   keyboardType: TextInputType.number,
-              //   errorText: reMpin ? "Password length should be 4" : null,
-              //   //   obscureText: true,
-              //   //   showObscureIcon: true,
-              //   onChange: (value) {
-              //     setState(() {
-              //       reMpin = value.trim().length < 4;
-              //     });
-              //   },
-              // ),
               Text(
                 "Confirm MPIN",
                 textAlign: TextAlign.center,
@@ -255,16 +228,18 @@ class _MpinGenerateState extends State<MpinGenerate> {
                         context,
                       ).showSnackBar(SnackBar(content: Text("MPIN Mismatch")));
                     } else {
-                      // if (mpinCtrl.text == reMpinCtrl.text) {
                       if (allSetMpinCtrl.text == allConfirmMpinCtrl.text) {
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
-                        // prefs.setString(StaticValues.Mpin, mpinCtrl.text);
                         prefs.setString(
                           StaticValues.Mpin,
+                          // allConfirmMpinCtrl.text,
+                          "Y",
+                        );
+                        await prefs.setString(
+                          StaticValues.fullMpin,
                           allConfirmMpinCtrl.text,
                         );
-
                         // await pref.setString(StaticValues.Mpin, "1111");
                         saveMpin();
                       }

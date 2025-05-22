@@ -63,6 +63,8 @@ dependencies:
   qr_flutter: ^4.1.0
   pdf: ^3.11.3
   syncfusion_flutter_pdf: 29.1.41
+  google_fonts: ^6.2.1
+  ionicons: ^0.2.2
   
 dev_dependencies:
   flutter_test:

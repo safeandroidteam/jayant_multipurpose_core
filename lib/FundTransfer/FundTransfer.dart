@@ -1,25 +1,17 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:passbook_core_jayant/MainScreens/home_page.dart';
-import 'package:passbook_core_jayant/passbook_core.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:passbook_core_jayant/FundTransfer/Beneficiary.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/PeopleModel.dart';
 import 'package:passbook_core_jayant/FundTransfer/OtherBankTransfer.dart';
 import 'package:passbook_core_jayant/FundTransfer/OwnBankTransfer.dart';
-import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
-import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
-import 'package:passbook_core_jayant/REST/app_exceptions.dart';
-import 'package:passbook_core_jayant/Util/QRScan.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
-import 'package:passbook_core_jayant/main.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FundTransfer extends StatefulWidget {
@@ -319,7 +311,7 @@ class _FundTransferState extends State<FundTransfer>
                                                 title: Text("Are you sure?"),
                                                 content: TextView(
                                                   text:
-                                                      "Do you want delete ${state.beneficiaryList[index].recieverName} beneficiary",
+                                                      "Do you want to delete ${state.beneficiaryList[index].recieverName} beneficiary",
                                                 ),
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:

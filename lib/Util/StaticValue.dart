@@ -7,12 +7,14 @@ class StaticValues {
   static String custID = "cust_id";
   static String accNumber = "acc_number";
   static String accName = "acc_name";
+  static String userName = "userName";
   static String userPass = "cust_pass";
   static String address = "address";
   static String rupeeSymbol = "₹";
   static String schemeCode = "Sch_Code";
   static String branchCode = "Br_Code";
   static String Mpin = "Mpin";
+  static String fullMpin = "fullMpin";
   static String mobileNo = "Mobile";
   static String ifsc = "Ifsc";
   static String accountNo = "AccountNumber";
