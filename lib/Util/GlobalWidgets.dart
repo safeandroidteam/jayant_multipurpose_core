@@ -1079,6 +1079,8 @@ class EditTextBordered extends StatefulWidget {
   final Widget? obscureIcon;
   final TextCapitalization? textCapitalization;
   final Widget? prefix;
+  final bool? readOnly;
+  final void Function()? onTap;
 
   const EditTextBordered({
     super.key,
@@ -1109,6 +1111,8 @@ class EditTextBordered extends StatefulWidget {
     this.textCapitalization = TextCapitalization.none,
     this.prefix,
     this.autoFocus = false,
+    this.readOnly = false,
+    this.onTap,
   });
 
   @override
@@ -1124,6 +1128,12 @@ class EditTextBorderedState extends State<EditTextBordered> {
       alignment: Alignment.centerRight,
       children: <Widget>[
         TextField(
+          onTap: () {
+            if (widget.onTap != null) {
+              widget.onTap!();
+            }
+          },
+          readOnly: widget.readOnly ?? false,
           enabled: widget.enabled ?? true,
           controller: widget.controller,
           onChanged: widget.onChange,

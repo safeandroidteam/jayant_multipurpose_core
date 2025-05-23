@@ -152,7 +152,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         },
         useSafeArea: true,
       );
-    }
+    } 
+      
+    
   }
 
   termsAndConditions() async {
@@ -207,6 +209,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       );
     }
   }
+  
+  
 
   @override
   void initState() {
@@ -687,6 +691,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             hint: "Username",
                             errorText: mobVal ? "Username is invalid" : null,
                             setBorder: true,
+                           
                             keyboardType: TextInputType.text,
                             textCapitalization: TextCapitalization.none,
                             textInputAction: TextInputAction.next,
@@ -729,6 +734,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       hint: "Username",
                       errorText: mobVal ? "Username is invalid" : null,
                       setBorder: true,
+                     
                       keyboardType: TextInputType.text,
                       textCapitalization: TextCapitalization.none,
                       textInputAction: TextInputAction.next,

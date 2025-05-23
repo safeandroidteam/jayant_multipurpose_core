@@ -5,7 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
+import 'package:passbook_core_jayant/Util/sim_sender.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
+import 'package:passbook_core_jayant/Util/sim_ui.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Settings/SaveMpinModel.dart';
@@ -15,8 +19,7 @@ class RegisterUI extends StatefulWidget {
   final GestureTapCallback? onTap;
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const RegisterUI({Key? key, this.onTap, required this.scaffoldKey})
-    : super(key: key);
+  const RegisterUI({super.key, this.onTap, required this.scaffoldKey});
 
   @override
   _RegisterUIState createState() => _RegisterUIState();
@@ -137,6 +140,59 @@ class _RegisterUIState extends State<RegisterUI>
     );
   }
 
+  void loadSims() async {
+    // Request permission
+    final status = await Permission.phone.request();
+    if (!status.isGranted) {
+      debugPrint("Phone permission not granted");
+      return;
+    }
+
+    try {
+      // Fetch SIM list
+      final simList = await SimSender.getSimList();
+      successPrint("SIM list length: ${simList.length}");
+
+      if (simList.isEmpty) {
+        debugPrint("No SIM cards found");
+        return;
+      }
+
+      setState(() {
+        // Optionally update UI with sim list (if needed elsewhere)
+      });
+
+      // Show bottom sheet and handle selection
+      showSimGridBottomSheet(context, simList, (selectedNumber) {
+        successPrint("Selected phone number: $selectedNumber");
+        if (selectedNumber.startsWith('+91')) {
+          selectedNumber = selectedNumber.substring(3);
+        } else if (selectedNumber.length == 12 &&
+            selectedNumber.startsWith('91')) {
+          selectedNumber = selectedNumber.substring(2);
+        }
+
+        mobCtrl.text = selectedNumber;
+
+        final trimmed = mobCtrl.text.trim();
+        customPrint("trimmed length=${trimmed.length}");
+
+        alertPrint("mobval=$mobVal");
+        setState(() {
+          mobVal = trimmed.length != 10;
+          isOtpValid = false;
+          isSendOTP = false;
+          _controller.reverse();
+        });
+
+        // Trigger registration
+        onRegister();
+      });
+    } catch (e) {
+      debugPrint("Error loading SIMs: $e");
+    }
+  }
+
   @override
   void initState() {
     _controller = AnimationController(
@@ -144,6 +200,7 @@ class _RegisterUIState extends State<RegisterUI>
       vsync: this,
     );
     _fadeIn = Tween(begin: 0.5, end: 1.0).animate(_controller);
+    loadSims();
     super.initState();
   }
 
@@ -190,6 +247,11 @@ class _RegisterUIState extends State<RegisterUI>
                 children: <Widget>[
                   SizedBox(height: 10.0),
                   EditTextBordered(
+                    onTap: () {
+                      print("tapped");
+                      loadSims();
+                    },
+                    readOnly: true,
                     controller: mobCtrl,
                     hint: "Mobile No",
                     keyboardType: TextInputType.number,
@@ -199,6 +261,7 @@ class _RegisterUIState extends State<RegisterUI>
                       onRegister();
                       FocusScope.of(context).nextFocus();
                     },
+
                     onChange: (value) {
                       setState(() {
                         print(value.trim().length != 10);
@@ -250,7 +313,7 @@ class _RegisterUIState extends State<RegisterUI>
                               ),
                               onChange: (value) {
                                 setState(() {
-                                  accVal = value.trim().length <= 0;
+                                  accVal = value.trim().isEmpty;
                                 });
                               },
                             ),
@@ -452,9 +515,9 @@ class _RegisterUIState extends State<RegisterUI>
             });
           } else {
             setState(() {
-              (response["Table"] as List).forEach((f) {
+              for (var f in (response["Table"] as List)) {
                 accNos.add(f["ACCNO"]);
-              });
+              }
               isOtpValid = true;
               isSendOTP = true;
               _controller.forward();
@@ -474,7 +537,7 @@ class _RegisterUIState extends State<RegisterUI>
         });
       }
     } else {
-      bool passValue = passCtrl.text.contains(new RegExp(r"^[a-zA-Z0-9]+$"));
+      bool passValue = passCtrl.text.contains(RegExp(r"^[a-zA-Z0-9]+$"));
 
       if (passValue) {
         GlobalWidgets().showSnackBar(
@@ -506,7 +569,7 @@ class _RegisterUIState extends State<RegisterUI>
       } else {
         if (mobCtrl.text.trim().length == 10 &&
                 otpCtrl.text.length >= 4 &&
-                accCtrl.text.length > 0 &&
+                accCtrl.text.isNotEmpty &&
                 //   usernameCtrl.text.length > 3 &&
                 usernameCtrl.text.length >= 3 ||
             usernameCtrl.text.length <= 11 &&

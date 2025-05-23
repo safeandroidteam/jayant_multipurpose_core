@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passbook_core_jayant/FundTransfer/FundTransfer.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
+import 'package:passbook_core_jayant/MainScreens/Login.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
 import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/MainScreens/sub_page.dart';
@@ -10,11 +11,47 @@ import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
 import 'package:passbook_core_jayant/Search/bloc/search_bloc.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:passbook_core_jayant/passbook_core.dart';
+import 'package:passbook_core_jayant/styles.dart';
+import 'package:passbook_core_jayant/test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Util/StaticValue.dart';
 import 'NewDesign/LoginNew.dart';
 import 'configuration.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // This widget is the root of your application.
+  final String extDownloadPath = '';
+  runApp(
+    CoreApp(
+      titleDecoration: TitleDecoration(
+        label: "Jayant India Nidhi Limited",
+        logoPath: "assets/mini-logo.png",
+        labelColor: Colors.black,
+      ),
+
+      /// Production API
+      // apiGateway: "apirbl.jayantindia.com:6391",
+
+      /// Test API
+      apiGateway: "apirbl.jayantindia.com:6386",
+
+      defaultScreen: Login(),
+      themeData: AppTheme().themeData(),
+      sharedPreferences: await SharedPreferences.getInstance(),
+      extDownloadPath: extDownloadPath,
+      homePageConfiguration: HomePageConfiguration(
+        baseOption: true,
+        fundTransferOption: true,
+        rechargeOption: true,
+        shoppingOption: true,
+        cardOption: true,
+        search: true,
+      ),
+    ),
+  );
+}
 
 class CoreApp extends StatelessWidget {
   //  final Widget _defaultScreen = Receipt(accFrom: "339202010056217",accTo: "1234567890123",amount: "10000",paidTo: "Dithesh Vishalakshan",transID: "PS/258160/200/50041/280PM",);
@@ -51,7 +88,7 @@ class CoreApp extends StatelessWidget {
         BlocProvider(create: (context) => PassBookBloc()),
         BlocProvider(create: (context) => TransferBloc()),
         BlocProvider(create: (context) => SearchBloc()),
-        BlocProvider(create: (context) => UserBloc(),),
+        BlocProvider(create: (context) => UserBloc()),
       ],
       child: MaterialApp(
         builder: (context, child) {
