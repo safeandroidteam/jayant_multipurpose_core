@@ -57,24 +57,26 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     String version = packageInfo.version;
     String buildNumber = packageInfo.buildNumber;
 
-    print(
+    customPrint(
       "appName $appName,"
       "\nPackageName $packageName"
       "\nVERSION FE $version"
       // "\nVERSION BE ${(versionMap["Table"][0]["Ver_Name"] as double).toString()}"
-      "\nVersion BE ${(versionMap["Table"][0]["Ver_Name"]).toString()}"
+      "\nVersion BE ${(versionMap["Data"][0]["Ver_Name"]).toString()}"
       "\nBuildNumber FE $buildNumber"
-      "\nBuildNumber BE ${(versionMap["Table"][0]["Ver_Code"] as double).round().toString()}",
+      "\nBuildNumber BE ${versionMap["Data"][0]["Ver_Code"].toString()}",
       // "\nBuildNumber BE ${(double.parse(versionMap["Table"][0]["Ver_Code"])).round().toString()}"
     );
 
-    /* if (versionMap["Table"][0]["Ver_Name"].toString() != version &&
-        versionMap["Table"][0]["Ver_Code"].toString() != buildNumber) {*/
-    // if ((versionMap["Table"][0]["Ver_Code"] as double).round().toString() !=
-    //     buildNumber) {
-    if (versionMap["Table"][0]["Ver_Name"].toString() != version ||
-        ((versionMap["Table"][0]["Ver_Code"]) as double).round().toString() !=
-            buildNumber) {
+    String vernameFrmapi = versionMap["Data"][0]["Ver_Name"].toString();
+    String vercodeFrmapi = versionMap["Data"][0]["Ver_Code"].toString();
+
+    String vercodeFrmapiDouble =
+        double.tryParse(vercodeFrmapi)?.round().toString() ?? "";
+    alertPrint("Ver_Name Frm Api==$vernameFrmapi");
+    alertPrint("Ver_Code Frm Api==$vercodeFrmapiDouble");
+    alertPrint("ver_Code From App==$buildNumber");
+    if (vercodeFrmapiDouble != buildNumber) {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -152,9 +154,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         },
         useSafeArea: true,
       );
-    } 
-      
-    
+    }
   }
 
   termsAndConditions() async {
@@ -209,8 +209,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       );
     }
   }
-  
-  
 
   @override
   void initState() {
@@ -691,7 +689,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             hint: "Username",
                             errorText: mobVal ? "Username is invalid" : null,
                             setBorder: true,
-                           
+
                             keyboardType: TextInputType.text,
                             textCapitalization: TextCapitalization.none,
                             textInputAction: TextInputAction.next,
@@ -734,7 +732,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       hint: "Username",
                       errorText: mobVal ? "Username is invalid" : null,
                       setBorder: true,
-                     
+
                       keyboardType: TextInputType.text,
                       textCapitalization: TextCapitalization.none,
                       textInputAction: TextInputAction.next,

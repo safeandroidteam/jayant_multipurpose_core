@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/register_acc_modal.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
+import 'package:passbook_core_jayant/Util/custom_drop_down.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/sim_sender.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
@@ -35,7 +37,7 @@ class _RegisterUIState extends State<RegisterUI>
       mpinCtrl = TextEditingController(),
       reMpinCtrl = TextEditingController(),
       usernameCtrl = TextEditingController();
-  List<String?> accNos = [];
+  List<RegisterAccData> accNos = [];
   FocusNode chapass = FocusNode();
   bool isSendOTP = false, isOtpValid = false;
   bool mobVal = false,
@@ -54,91 +56,7 @@ class _RegisterUIState extends State<RegisterUI>
 
   final _listController = ScrollController();
 
-  SharedPreferences? pref;
-  List<SaveMpin> mPinResponse = [];
-  String? str_Ststus;
-  int? strStatusCode;
-
-  Future<List<SaveMpin>?> saveMpin() async {
-    pref = StaticValues.sharedPreferences;
-    var response = await RestAPI().post(
-      APis.saveMpin,
-      params: {
-        "CustID": pref!.getString(StaticValues.custID),
-        "MPIN": reMpinCtrl.text,
-      },
-    );
-    setState(() {
-      mPinResponse = saveMpinFromJson(json.encode(response));
-      str_Ststus = mPinResponse[0].status;
-      strStatusCode = mPinResponse[0].statuscode;
-      print("LJT$str_Ststus");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(str_Ststus!)));
-
-      if (strStatusCode == 1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("MPIN added successfully. Please login")),
-        );
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
-      }
-    });
-    return null;
-  }
-
-  void saveData(LoginModel loginModel) async {
-    SharedPreferences preferences = StaticValues.sharedPreferences!;
-    print("CUST ID :: ${loginModel.table![0].toString()}");
-    await preferences.setString(
-      StaticValues.custID,
-      loginModel.table![0].custId.toString(),
-    );
-    await preferences.setString(
-      StaticValues.accNumber,
-      loginModel.table![0].accNo.toString(),
-    );
-    await preferences.setString(
-      StaticValues.accName,
-      loginModel.table![0].custName.toString(),
-    );
-    Navigator.of(context).pushReplacementNamed("/SubPage");
-  }
-
-  void _showAccList(TextEditingController textCtrl) {
-    showModalBottomSheet(
-      context: context,
-      elevation: 3.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.0),
-                topRight: Radius.circular(20.0),
-              ),
-              color: Colors.white,
-            ),
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              children: List.generate(accNos.length, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    textCtrl.text = accNos[index]!;
-                    Navigator.of(context).pop();
-                  },
-                  child: ListTile(title: TextView(text: accNos[index] ?? "")),
-                );
-              }),
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //SharedPreferences? pref;
 
   void loadSims() async {
     // Request permission
@@ -247,11 +165,11 @@ class _RegisterUIState extends State<RegisterUI>
                 children: <Widget>[
                   SizedBox(height: 10.0),
                   EditTextBordered(
-                    onTap: () {
-                      print("tapped");
-                      loadSims();
-                    },
-                    readOnly: true,
+                    // onTap: () {
+                    //   print("tapped");
+                    //   loadSims();
+                    // },
+                    readOnly: false,
                     controller: mobCtrl,
                     hint: "Mobile No",
                     keyboardType: TextInputType.number,
@@ -280,10 +198,10 @@ class _RegisterUIState extends State<RegisterUI>
                     controller: otpCtrl,
                     hint: "Enter OTP",
                     keyboardType: TextInputType.number,
-                    errorText: otpVal ? "OTP length should be 4" : null,
+                    errorText: otpVal ? "OTP length should be 6" : null,
                     onChange: (value) {
                       setState(() {
-                        otpVal = value.trim().length < 4;
+                        otpVal = value.trim().length < 6;
                       });
                     },
                   ),
@@ -294,30 +212,16 @@ class _RegisterUIState extends State<RegisterUI>
                       ignoring: false /*!isOtpValid && !isSendOTP*/,
                       child: Column(
                         children: <Widget>[
-                          InkWell(
-                            onTap: () {
-                              _showAccList(accCtrl);
+                          LabelWithDropDownField<RegisterAccData>(
+                            textDropDownLabel: "Select A/C No",
+                            items: accNos,
+                            itemAsString: (p0) => p0.accNo,
+                            onChanged: (value) {
+                              accCtrl.text = value.accId;
                             },
-                            child: EditTextBordered(
-                              enabled: false,
-                              controller: accCtrl,
-                              hint: "Select A/C No",
-                              errorText: accVal ? "Select an account" : null,
-                              obscureIcon: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.arrow_drop_down,
-                                  color: Colors.black,
-                                  size: 25.0,
-                                ),
-                              ),
-                              onChange: (value) {
-                                setState(() {
-                                  accVal = value.trim().isEmpty;
-                                });
-                              },
-                            ),
+                            padding: 20,
                           ),
+
                           SizedBox(height: 20.0),
                           EditTextBordered(
                             controller: usernameCtrl,
@@ -367,6 +271,7 @@ class _RegisterUIState extends State<RegisterUI>
                             controller: rePassCtrl,
                             hint: "Confirm Password",
                             focusNode: chapass,
+                            textInputAction: TextInputAction.next,
                             errorText:
                                 rePassVal ? "Password not matching" : null,
                             obscureText: true,
@@ -384,6 +289,7 @@ class _RegisterUIState extends State<RegisterUI>
                             controller: mpinCtrl,
                             hint: "MPIN",
                             keyboardType: TextInputType.number,
+
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(4),
                               FilteringTextInputFormatter.digitsOnly,
@@ -459,25 +365,46 @@ class _RegisterUIState extends State<RegisterUI>
     );
   }
 
+  Future<void> saveMpin(String mpin) async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setString(StaticValues.Mpin, "Y");
+    await pref.setString(StaticValues.fullMpin, mpin);
+
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (context) => Login()));
+  }
+
   void onRegister() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
     if (!isSendOTP && !isOtpValid) {
-      if (mobCtrl.text.trim().length == 10 &&
-          mpinCtrl.text.trim().length == 4) {
+      if (mobCtrl.text.trim().length == 10) {
         _isLoading = true;
         try {
+          ///otp sent api call
+          Map<String, dynamic> validateMobNoBody = {
+            "Cmp_Code": cmpCode,
+            "Mobile_No": mobCtrl.text.trim(),
+          };
+
           Map response = await (RestAPI().post(
-            "${APis.getRegisterOTP}?MobileNo=${mobCtrl.text}",
+            APis.getRegisterOTP,
+            params: validateMobNoBody,
           ));
           setState(() {
             _isLoading = false;
+            alertPrint("mob no vlaidating =$_isLoading");
           });
 
-          if (response["Table"][0]["Result"].toString().toLowerCase() == 'y') {
+          if (response["ProceedStatus"].toString().toLowerCase() == 'y') {
+            warningPrint("mob no otp sent if worked");
             GlobalWidgets().showSnackBar(context, "OTP sent");
             setState(() {
               isSendOTP = true;
             });
           } else {
+            warningPrint("mob no otp sent else worked");
             setState(() {
               isSendOTP = false;
             });
@@ -488,7 +415,10 @@ class _RegisterUIState extends State<RegisterUI>
             _isLoading = false;
           });
 
-          GlobalWidgets().showSnackBar(context, e.message);
+          GlobalWidgets().showSnackBar(
+            context,
+            e.message["ProceedMessage"].toString(),
+          );
         }
       } else {
         setState(() {
@@ -497,37 +427,61 @@ class _RegisterUIState extends State<RegisterUI>
         GlobalWidgets().showSnackBar(context, "Invalid mobile number");
       }
     } else if (isSendOTP && !isOtpValid) {
-      if (mobCtrl.text.trim().length == 10 && otpCtrl.text.length >= 4) {
-        _isLoading = true;
+      if (mobCtrl.text.trim().length == 10 && otpCtrl.text.length >= 6) {
         try {
-          Map response = await (RestAPI().get(
-            "${APis.validateOTP}?MobileNo=${mobCtrl.text}&OTP=${otpCtrl.text}",
+          ///Validate otp  api call
+          setState(() {
+            _isLoading = true;
+          });
+          Map<String, dynamic> validateOTPBody = {
+            "Cmp_Code": cmpCode,
+            "Mobile_No": mobCtrl.text.trim(),
+            "OTP": otpCtrl.text,
+          };
+          Map response = await (RestAPI().post(
+            APis.validateOTP,
+            params: validateOTPBody,
           ));
-          _isLoading = false;
-          if (response["Table"][0]["ACCNO"].toString().toLowerCase() == 'n') {
+
+          alertPrint("_isLoading=$_isLoading");
+          if (response["ProceedStatus"].toString().toLowerCase() == 'n') {
             GlobalWidgets().showSnackBar(
               context,
-              "Invalid OTP or Mobile number",
+              response["ProceedMessage"].toString(),
             );
             setState(() {
               isOtpValid = false;
               isSendOTP = true;
+              _isLoading = false;
             });
+            alertPrint("_isLoading=$_isLoading");
           } else {
+            GlobalWidgets().showSnackBar(
+              context,
+              response["ProceedMessage"].toString(),
+            );
             setState(() {
-              for (var f in (response["Table"] as List)) {
-                accNos.add(f["ACCNO"]);
+              accNos.clear();
+              for (var f in (response["Data"] as List)) {
+                accNos.add(
+                  RegisterAccData(accId: f["Acc_ID"], accNo: f["Acc_No"]),
+                );
               }
               isOtpValid = true;
               isSendOTP = true;
+              _isLoading = false;
               _controller.forward();
             });
           }
+          alertPrint("_isLoading after response with accno=$_isLoading");
         } on RestException catch (e) {
           setState(() {
             _isLoading = false;
           });
-          GlobalWidgets().showSnackBar(context, e.message);
+          GlobalWidgets().showSnackBar(
+            context,
+            e.message["ProceedMessage"].toString(),
+          );
         }
       } else {
         GlobalWidgets().showSnackBar(context, "Invalid OTP or Mobile number");
@@ -579,24 +533,49 @@ class _RegisterUIState extends State<RegisterUI>
                 //  passCtrl.text.length>=4 && passCtrl.text.contains(RegExp(r"^[a-zA-Z0-9]+$")) && RegExp(r"^[a-zA-Z0-9]+$").hasMatch(passCtrl.text) &&
                 passCtrl.text == rePassCtrl.text &&
                 mpinCtrl.text == reMpinCtrl.text) {
-          String url =
-              "${APis.registerAcc}?userid=${usernameCtrl.text}&password=${passCtrl.text}"
-              "&MobileNo=${mobCtrl.text}&Accno=${accCtrl.text}";
-          _isLoading = true;
-          Map response = await (RestAPI().post(url));
-          // saveMpin();
-          _isLoading = false;
-          if (response["Table"][0]["Status"].toString() ==
-              "Usercode Already Exists") {
-            GlobalWidgets().showSnackBar(context, "Usercode Already Exists");
-          } else {
-            print(response["Table"][0]["Status"].toString());
+          ///Register
+          try {
+            Map<String, dynamic> registerBody = {
+              "Cmp_Code": cmpCode,
+              "MobileNo": mobCtrl.text.trim(),
+              "Acc_ID": accCtrl.text,
+              "User_Name": usernameCtrl.text,
+              "User_Password": passCtrl.text,
+              "User_MPIN": mpinCtrl.text,
+            };
+
+            String url = APis.registerAcc;
+            setState(() {
+              _isLoading = true;
+            });
+
+            Map response = await (RestAPI().post(url, params: registerBody));
+
+            if (response["ProceedStatus"].toString().toLowerCase() == "n") {
+              GlobalWidgets().showSnackBar(
+                context,
+                response["Data"][0]["Proceed_Message"].toString(),
+              );
+              setState(() {
+                _isLoading = false;
+              });
+            } else {
+              GlobalWidgets().showSnackBar(
+                context,
+                response["Data"][0]["Proceed_Message"].toString(),
+              );
+              widget.onTap!();
+              saveMpin(mpinCtrl.text);
+            }
+          } on RestException catch (e) {
+            setState(() {
+              _isLoading = false;
+            });
+
             GlobalWidgets().showSnackBar(
               context,
-              response["Table"][0]["Status"].toString(),
+              e.message["Data"][0]["Proceed_Message"].toString(),
             );
-            widget.onTap!();
-            saveMpin();
           }
         } else {
           GlobalWidgets().showSnackBar(
@@ -606,35 +585,5 @@ class _RegisterUIState extends State<RegisterUI>
         }
       }
     }
-
-    //   GlobalWidgets().showSnackBar(context, passValue.toString());
-
-    /*  if (mobCtrl.text.trim().length == 10 &&
-          otpCtrl.text.length >= 4 &&
-          accCtrl.text.length > 0 &&
-       //   usernameCtrl.text.length > 3 &&
-          usernameCtrl.text.length >= 3 ||  usernameCtrl.text.length <= 11 &&
-        //  passCtrl.text.length >= 4 &&
-        //  passCtrl.text.length>=6 && !passCtrl.text.contains(RegExp(r'\W')) && RegExp(r'\d+\w*\d+').hasMatch(passCtrl.text) &&
-        //  passCtrl.text.length>=4 && !passCtrl.text.contains(RegExp(r'\W')) && RegExp(r'\d+\w*\d+').hasMatch(passCtrl.text) &&
-        //  passCtrl.text.length>=4 && passCtrl.text.contains(RegExp(r"^[a-zA-Z0-9]+$")) && RegExp(r"^[a-zA-Z0-9]+$").hasMatch(passCtrl.text) &&
-
-          passCtrl.text == rePassCtrl.text) {
-        String url = "${APis.registerAcc}?userid=${usernameCtrl.text}&password=${passCtrl.text}"
-            "&MobileNo=${mobCtrl.text}&Accno=${accCtrl.text}";
-        _isLoading = true;
-        Map response = await RestAPI().post(url);
-        _isLoading = false;
-        if (response["Table"][0]["Status"].toString() == "Usercode Already Exists") {
-          GlobalWidgets().showSnackBar(context, "Usercode Already Exists");
-        } else {
-          print(response["Table"][0]["Status"].toString());
-          GlobalWidgets().showSnackBar(context, response["Table"][0]["Status"].toString());
-          widget.onTap();
-        }
-      } else {
-        GlobalWidgets().showSnackBar(context, "Please fill the missing fields");
-      }
-    }*/
   }
 }

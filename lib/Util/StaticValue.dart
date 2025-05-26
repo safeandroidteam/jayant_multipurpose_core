@@ -19,7 +19,8 @@ class StaticValues {
   static String ifsc = "Ifsc";
   static String accountNo = "AccountNumber";
   static String selectedAccNo = "SAccNo";
-
+  static String cmpCodeKey = "cmpCodeKey";
+  static String cmpCode = "1";
   static Color _primaryColor = Color(0xff005b96);
   static Color _backgroundColor = Color(0xffffffff);
   /* static Color _accentColor = Color(0xff03396c);

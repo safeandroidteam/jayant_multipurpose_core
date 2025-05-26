@@ -21,6 +21,12 @@ import 'configuration.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  await sharedPreferences.setString(
+    StaticValues.cmpCodeKey,
+    StaticValues.cmpCode,
+  );
+
   // This widget is the root of your application.
   final String extDownloadPath = '';
   runApp(

@@ -17,6 +17,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
     this.onBeforePopupOpening,
     this.isHintvalue = false,
     this.showboxshadow = false,
+    this.padding,
   });
   final String textDropDownLabel;
   final Future<bool?> Function(T?)? onBeforePopupOpening;
@@ -29,6 +30,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
   final bool showSelectedItems;
   final bool? isHintvalue;
   final String Function(T)? itemAsString;
+  final double? padding;
 
   final bool? showboxshadow;
   @override
@@ -72,26 +74,28 @@ class LabelWithDropDownField<T> extends StatelessWidget {
                 alignLabelWithHint: alignLabelWithHint,
                 icon: icon,
                 fillColor: Colors.white,
-                filled: true,
+                filled: false,
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey, width: 0.3),
+                  borderSide: BorderSide(color: Colors.black, width: 0.5),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey, width: 0.3),
+                  borderSide: BorderSide(color: Colors.black, width: 0.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey, width: 0.3),
+                  borderSide: BorderSide(color: Colors.black, width: 0.5),
                 ),
                 disabledBorder: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.all(10),
+                contentPadding: EdgeInsets.all(padding ?? 10),
                 hintText: hintText ?? "",
                 hintStyle: GoogleFonts.poppins(
-                  color: isHintvalue == true ? Colors.black : Colors.grey,
+                  color: isHintvalue == true ? Colors.black : Colors.black,
                   fontSize: 14,
                 ),
+
                 labelText: labelText ?? "",
                 labelStyle: GoogleFonts.poppins(
                   color: isHintvalue == true ? Colors.black : Colors.grey,

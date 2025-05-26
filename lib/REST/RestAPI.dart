@@ -181,7 +181,7 @@ class APis {
     Map<String, String?>? params,
   }) => Uri.http(StaticValues.apiGateway!, path, params).toString();
 
-  static String _superLink = 'http://${StaticValues.apiGateway}/Api/Values';
+  static final String _superLink = 'https://mobapiuat.onlinesafe.in';
   //  static String _superLinkJayant = 'http://Azure-demo2.safeandsmartbank.com:6544';
 
   /// Production API
@@ -189,12 +189,13 @@ class APis {
   // static String _superLinkJayant1 = 'http://apirbl.jayantindia.com:6393';
 
   /// Test API
-  static String _superLinkJayant = 'http://apirbl.jayantindia.com:6389';
-  static String _superLinkJayant1 = 'https://sec2pay.jayantindia.com:6390';
+  static final String _superLinkJayant = 'http://apirbl.jayantindia.com:6389';
+  static final String _superLinkJayant1 =
+      'https://sec2pay.jayantindia.com:6390';
 
   static String loginUrl = "$_superLink/get_AccountInfo1?";
   static String loginMPin = "$_superLink/get_MpinLogin?";
-  static String mobileGetVersion = "$_superLink/Mobile_Get_Version";
+  static String mobileGetVersion = "$_superLink/FetchMobAppVersion";
 
   static String generateRefID(String key) =>
       "$_superLink/GetReferanceNo?UserId=$key";
@@ -204,14 +205,14 @@ class APis {
 
   ///Register
   //http://103.230.37.187:6556/Mobile_Get_OTP?MobileNo=9847828438
-  static String getRegisterOTP = "$_superLink/Mobile_Get_OTP";
+  static String getRegisterOTP = "$_superLink/ValidateSignUpMobileNo";
 
   //http://103.230.37.187:6556/Mobile_Get_SbNo?MobileNo=9847828438&OTP=4020
-  static String validateOTP = "$_superLink/Mobile_Get_SbNo";
+  static String validateOTP = "$_superLink/ValidateSignUpMobileNoOTP";
 
   // http://103.230.37.187:6556/registercustomer?userid=chitra
   // &password=1234567&MobileNo=9847828438&Accno=0020070001785
-  static String registerAcc = "$_superLink/registercustomer";
+  static String registerAcc = "$_superLink/Save_UserMaster";
 
   ///Forgot password
   static String getPassChangeOTP = "$_superLink/GetPasswordChangeOTP?";
