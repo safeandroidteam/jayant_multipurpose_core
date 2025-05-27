@@ -135,6 +135,7 @@ dynamic _returnResponse<T>(T response) {
         debugPrint("responseJson : $responseJson");
         return responseJson;
       case 404:
+        throw NotFoundException(json.decode(response.body));
       case 400:
         throw BadRequestException(json.decode(response.body));
       case 401:
@@ -193,8 +194,11 @@ class APis {
   static final String _superLinkJayant1 =
       'https://sec2pay.jayantindia.com:6390';
 
-  static String loginUrl = "$_superLink/get_AccountInfo1?";
+  // static String loginUrl = "$_superLink/get_AccountInfo1?";
+  static String loginUrl = "$_superLink/ValidateUserLogin";
   static String loginMPin = "$_superLink/get_MpinLogin?";
+  static String loginOtpVerify =
+      "$_superLink/Validate_UserLoginOTPVerification";
   static String mobileGetVersion = "$_superLink/FetchMobAppVersion";
 
   static String generateRefID(String key) =>

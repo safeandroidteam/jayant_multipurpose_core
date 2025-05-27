@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/SignInModel.dart';
 import 'package:passbook_core_jayant/MainScreens/Register.dart';
 import 'package:passbook_core_jayant/MainScreens/new_user.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
@@ -68,15 +69,16 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       // "\nBuildNumber BE ${(double.parse(versionMap["Table"][0]["Ver_Code"])).round().toString()}"
     );
 
-    String vernameFrmapi = versionMap["Data"][0]["Ver_Name"].toString();
-    String vercodeFrmapi = versionMap["Data"][0]["Ver_Code"].toString();
+    String verNameFromApi = versionMap["Data"][0]["Ver_Name"].toString();
+    String verCodeFromApi = versionMap["Data"][0]["Ver_Code"].toString();
 
-    String vercodeFrmapiDouble =
-        double.tryParse(vercodeFrmapi)?.round().toString() ?? "";
-    alertPrint("Ver_Name Frm Api==$vernameFrmapi");
-    alertPrint("Ver_Code Frm Api==$vercodeFrmapiDouble");
+    String verCodeFromApiDouble =
+        double.tryParse(verCodeFromApi)?.round().toString() ?? "";
+    alertPrint("Ver_Name Frm Api==$verNameFromApi");
+    alertPrint("Ver_Code Frm Api==$verCodeFromApiDouble");
     alertPrint("ver_Code From App==$buildNumber");
-    if (vercodeFrmapiDouble != buildNumber) {
+
+    if (verCodeFromApiDouble != buildNumber) {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -495,49 +497,102 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   String? MPin, strCustName;
   Map? response;
   String? str_Otp;
+  String? cmpCode;
   var _pass;
   bool isLoading = false;
   int count = 0;
 
-  void saveData(LoginModel loginModel) async {
+  // void saveData(LoginModel loginModel) async {
+  //   SharedPreferences preferences = StaticValues.sharedPreferences!;
+  //   print("CUST ID :: ${loginModel.table![0].toString()}");
+  //   await preferences.setString(
+  //     StaticValues.custID,
+  //     loginModel.table![0].custId.toString(),
+  //   );
+  //   await preferences.setString(
+  //     StaticValues.branchCode,
+  //     loginModel.table![0].brCode.toString(),
+  //   );
+  //   await preferences.setString(
+  //     StaticValues.schemeCode,
+  //     loginModel.table![0].schCode.toString(),
+  //   );
+  //   await preferences.setString(
+  //     StaticValues.accNumber,
+  //     loginModel.table![0].accNo.toString(),
+  //   );
+  //   await preferences.setString(
+  //     StaticValues.ifsc,
+  //     loginModel.table![0].ifsc.toString(),
+  //   );
+  //   await preferences.setString(
+  //     StaticValues.accName,
+  //     loginModel.table![0].custName.toString(),
+  //   );
+  //   await preferences.setString(
+  //     StaticValues.mobileNo,
+  //     loginModel.table![0].mobile.toString(),
+  //   );
+  //   await preferences.setString(
+  //     StaticValues.accountNo,
+  //     loginModel.table![0].accountNo.toString(),
+  //   );
+  //   //  await preferences.setString(StaticValues.userPass, passCtrl.text);
+  //   await preferences.setString(
+  //     StaticValues.address,
+  //     loginModel.table![0].adds!
+  //         .split(",")
+  //         .toList()
+  //         .where((element) => element.isNotEmpty)
+  //         .join(",")
+  //         .toString(),
+  //   );
+  //   Navigator.of(context).pushReplacementNamed("/HomePage");
+  // }
+
+  void saveData(SignInModel signInModel) async {
     SharedPreferences preferences = StaticValues.sharedPreferences!;
-    print("CUST ID :: ${loginModel.table![0].toString()}");
+    print("CUST ID :: ${signInModel.data[0].toString()}");
     await preferences.setString(
       StaticValues.custID,
-      loginModel.table![0].custId.toString(),
+      signInModel.data[0].custId.toString(),
     );
     await preferences.setString(
       StaticValues.branchCode,
-      loginModel.table![0].brCode.toString(),
+      signInModel.data[0].brCode.toString(),
     );
+    // await preferences.setString(
+    //   StaticValues.schemeCode,
+    //   signInModel.data![0].schCode.toString(),
+    // );
+    // await preferences.setString(
+    //   StaticValues.accNumber,
+    //   signInModel.data![0].accNo.toString(),
+    // );
+    // await preferences.setString(
+    //   StaticValues.ifsc,
+    //   signInModel.data![0].ifsc.toString(),
+    // );
     await preferences.setString(
-      StaticValues.schemeCode,
-      loginModel.table![0].schCode.toString(),
-    );
-    await preferences.setString(
-      StaticValues.accNumber,
-      loginModel.table![0].accNo.toString(),
-    );
-    await preferences.setString(
-      StaticValues.ifsc,
-      loginModel.table![0].ifsc.toString(),
+      StaticValues.userName,
+      signInModel.data[0].userName.toString(),
     );
     await preferences.setString(
       StaticValues.accName,
-      loginModel.table![0].custName.toString(),
+      signInModel.data[0].profileName.toString(),
     );
     await preferences.setString(
-      StaticValues.mobileNo,
-      loginModel.table![0].mobile.toString(),
+      StaticValues.custType,
+      signInModel.data[0].customerType.toString(),
     );
-    await preferences.setString(
-      StaticValues.accountNo,
-      loginModel.table![0].accountNo.toString(),
-    );
+    // await preferences.setString(
+    //   StaticValues.accountNo,
+    //   signInModel.data![0].accountNo.toString(),
+    // );
     //  await preferences.setString(StaticValues.userPass, passCtrl.text);
     await preferences.setString(
       StaticValues.address,
-      loginModel.table![0].adds!
+      signInModel.data[0].fullAddress!
           .split(",")
           .toList()
           .where((element) => element.isNotEmpty)
@@ -561,6 +616,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       SharedPreferences pref = StaticValues.sharedPreferences!;
       MPin = pref.getString(StaticValues.Mpin);
       strCustName = pref.getString(StaticValues.accName);
+      cmpCode = pref.getString(StaticValues.cmpCodeKey);
+      debugPrint("cmpCode : $cmpCode");
       debugPrint("MPIN : $MPin");
       isMPinEmpty = false;
       /*usernameCtrl.text = "nira";
@@ -847,11 +904,16 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                 debugPrint("Login UN & PW > ALL true");
                 _isLoading = true;
                 try {
-                  response = await RestAPI().get(
-                    "${APis.loginUrl}Mob_no=${usernameCtrl.text}&pwd=${passCtrl.text}&IMEI=863675039500942",
+                  response = await RestAPI().post(
+                    "${APis.loginUrl}",
+                    params: {
+                      "Cmp_Code": cmpCode ?? "",
+                      "User_Name": usernameCtrl.text,
+                      "Password": passCtrl.text,
+                    },
                   );
 
-                  setState(() async {
+                  setState(() {
                     _isLoading = false;
                     if (response!.toString().isEmpty ||
                         response == null ||
@@ -862,63 +924,28 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       );
                       return;
                     }
-                    //   if ((response["Table"][0] as Map).containsKey("Invalid")) {
-                    if (response!["Table"][0]["Cust_id"] == "Invalid") {
+                    if (response!["ProceedStatus"] == "N") {
                       setState(() {
                         _isLoading = false;
                       });
                       print("LIJITH");
+                      debugPrint(
+                        "ProceedMessage ::: ${response!["ProceedMessage"]}",
+                      );
                       GlobalWidgets().showSnackBar(
                         context,
-                        // response!["Table"][0]["Cust_id"],
-                        response!["Table"][0]["Msg"],
+                        response!["ProceedMessage"],
                       );
-                    } else if (response!["Table"][0]["Cust_id"] == "Blocked") {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      //  if (response["Table"][0]["Cust_id"] == "Invalid"){
-                      print("Blocked");
-                      GlobalWidgets().showSnackBar(
-                        context,
-                        response!["Table"][0]["Msg"],
-                      );
-                    } else {
+                    } else if (response!["Data"][0]["OTP_Required"] == "Y") {
                       // usernameCtrl.clear();
                       // passCtrl.clear();
-                      var response1 = await RestAPI().post(
-                        APis.GenerateOTP,
-                        params: {
-                          "MobileNo": response!["Table"][0]["Mobile"],
-                          "Amt": "0",
-                          "SMS_Module": "GENERAL",
-                          "SMS_Type": "GENERAL_OTP",
-                          "OTP_Return": "Y",
-                        },
+
+                      debugPrint(
+                        "OTP_Required = ${response!["Data"][0]["OTP_Required"]}",
                       );
-                      debugPrint("rechargeResponse::: $response1");
-                      str_Otp = response1[0]["OTP"];
-
-                      //    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(str_Message)));
-                      //  RestAPI().get(APis.rechargeMobile(params));
-                      /*    Map response =
-                            await RestAPI().get(APis.rechargeMobile(params));*/
-                      //   getMobileRecharge();
-                      setState(() {
-                        //     isLoading = false;
-
-                        Timer(Duration(minutes: 5), () {
-                          setState(() {
-                            str_Otp = "";
-                          });
-                        });
-                      });
 
                       ///TODO  for otp while login
                       _loginConfirmation("1");
-
-                      /*LoginModel login = LoginModel.fromJson(response);
-                        saveData(login);*/
                     }
                   });
                 } on RestException catch (e) {
@@ -926,7 +953,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                     _isLoading = false;
                   });
 
-                  GlobalWidgets().showSnackBar(context, e.message);
+                  GlobalWidgets().showSnackBar(
+                    context,
+                    e.message["ProceedMessage"].toString(),
+                  );
                 }
               }
 
@@ -1136,7 +1166,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         SharedPreferences preferences =
                             StaticValues.sharedPreferences!;
 
-                        if (pass == str_Otp) {
+                        debugPrint("OTP: $pass");
+
+                        // if (pass == str_Otp) {
+                        if (pass!.isNotEmpty) {
                           if (loginType == "0") {
                             preferences.setString(
                               StaticValues.userPass,
@@ -1146,6 +1179,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             LoginModel login = LoginModel.fromJson(
                               response as Map<String, dynamic>,
                             );
+
                             String? storedMpin = preferences.getString(
                               StaticValues.fullMpin,
                             );
@@ -1179,58 +1213,110 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             customPrint(
                               "Username get after new set to SharedPref1 : ${preferences.getString(StaticValues.userName)}",
                             );
-                            saveData(login);
+                            // saveData(login);
                             print("LIJU");
                           } else {
-                            LoginModel login = LoginModel.fromJson(
-                              response as Map<String, dynamic>,
-                            );
+                            try {
+                              debugPrint("OTP: $pass");
 
-                            /// New user login then remove old user MPIN
-                            String? userNameValue = preferences.getString(
-                              StaticValues.userName,
-                            );
+                              response = await RestAPI().post(
+                                APis.loginOtpVerify,
+                                params: {
+                                  "Cmp_Code": cmpCode,
+                                  "User_Name": usernameCtrl.text,
+                                  "Password": passCtrl.text,
+                                  "OTP": pass,
+                                },
+                              );
 
-                            warningPrint(
-                              "MPin == null | Username get from SharedPref1 : $userNameValue",
-                            );
+                              SignInModel signIn = SignInModel.fromJson(
+                                response as Map<String, dynamic>,
+                              );
 
-                            if (userNameValue != null &&
-                                userNameValue.isNotEmpty) {
-                              if (usernameCtrl.text != userNameValue) {
+                              debugPrint("Response from OTP Verify: $response");
+
+                              if (response!["ProceedStatus"] == "N") {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                print("LIJITH");
+                                debugPrint(
+                                  "ProceedMessage ::: ${response!["ProceedMessage"]}",
+                                );
+                                GlobalWidgets().showSnackBar(
+                                  context,
+                                  response!["ProceedMessage"],
+                                );
+                              } else if (response!["Data"][0]["Proceed_Status"] ==
+                                  "Y") {
+                                /// New user login then remove old user MPIN
+                                String? userNameValue = preferences.getString(
+                                  StaticValues.userName,
+                                );
+
                                 warningPrint(
-                                  "Username in SharedPref1 : $userNameValue",
+                                  "MPin == null | Username get from SharedPref1 : $userNameValue",
                                 );
-                                alertPrint(
-                                  "Username in usernameCtrl1 : ${usernameCtrl.text}",
-                                );
-                                await preferences.remove(StaticValues.Mpin);
 
-                                successPrint(
-                                  "Mpin in SharedPref1 : ${preferences.getString(StaticValues.Mpin)}",
+                                if (userNameValue != null &&
+                                    userNameValue.isNotEmpty) {
+                                  if (usernameCtrl.text != userNameValue) {
+                                    warningPrint(
+                                      "Username in SharedPref1 : $userNameValue",
+                                    );
+                                    alertPrint(
+                                      "Username in usernameCtrl1 : ${usernameCtrl.text}",
+                                    );
+                                    await preferences.remove(StaticValues.Mpin);
+
+                                    successPrint(
+                                      "Mpin in SharedPref1 : ${preferences.getString(StaticValues.Mpin)}",
+                                    );
+                                  }
+                                }
+
+                                if (usernameCtrl.text.isNotEmpty) {
+                                  await preferences.setString(
+                                    StaticValues.userName,
+                                    usernameCtrl.text,
+                                  );
+                                }
+
+                                customPrint(
+                                  "Username get after new set to SharedPref1 : ${preferences.getString(StaticValues.userName)}",
                                 );
+
+                                GlobalWidgets().showSnackBar(
+                                  context,
+                                  response!["Data"][0]["Proceed_Message"],
+                                );
+                                saveData(signIn);
+                                // usernameCtrl.clear();
+                                // passCtrl.clear();
+                                print("LIJU");
                               }
-                            }
+                            } on RestException catch (e) {
+                              setState(() {
+                                _isLoading = false;
+                              });
 
-                            if (usernameCtrl.text.isNotEmpty) {
-                              await preferences.setString(
-                                StaticValues.userName,
-                                usernameCtrl.text,
+                              // GlobalWidgets().showSnackBar(
+                              //   context,
+                              //   e.message["ProceedMessage"],
+                              // );
+                              Fluttertoast.showToast(
+                                msg: e.message["ProceedMessage"],
+                                toastLength: Toast.LENGTH_SHORT,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.black54,
+                                textColor: Colors.white,
+                                fontSize: 16.0,
                               );
                             }
-
-                            customPrint(
-                              "Username get after new set to SharedPref1 : ${preferences.getString(StaticValues.userName)}",
-                            );
-
-                            saveData(login);
-                            // usernameCtrl.clear();
-                            // passCtrl.clear();
-                            print("LIJU");
                           }
                         } else {
                           Fluttertoast.showToast(
-                            msg: "OTP Miss match",
+                            msg: "OTP Mismatch",
                             toastLength: Toast.LENGTH_SHORT,
                             timeInSecForIosWeb: 1,
                             backgroundColor: Colors.black54,

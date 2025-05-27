@@ -12,7 +12,6 @@ import 'package:passbook_core_jayant/Search/bloc/search_bloc.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:passbook_core_jayant/styles.dart';
-import 'package:passbook_core_jayant/test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Util/StaticValue.dart';
@@ -32,7 +31,7 @@ void main() async {
   runApp(
     CoreApp(
       titleDecoration: TitleDecoration(
-        label: "Jayant India Nidhi Limited",
+        label: "JINL Co-Operative Multipurpose Society",
         logoPath: "assets/mini-logo.png",
         labelColor: Colors.black,
       ),
