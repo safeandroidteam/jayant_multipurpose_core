@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
@@ -9,8 +7,8 @@ import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_drop_down.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/sim_sender.dart';
-import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:passbook_core_jayant/Util/sim_ui.dart';
+import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Login.dart';
@@ -392,7 +390,7 @@ class _RegisterUIState extends State<RegisterUI>
           ));
           setState(() {
             _isLoading = false;
-            alertPrint("mob no vlaidating =$_isLoading");
+            alertPrint("mob no validating =$_isLoading");
           });
 
           if (response["ProceedStatus"].toString().toLowerCase() == 'y') {

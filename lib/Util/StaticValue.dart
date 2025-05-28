@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class StaticValues {
   static String custID = "cust_id";
+  static String custType = "custType";
   static String accNumber = "acc_number";
   static String accName = "acc_name";
   static String userName = "userName";
@@ -21,6 +22,8 @@ class StaticValues {
   static String selectedAccNo = "SAccNo";
   static String cmpCodeKey = "cmpCodeKey";
   static String cmpCode = "1";
+
+  ///Color
   static Color _primaryColor = Color(0xff005b96);
   static Color _backgroundColor = Color(0xffffffff);
   /* static Color _accentColor = Color(0xff03396c);

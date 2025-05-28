@@ -12,13 +12,20 @@ class RestException implements Exception {
 class FetchDataException extends RestException {
   final message;
 
-  FetchDataException([this.message]) : super("Error During Communication: ",message );
+  FetchDataException([this.message])
+    : super("Error During Communication: ", message);
 }
 
 class BadRequestException extends RestException {
   final message;
 
   BadRequestException([this.message]) : super("Invalid Request: ", message);
+}
+
+class NotFoundException extends RestException {
+  final message;
+
+  NotFoundException([this.message]) : super("Invalid Request: ", message);
 }
 
 class UnauthorisedException extends RestException {
