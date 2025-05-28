@@ -11,6 +11,7 @@ import 'package:passbook_core_jayant/MainScreens/AccountMenus.dart';
 import 'package:passbook_core_jayant/MainScreens/PassbookMenus.dart';
 import 'package:passbook_core_jayant/PayBills/Recharge.dart';
 import 'package:passbook_core_jayant/Search/SearchHome.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,23 +30,25 @@ class SubPage extends StatefulWidget {
 
 class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
   SharedPreferences? preferences;
-  var userId = "", acc = "", ifsc = "", name = "", address = "";
+  var userId = "", acc = "", ifsc = "", name = "", address = "", brName = "";
+
   final double _iconSize = 25.0;
 
   Timer? _countdownTimer;
 
   void loadData() async {
     preferences = StaticValues.sharedPreferences;
+    alertPrint("homepage loaddata wrking");
     setState(() {
       userId = preferences?.getString(StaticValues.custID) ?? "";
       acc = preferences?.getString(StaticValues.accountNo) ?? "";
       ifsc = preferences?.getString(StaticValues.ifsc) ?? "";
       name = preferences?.getString(StaticValues.accName) ?? "";
-      address = preferences?.getString(StaticValues.address) ?? "";
-      print("userName");
-      print(userId);
-      print(acc);
-      print(name);
+      var address1 = preferences?.getString(StaticValues.address) ?? "";
+      warningPrint("address in pref =$address1");
+      address = address1.replaceAll(RegExp(r'\s+'), ' ').trim();
+      successPrint("clean address =$address");
+      brName = preferences?.getString(StaticValues.brName) ?? "";
     });
   }
 
@@ -54,21 +57,6 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
     loadData();
     super.initState();
   }
-
-  /*  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async{
-        if(state == AppLifecycleState.paused){
-          _countdownTimer = Timer(Duration(seconds: 60), Duration(seconds: 1));
-        }
-        else if(state == AppLifecycleState.resumed){
-          if(_countdownTimer.remaining > Duration(seconds: 0)){
-            print("AppLifecycle State timer didnt compleate");
-          }
-          else{
-            print("AppLifecycleState timeout");
-          }
-          _countdownTimer.cancel();
-        }
-  }*/
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -84,6 +72,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    alertPrint("address in build =$address");
     return Scaffold(
       body: CustomScrollView(
         physics: BouncingScrollPhysics(),
@@ -137,6 +126,11 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
                               ),
                               TextView(
                                 text: acc ?? "",
+                                color: Colors.white,
+                                size: 14.0,
+                              ),
+                              TextView(
+                                text: "Branch Name : $brName" ?? "",
                                 color: Colors.white,
                                 size: 14.0,
                               ),

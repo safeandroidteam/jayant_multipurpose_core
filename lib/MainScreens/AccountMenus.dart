@@ -361,7 +361,7 @@ class AccountMenus extends StatefulWidget {
 class _AccountMenusState extends State<AccountMenus>
     with TickerProviderStateMixin {
   late SharedPreferences preferences;
-  var userId = "", acc = "", name = "", address = "";
+  var userId = "", acc = "", name = "", address = "", cmpCode = "";
   List<AccountsLoanTable> _accLoanTableModel = [];
   List<AccountsDepositTable> _accDepositModel = [];
   List<PassbookItem> _chittyModel = [], _shareModel = [];
@@ -375,14 +375,15 @@ class _AccountMenusState extends State<AccountMenus>
       acc = preferences.getString(StaticValues.accNumber) ?? "";
       name = preferences.getString(StaticValues.accName) ?? "";
       address = preferences.getString(StaticValues.address) ?? "";
+      cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
       print("userName");
-      print(userId);
+      alertPrint("custId=$userId");
       print(acc);
       print(name);
     });
 
-    _homeBloc.add(AccDepositEvent(userId));
-    _homeBloc.add(AccLoanEvent(userId));
+    _homeBloc.add(AccDepositEvent(userId, cmpCode, "DEPOSIT"));
+    _homeBloc.add(AccLoanEvent(userId, cmpCode, "LOAN"));
     _homeBloc.add(ChittyEvent(userId));
     _homeBloc.add(ShareEvent(userId));
   }
@@ -411,9 +412,11 @@ class _AccountMenusState extends State<AccountMenus>
                 centerTitle: true,
                 pinned: true,
                 stretch: true,
-                title:
-                
-                 TextView(text:"Account", size: 20.0, color: Colors.white),
+                title: TextView(
+                  text: "Account",
+                  size: 20.0,
+                  color: Colors.white,
+                ),
               ),
               SliverSafeArea(
                 sliver: SliverList(
@@ -424,30 +427,30 @@ class _AccountMenusState extends State<AccountMenus>
                         if (snapshot is AccDepositResponse) {
                           setState(() {
                             _accDepositModel =
-                                snapshot.accountsDepositModel.table;
+                                snapshot.accountsDepositModel.data;
                           });
                         }
                         if (snapshot is AccLoanResponse) {
                           setState(() {
                             _accLoanTableModel =
-                                snapshot.accountsLoanModel.table;
+                                snapshot.accountsLoanModel.data;
                           });
                         }
                         if (snapshot is ChittyResponse) {
                           setState(() {
-                            _chittyModel = snapshot.chittyListModel.table!;
+                            _chittyModel = snapshot.chittyListModel.table;
                           });
                         }
                         if (snapshot is ShareResponse) {
                           setState(() {
-                            _shareModel = snapshot.shareListModel.table!;
+                            _shareModel = snapshot.shareListModel.table;
                           });
                         }
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: TextView(text:
-                          "Deposit",
+                        child: TextView(
+                          text: "Deposit",
                           size: 24.0,
                           fontWeight: FontWeight.bold,
                           color: Color(0xff707070),
@@ -492,8 +495,8 @@ class _AccountMenusState extends State<AccountMenus>
                             );
                           } else {
                             return Center(
-                              child: TextView(text:
-                                "You don't have a deposit in this bank",
+                              child: TextView(
+                                text: "You don't have a deposit in this bank",
                               ),
                             );
                           }
@@ -502,8 +505,8 @@ class _AccountMenusState extends State<AccountMenus>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextView(text:
-                        "Loan",
+                      child: TextView(
+                        text: "Loan",
                         size: 24.0,
                         fontWeight: FontWeight.bold,
                         color: Color(0xff707070),
@@ -544,8 +547,8 @@ class _AccountMenusState extends State<AccountMenus>
                             );
                           } else {
                             return Center(
-                              child: TextView(text:
-                                "You don't have a loan in this bank",
+                              child: TextView(
+                                text: "You don't have a loan in this bank",
                               ),
                             );
                           }
@@ -554,8 +557,8 @@ class _AccountMenusState extends State<AccountMenus>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextView(text:
-                        "Chitty",
+                      child: TextView(
+                        text: "Chitty",
                         size: 24.0,
                         fontWeight: FontWeight.bold,
                         color: Color(0xff707070),
@@ -596,8 +599,8 @@ class _AccountMenusState extends State<AccountMenus>
                             );
                           } else {
                             return Center(
-                              child: TextView(text:
-                                "You don't have a chitty in this bank",
+                              child: TextView(
+                                text: "You don't have a chitty in this bank",
                               ),
                             );
                           }
@@ -606,8 +609,8 @@ class _AccountMenusState extends State<AccountMenus>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextView(text:
-                        "Share",
+                      child: TextView(
+                        text: "Share",
                         size: 24.0,
                         fontWeight: FontWeight.bold,
                         color: Color(0xff707070),
@@ -649,8 +652,8 @@ class _AccountMenusState extends State<AccountMenus>
                                   });*/
                           } else {
                             return Center(
-                              child: TextView(text:
-                                "You don't have a share in this bank",
+                              child: TextView(
+                                text: "You don't have a share in this bank",
                               ),
                             );
                           }

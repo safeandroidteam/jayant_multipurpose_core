@@ -7,80 +7,84 @@ String transactionModelToJson(AccountsDepositModel data) =>
     json.encode(data.toJson());
 
 class AccountsDepositModel {
-  List<AccountsDepositTable> table;
+  String proceedStatus;
+  String proceedMessage;
+  List<AccountsDepositTable> data;
 
   AccountsDepositModel({
-    this.table = const [], // Default to empty list if null
+    required this.proceedStatus,
+    required this.proceedMessage,
+    required this.data,
   });
 
   factory AccountsDepositModel.fromJson(Map<String, dynamic> json) =>
       AccountsDepositModel(
-        table:
-            json["Table"] == null
+        proceedStatus: json["ProceedStatus"] ?? '',
+        proceedMessage: json["ProceedMessage"] ?? '',
+        data:
+            json["Data"] == null
                 ? []
                 : List<AccountsDepositTable>.from(
-                  json["Table"].map((x) => AccountsDepositTable.fromJson(x)),
+                  json["Data"].map((x) => AccountsDepositTable.fromJson(x)),
                 ),
       );
 
   Map<String, dynamic> toJson() => {
-    "Table": List<dynamic>.from(table.map((x) => x.toJson())),
+    "ProceedStatus": proceedStatus,
+    "ProceedMessage": proceedMessage,
+    "Data": List<dynamic>.from(data.map((x) => x.toJson())),
   };
 }
 
 class AccountsDepositTable {
-  double custId;
+  int custId;
   String custName;
   String address;
-  String custBranch;
-  String accNo;
-  String accBranch;
-  double balance;
-  String nominee;
-  String accType;
+  int brCode;
+  String brName;
+  int schCode;
+  String schName;
   String module;
-  String dueDate;
+  String depBranch;
+  String balance;
 
   AccountsDepositTable({
     required this.custId,
     required this.custName,
     required this.address,
-    required this.custBranch,
-    required this.accNo,
-    required this.accBranch,
-    required this.balance,
-    required this.nominee,
-    required this.accType,
+    required this.brCode,
+    required this.brName,
+    required this.schCode,
+    required this.schName,
     required this.module,
-    required this.dueDate,
+    required this.depBranch,
+    required this.balance,
   });
 
   factory AccountsDepositTable.fromJson(Map<String, dynamic> json) =>
       AccountsDepositTable(
-        custId: json["Cust_Id"] == null ? 0.0 : json["Cust_Id"].toDouble(),
+        custId: json["Cust_ID"] ?? 0,
         custName: json["Cust_Name"] ?? '',
-        address: json["Adds"] ?? '',
-        custBranch: json["Cust_Br"] ?? '',
-        accNo: json["Acc_No"] ?? '',
-        accBranch: json["Acc_Br"] ?? '',
-        balance: json["Balance"] == null ? 0.0 : json["Balance"].toDouble(),
-        nominee: json["nominee"] ?? '',
-        accType: json["Acc_type"] ?? '',
-        module: json["module"] ?? '',
-        dueDate: json["Due_Date"] ?? '',
+        address: json["Address"] ?? '',
+        brCode: json["Br_Code"] ?? 0,
+        brName: json["Br_Name"] ?? '',
+        schCode: json["Sch_Code"] ?? 0,
+        schName: json["Sch_Name"] ?? '',
+        module: json["Module"] ?? '',
+        depBranch: json["Dep_Branch"] ?? '',
+        balance: json["Balance"] ?? '0.00',
       );
 
   Map<String, dynamic> toJson() => {
-    "Cust_Id": custId,
+    "Cust_ID": custId,
     "Cust_Name": custName,
-    "Adds": address,
-    "Cust_Br": custBranch,
-    "Acc_No": accNo,
-    "Acc_Br": accBranch,
+    "Address": address,
+    "Br_Code": brCode,
+    "Br_Name": brName,
+    "Sch_Code": schCode,
+    "Sch_Name": schName,
+    "Module": module,
+    "Dep_Branch": depBranch,
     "Balance": balance,
-    "nominee": nominee,
-    "Acc_type": accType,
-    "module": module,
-    "Due_Date": dueDate,
   };
 }

@@ -25,9 +25,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(AccDepositLoading());
 
     try {
-      final response = await RestAPI().get(
-        APis.getDepositDetailsList(event.custID),
+      Map<String, dynamic> accDepositBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+        "Section": event.section,
+      };
+      final response = await RestAPI().post(
+        APis.fetchAccDetailsbySection,
+        params: accDepositBody,
       );
+      successPrint("Acc deposit deposit fetched");
       emit(AccDepositResponse(AccountsDepositModel.fromJson(response)));
       successPrint("Deposit Data in Account=$response");
     } on RestException catch (e) {
@@ -42,9 +49,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(AccLoanLoading());
     try {
-      final response = await RestAPI().get(
-        APis.accountLoanListUrl(event.custID),
+        Map<String, dynamic> accLoanBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+        "Section": event.section,
+      };
+      final response = await RestAPI().post(
+        APis.fetchAccDetailsbySection,
+        params: accLoanBody,
       );
+     
       emit(AccLoanResponse(AccountsLoanModel.fromJson(response)));
       successPrint("Loan Data in Account=$response");
     } on RestException catch (e) {

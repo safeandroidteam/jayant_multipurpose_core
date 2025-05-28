@@ -188,19 +188,30 @@ class APis {
   /// Production API
   // static String _superLinkJayant = 'http://apirbl.jayantindia.com:6395';
   // static String _superLinkJayant1 = 'http://apirbl.jayantindia.com:6393';
+  //test
 
-  /// Test API
   static final String _superLinkJayant = 'http://apirbl.jayantindia.com:6389';
   static final String _superLinkJayant1 =
       'https://sec2pay.jayantindia.com:6390';
 
-  // static String loginUrl = "$_superLink/get_AccountInfo1?";
+  /// New
+
+  //register
+  static String registerAcc = "$_superLink/Save_UserMaster";
+  static String getRegisterOTP = "$_superLink/ValidateSignUpMobileNo";
+  static String validateOTP = "$_superLink/ValidateSignUpMobileNoOTP";
+
+  //Login
   static String loginUrl = "$_superLink/ValidateUserLogin";
   static String loginMPin = "$_superLink/get_MpinLogin?";
   static String loginOtpVerify =
       "$_superLink/Validate_UserLoginOTPVerification";
   static String mobileGetVersion = "$_superLink/FetchMobAppVersion";
+  //Account section
+  static String fetchAccDetailsbySection =
+      "$_superLink/Fetch_AccountDetailsBySection";
 
+  ///OLD
   static String generateRefID(String key) =>
       "$_superLink/GetReferanceNo?UserId=$key";
 
@@ -209,14 +220,9 @@ class APis {
 
   ///Register
   //http://103.230.37.187:6556/Mobile_Get_OTP?MobileNo=9847828438
-  static String getRegisterOTP = "$_superLink/ValidateSignUpMobileNo";
-
-  //http://103.230.37.187:6556/Mobile_Get_SbNo?MobileNo=9847828438&OTP=4020
-  static String validateOTP = "$_superLink/ValidateSignUpMobileNoOTP";
 
   // http://103.230.37.187:6556/registercustomer?userid=chitra
   // &password=1234567&MobileNo=9847828438&Accno=0020070001785
-  static String registerAcc = "$_superLink/Save_UserMaster";
 
   ///Forgot password
   static String getPassChangeOTP = "$_superLink/GetPasswordChangeOTP?";
@@ -277,8 +283,8 @@ class APis {
   static String accountLoanListUrl(String custID) =>
       "$_superLink/get_loan_details?Cust_id=$custID";
 
-  static String getDepositDetailsList(String custID) =>
-      "$_superLink/get_deposit_details?Cust_id=$custID";
+  // static String getDepositDetailsList(String custID) =>
+  //     "$_superLink/get_deposit_details?Cust_id=$custID";
 
   ///get Other Acc List of passbook and account section=============
   //Acc_Type=LN(Loan List)

@@ -7,115 +7,74 @@ String transactionModelToJson(AccountsLoanModel data) =>
     json.encode(data.toJson());
 
 class AccountsLoanModel {
-  List<AccountsLoanTable> table;
+  List<AccountsLoanTable> data;
 
-  AccountsLoanModel({
-    this.table = const [], // Default to empty list if null
-  });
+  AccountsLoanModel({this.data = const []});
 
   factory AccountsLoanModel.fromJson(Map<String, dynamic> json) =>
       AccountsLoanModel(
-        table:
-            json["Table"] == null
+        data:
+            json["Data"] == null
                 ? []
                 : List<AccountsLoanTable>.from(
-                  json["Table"].map((x) => AccountsLoanTable.fromJson(x)),
+                  json["Data"].map((x) => AccountsLoanTable.fromJson(x)),
                 ),
       );
 
   Map<String, dynamic> toJson() => {
-    "Table": List<dynamic>.from(table.map((x) => x.toJson())),
+    "Data": List<dynamic>.from(data.map((x) => x.toJson())),
   };
 }
 
 class AccountsLoanTable {
-  double accId;
-  String custId;
-  String name;
-  String address;
-  String custBranch;
-  String loanNo;
-  String loanType;
-  String loanBranch;
-  double balance;
-  double intrest;
-  double overdueAmnt;
-  double overdueIntrest;
-  String suerty;
-  String module;
-  String schemeCode;
-  String loanbranchCode;
-  double intrestRate;
-  String loanDate;
-  String dueDate;
+  dynamic custId;
+  dynamic custName;
+  dynamic address;
+  dynamic brCode;
+  dynamic brName;
+  dynamic schCode;
+  dynamic schName;
+  dynamic module;
+  dynamic depBranch;
+  dynamic balance;
 
   AccountsLoanTable({
-    required this.accId,
-    required this.custId,
-    required this.name,
-    required this.address,
-    required this.custBranch,
-    required this.loanNo,
-    required this.loanType,
-    required this.loanBranch,
-    required this.balance,
-    required this.intrest,
-    required this.overdueAmnt,
-    required this.overdueIntrest,
-    required this.suerty,
-    required this.module,
-    required this.schemeCode,
-    required this.loanbranchCode,
-    required this.intrestRate,
-    required this.loanDate,
-    required this.dueDate,
+    this.custId,
+    this.custName,
+    this.address,
+    this.brCode,
+    this.brName,
+    this.schCode,
+    this.schName,
+    this.module,
+    this.depBranch,
+    this.balance,
   });
 
   factory AccountsLoanTable.fromJson(Map<String, dynamic> json) =>
       AccountsLoanTable(
-        accId: json["Acc_ID"] == null ? 0.0 : json["Acc_ID"].toDouble(),
-        custId: json["Cust_id"] ?? '',
-        name: json["Name"] ?? '',
-        address: json["Addrs"] ?? '',
-        custBranch: json["cust_br"] ?? '',
-        loanNo: json["Loan_no"] ?? '',
-        loanType: json["Loan_type"] ?? '',
-        loanBranch: json["Loan_br"] ?? '',
-        balance: json["Balance"] == null ? 0.0 : json["Balance"].toDouble(),
-        intrest: json["Interest"] == null ? 0.0 : json["Interest"].toDouble(),
-        overdueAmnt:
-            json["OverDue_Amt"] == null ? 0.0 : json["OverDue_Amt"].toDouble(),
-        overdueIntrest:
-            json["OverDue_Int"] == null ? 0.0 : json["OverDue_Int"].toDouble(),
-        suerty: json["Suerty"] ?? '',
-        module: json["Module"] ?? '',
-        schemeCode: json["Sch_code"] ?? '',
-        loanbranchCode: json["Ln_Br_Code"] ?? '',
-        intrestRate:
-            json["Int_Rate"] == null ? 0.0 : json["Int_Rate"].toDouble(),
-        loanDate: json["Loan_date"] ?? '',
-        dueDate: json["Due_date"] ?? '',
+        custId: json["Cust_ID"],
+        custName: json["Cust_Name"],
+        address: json["Address"],
+        brCode: json["Br_Code"],
+        brName: json["Br_Name"],
+        schCode: json["Sch_Code"],
+        schName: json["Sch_Name"],
+        module: json["Module"],
+        depBranch: json["Dep_Branch"],
+        balance: json["Balance"],
       );
 
   Map<String, dynamic> toJson() => {
-    "Acc_ID": accId,
-    "Cust_id": custId,
-    "Name": name,
-    "Addrs": address,
-    "cust_br": custBranch,
-    "Loan_no": loanNo,
-    "Loan_type": loanType,
-    "Loan_br": loanBranch,
-    "Balance": balance,
-    "Interest": intrest,
-    "OverDue_Amt": overdueAmnt,
-    "OverDue_Int": overdueIntrest,
-    "Suerty": suerty,
+    "Cust_ID": custId,
+    "Cust_Name": custName,
+    "Address": address,
+    "Br_Code": brCode,
+    "Br_Name": brName,
+    "Sch_Code": schCode,
+    "Sch_Name": schName,
     "Module": module,
-    "Sch_code": schemeCode,
-    "Ln_Br_Code": loanbranchCode,
-    "Int_Rate": intrestRate,
-    "Loan_date": loanDate,
-    "Due_date": dueDate,
+    "Dep_Branch": depBranch,
+    "Balance": balance,
   };
 }

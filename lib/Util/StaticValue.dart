@@ -18,6 +18,7 @@ class StaticValues {
   static String fullMpin = "fullMpin";
   static String mobileNo = "Mobile";
   static String ifsc = "Ifsc";
+  static String brName = "brName";
   static String accountNo = "AccountNumber";
   static String selectedAccNo = "SAccNo";
   static String cmpCodeKey = "cmpCodeKey";

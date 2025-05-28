@@ -552,7 +552,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
 
   void saveData(SignInModel signInModel) async {
     SharedPreferences preferences = StaticValues.sharedPreferences!;
-    print("CUST ID :: ${signInModel.data[0].toString()}");
+    successPrint("Signin Modal ==${signInModel.data.first.toJson()}");
     await preferences.setString(
       StaticValues.custID,
       signInModel.data[0].custId.toString(),
@@ -560,6 +560,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
     await preferences.setString(
       StaticValues.branchCode,
       signInModel.data[0].brCode.toString(),
+    );
+    await preferences.setString(
+      StaticValues.brName,
+      signInModel.data[0].brName.toString(),
     );
     // await preferences.setString(
     //   StaticValues.schemeCode,
@@ -905,7 +909,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                 _isLoading = true;
                 try {
                   response = await RestAPI().post(
-                    "${APis.loginUrl}",
+                    APis.loginUrl,
                     params: {
                       "Cmp_Code": cmpCode ?? "",
                       "User_Name": usernameCtrl.text,
@@ -936,16 +940,45 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         context,
                         response!["ProceedMessage"],
                       );
-                    } else if (response!["Data"][0]["OTP_Required"] == "Y") {
-                      // usernameCtrl.clear();
-                      // passCtrl.clear();
+                    } else {
+                      if (response!["Data"][0]["OTP_Required"] == "Y") {
+                        // usernameCtrl.clear();
+                        // passCtrl.clear();
 
-                      debugPrint(
-                        "OTP_Required = ${response!["Data"][0]["OTP_Required"]}",
-                      );
+                        debugPrint(
+                          "OTP_Required = ${response!["Data"][0]["OTP_Required"]}",
+                        );
 
-                      ///TODO  for otp while login
-                      _loginConfirmation("1");
+                        ///TODO  for otp while login
+                        _loginConfirmation("1");
+                      } else {
+                        saveData(
+                          SignInModel(
+                            proceedStatus: response!["ProceedStatus"],
+                            proceedMessage: response!["ProceedMessage"],
+                            data: [
+                              SignInData(
+                                proceedStatus:
+                                    response!["Data"][0]["Proceed_Status"],
+                                proceedMessage:
+                                    response!["Data"][0]["Proceed_Message"],
+                                cmpCode: response!["Data"][0]["Cmp_Code"],
+                                userId: response!["Data"][0]["User_ID"],
+                                custId: response!["Data"][0]["CustID"],
+                                userName: response!["Data"][0]["User_Name"],
+                                profileName:
+                                    response!["Data"][0]["ProfileName"],
+                                fullAddress:
+                                    response!["Data"][0]["Full_Address"],
+                                brCode: response!["Data"][0]["Br_Code"],
+                                brName: response!["Data"][0]["Br_Name"],
+                                customerType:
+                                    response!["Data"][0]["Customer_Type"],
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                     }
                   });
                 } on RestException catch (e) {
@@ -1157,8 +1190,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
         builder:
             (context, setState) => CustomRaisedButton(
               loadingValue: isLoading,
-              buttonText:
-                  isLoading ? CircularProgressIndicator() as String : "LOGIN",
+              buttonText: isLoading ? "Loading..." : "LOGIN",
               onPressed:
                   isLoading
                       ? () {}
@@ -1174,10 +1206,6 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             preferences.setString(
                               StaticValues.userPass,
                               passCtrl.text,
-                            );
-
-                            LoginModel login = LoginModel.fromJson(
-                              response as Map<String, dynamic>,
                             );
 
                             String? storedMpin = preferences.getString(
@@ -1218,7 +1246,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                           } else {
                             try {
                               debugPrint("OTP: $pass");
-
+                              setState(() {
+                                isLoading = true;
+                              });
                               response = await RestAPI().post(
                                 APis.loginOtpVerify,
                                 params: {
@@ -1236,17 +1266,16 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                               debugPrint("Response from OTP Verify: $response");
 
                               if (response!["ProceedStatus"] == "N") {
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                                print("LIJITH");
-                                debugPrint(
+                                successPrint(
                                   "ProceedMessage ::: ${response!["ProceedMessage"]}",
                                 );
                                 GlobalWidgets().showSnackBar(
                                   context,
                                   response!["ProceedMessage"],
                                 );
+                                setState(() {
+                                  isLoading = false;
+                                });
                               } else if (response!["Data"][0]["Proceed_Status"] ==
                                   "Y") {
                                 /// New user login then remove old user MPIN
@@ -1291,19 +1320,18 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                   response!["Data"][0]["Proceed_Message"],
                                 );
                                 saveData(signIn);
+                                setState(() {
+                                  isLoading = false;
+                                });
                                 // usernameCtrl.clear();
                                 // passCtrl.clear();
                                 print("LIJU");
                               }
                             } on RestException catch (e) {
                               setState(() {
-                                _isLoading = false;
+                                isLoading = false;
                               });
 
-                              // GlobalWidgets().showSnackBar(
-                              //   context,
-                              //   e.message["ProceedMessage"],
-                              // );
                               Fluttertoast.showToast(
                                 msg: e.message["ProceedMessage"],
                                 toastLength: Toast.LENGTH_SHORT,
