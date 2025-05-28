@@ -7,12 +7,20 @@ String transactionModelToJson(AccountsLoanModel data) =>
     json.encode(data.toJson());
 
 class AccountsLoanModel {
+  final String? proceedStatus;
+  final String? proceedMessage;
   List<AccountsLoanTable> data;
 
-  AccountsLoanModel({this.data = const []});
+  AccountsLoanModel({
+    required this.proceedStatus,
+    required this.proceedMessage,
+    required this.data,
+  });
 
   factory AccountsLoanModel.fromJson(Map<String, dynamic> json) =>
       AccountsLoanModel(
+        proceedStatus: json["ProceedStatus"],
+        proceedMessage: json["ProceedMessage"],
         data:
             json["Data"] == null
                 ? []
@@ -22,59 +30,93 @@ class AccountsLoanModel {
       );
 
   Map<String, dynamic> toJson() => {
+    "ProceedStatus": proceedStatus,
+    "ProceedMessage": proceedMessage,
     "Data": List<dynamic>.from(data.map((x) => x.toJson())),
   };
 }
 
 class AccountsLoanTable {
-  dynamic custId;
-  dynamic custName;
-  dynamic address;
-  dynamic brCode;
-  dynamic brName;
-  dynamic schCode;
-  dynamic schName;
-  dynamic module;
-  dynamic depBranch;
-  dynamic balance;
+  final int? accId;
+  final int? custId;
+  final String? custName;
+  final String? fullAddress;
+  final String? custBranch;
+  final String? loanNo;
+  final String? loanType;
+  final int? schCode;
+  final String? module;
+  final double? balance;
+  final double? interest;
+  final double? odAmount;
+  final double? odInterest;
+  final String? surety;
+  final int? loanBrCode;
+  final double? intRate;
+  final String? openDate;
+  final String? dueDate;
 
   AccountsLoanTable({
+    this.accId,
     this.custId,
     this.custName,
-    this.address,
-    this.brCode,
-    this.brName,
+    this.fullAddress,
+    this.custBranch,
+    this.loanNo,
+    this.loanType,
     this.schCode,
-    this.schName,
     this.module,
-    this.depBranch,
     this.balance,
+    this.interest,
+    this.odAmount,
+    this.odInterest,
+    this.surety,
+    this.loanBrCode,
+    this.intRate,
+    this.openDate,
+    this.dueDate,
   });
 
   factory AccountsLoanTable.fromJson(Map<String, dynamic> json) =>
       AccountsLoanTable(
+        accId: json["Acc_ID"],
         custId: json["Cust_ID"],
         custName: json["Cust_Name"],
-        address: json["Address"],
-        brCode: json["Br_Code"],
-        brName: json["Br_Name"],
+        fullAddress: json["Full_Address"],
+        custBranch: json["Cust_Branch"],
+        loanNo: json["LoanNo"],
+        loanType: json["Loan_Type"],
         schCode: json["Sch_Code"],
-        schName: json["Sch_Name"],
         module: json["Module"],
-        depBranch: json["Dep_Branch"],
         balance: json["Balance"],
+        interest: json["Interest"],
+        odAmount: json["ODAmount"],
+        odInterest: json["OD_Interest"],
+        surety: json["Surety"],
+        loanBrCode: json["Loan_BrCode"],
+        intRate: json["IntRate"],
+        openDate: json["OpenDate"],
+        dueDate: json["DueDate"],
       );
 
   Map<String, dynamic> toJson() => {
+    "Acc_ID": accId,
     "Cust_ID": custId,
     "Cust_Name": custName,
-    "Address": address,
-    "Br_Code": brCode,
-    "Br_Name": brName,
+    "Full_Address": fullAddress,
+    "Cust_Branch": custBranch,
+    "LoanNo": loanNo,
+    "Loan_Type": loanType,
     "Sch_Code": schCode,
-    "Sch_Name": schName,
     "Module": module,
-    "Dep_Branch": depBranch,
     "Balance": balance,
+    "Interest": interest,
+    "ODAmount": odAmount,
+    "OD_Interest": odInterest,
+    "Surety": surety,
+    "Loan_BrCode": loanBrCode,
+    "IntRate": intRate,
+    "OpenDate": openDate,
+    "DueDate": dueDate,
   };
 }

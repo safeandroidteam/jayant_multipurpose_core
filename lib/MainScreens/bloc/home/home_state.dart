@@ -4,6 +4,7 @@ import 'package:passbook_core_jayant/Account/Model/AccountsDepositModel.dart';
 import 'package:passbook_core_jayant/Account/Model/AccountsLoanModel.dart';
 import 'package:passbook_core_jayant/Passbook/Model/PassbookListModel.dart';
 
+import '../../../Account/Model/AccountsShareModel.dart';
 
 @immutable
 abstract class HomeState extends Equatable {}
@@ -36,6 +37,7 @@ class AccDepositErrorException extends HomeState {
   @override
   List<Object> get props => [error];
 }
+
 class AccLoanLoading extends HomeState {
   @override
   List<Object> get props => [];
@@ -58,19 +60,22 @@ class AccLoanResponseErrorException extends HomeState {
   @override
   List<Object> get props => [error];
 }
+
 class ShareLoading extends HomeState {
   @override
   List<Object> get props => [];
 }
 
 class ShareResponse extends HomeState {
-  final PassbookListModel shareListModel;
+  // final PassbookListModel shareListModel;
+  final AccountsShareModel accountsShareModel;
 
-  ShareResponse(this.shareListModel);
+  ShareResponse(this.accountsShareModel);
 
   @override
-  List<Object> get props => [shareListModel];
+  List<Object> get props => [accountsShareModel];
 }
+
 class ShareResponseErrorException extends HomeState {
   final error;
 
@@ -79,6 +84,7 @@ class ShareResponseErrorException extends HomeState {
   @override
   List<Object> get props => [error];
 }
+
 class ChittyLoading extends HomeState {
   @override
   List<Object> get props => [];
@@ -92,6 +98,7 @@ class ChittyResponse extends HomeState {
   @override
   List<Object> get props => [chittyListModel];
 }
+
 class ChittyResponseErrorException extends HomeState {
   final error;
 
@@ -100,9 +107,6 @@ class ChittyResponseErrorException extends HomeState {
   @override
   List<Object> get props => [error];
 }
-
-
-
 
 class PassLoanLoading extends HomeState {
   @override

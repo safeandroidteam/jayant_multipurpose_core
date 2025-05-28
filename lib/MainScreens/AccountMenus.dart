@@ -348,8 +348,9 @@ import 'package:passbook_core_jayant/Passbook/Model/PassbookListModel.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 import 'package:passbook_core_jayant/Util/StaticValue.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Account/Model/AccountsShareModel.dart';
 
 class AccountMenus extends StatefulWidget {
   const AccountMenus({super.key});
@@ -364,6 +365,7 @@ class _AccountMenusState extends State<AccountMenus>
   var userId = "", acc = "", name = "", address = "", cmpCode = "";
   List<AccountsLoanTable> _accLoanTableModel = [];
   List<AccountsDepositTable> _accDepositModel = [];
+  List<AccountsShareTable> _accShareModel = [];
   List<PassbookItem> _chittyModel = [], _shareModel = [];
   final double _pageViewHeight = 200;
   final HomeBloc _homeBloc = HomeBloc();
@@ -385,7 +387,7 @@ class _AccountMenusState extends State<AccountMenus>
     _homeBloc.add(AccDepositEvent(userId, cmpCode, "DEPOSIT"));
     _homeBloc.add(AccLoanEvent(userId, cmpCode, "LOAN"));
     _homeBloc.add(ChittyEvent(userId));
-    _homeBloc.add(ShareEvent(userId));
+    _homeBloc.add(AccShareEvent(userId, cmpCode, "SHARE"));
   }
 
   @override
@@ -443,7 +445,8 @@ class _AccountMenusState extends State<AccountMenus>
                         }
                         if (snapshot is ShareResponse) {
                           setState(() {
-                            _shareModel = snapshot.shareListModel.table;
+                            // _shareModel = snapshot.shareListModel.table;
+                            _accShareModel = snapshot.accountsShareModel.data;
                           });
                         }
                       },
@@ -626,30 +629,38 @@ class _AccountMenusState extends State<AccountMenus>
                                 current is ShareResponse ||
                                 current is ShareResponseErrorException,
                         builder: (context, snapshot) {
+                          customPrint(
+                            "Current state in account share: $snapshot",
+                          );
                           if (snapshot is ShareLoading) {
+                            customPrint("acc share circular");
                             return Center(child: CircularProgressIndicator());
-                          } else if (_shareModel.isNotEmpty) {
-                            return Center(
-                              child: Text("Please Contact the Branch"),
-                            );
-                            /*    return PageView.builder(
-                                  controller: PageController(viewportFraction: .95),
-                                  itemCount: _shareModel.length,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: ShareCardModel(
-                                        shareListTable: _shareModel[index],
-                                        onPressed: () {
-                                        */ /*  Navigator.of(context).push(MaterialPageRoute(
+                            // } else if (_shareModel.isNotEmpty) {
+                          } else if (_accShareModel.isNotEmpty) {
+                            // return Center(
+                            //   child: Text("Please Contact the Branch"),
+                            // );
+                            return PageView.builder(
+                              controller: PageController(viewportFraction: .95),
+                              // itemCount: _shareModel.length,
+                              itemCount: _accShareModel.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: ShareCardModel(
+                                    // accountsShare: _shareModel[index],
+                                    accountsShare: _accShareModel[index],
+                                    onPressed: () {
+                                      /*  Navigator.of(context).push(MaterialPageRoute(
                                               builder: (context) => PassbookDPSH(
                                                     type: "SH",
-                                                  )));*/ /*
-                                        },
-                                      ),
-                                    );
-                                  });*/
+                                                  )));*/
+                                    },
+                                  ),
+                                );
+                              },
+                            );
                           } else {
                             return Center(
                               child: TextView(

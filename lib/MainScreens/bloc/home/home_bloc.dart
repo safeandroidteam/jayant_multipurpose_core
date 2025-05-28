@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:passbook_core_jayant/Account/Model/AccountsDepositModel.dart';
 import 'package:passbook_core_jayant/Account/Model/AccountsLoanModel.dart';
+import 'package:passbook_core_jayant/Account/Model/AccountsShareModel.dart';
 import 'package:passbook_core_jayant/Passbook/Model/PassbookListModel.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
@@ -15,7 +16,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<AccDepositEvent>(_onAccDepositEvent);
     on<AccLoanEvent>(_onAccLoanEvent);
     on<ChittyEvent>(_onChittyEvent);
-    on<ShareEvent>(_onShareEvent);
+    on<AccShareEvent>(_onShareEvent);
   }
 
   Future<void> _onAccDepositEvent(
@@ -34,7 +35,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         APis.fetchAccDetailsbySection,
         params: accDepositBody,
       );
-      successPrint("Acc deposit deposit fetched");
+      successPrint("Acc deposit fetched");
       emit(AccDepositResponse(AccountsDepositModel.fromJson(response)));
       successPrint("Deposit Data in Account=$response");
     } on RestException catch (e) {
@@ -49,7 +50,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(AccLoanLoading());
     try {
-        Map<String, dynamic> accLoanBody = {
+      Map<String, dynamic> accLoanBody = {
         "Cmp_Code": event.cmpCode,
         "Cust_ID": event.custID,
         "Section": event.section,
@@ -58,7 +59,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         APis.fetchAccDetailsbySection,
         params: accLoanBody,
       );
-     
+      successPrint("Acc loan fetched");
       emit(AccLoanResponse(AccountsLoanModel.fromJson(response)));
       successPrint("Loan Data in Account=$response");
     } on RestException catch (e) {
@@ -86,13 +87,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onShareEvent(ShareEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onShareEvent(
+    AccShareEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(ShareLoading());
     try {
-      final response = await RestAPI().get(
-        "${APis.otherAccListInfo}${event.custID}&Acc_Type=SH",
+      Map<String, dynamic> accShareBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+        "Section": event.section,
+      };
+      final response = await RestAPI().post(
+        APis.fetchAccDetailsbySection,
+        params: accShareBody,
       );
-      emit(ShareResponse(PassbookListModel.fromJson(response)));
+      successPrint("Acc share fetched");
+      // emit(ShareResponse(PassbookListModel.fromJson(response)));
+      emit(ShareResponse(AccountsShareModel.fromJson(response)));
       successPrint("Share Data in Account=$response");
     } on RestException catch (e) {
       emit(ShareResponseErrorException(e));

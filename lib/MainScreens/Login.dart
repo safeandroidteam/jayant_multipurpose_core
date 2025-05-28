@@ -573,10 +573,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
     //   StaticValues.accNumber,
     //   signInModel.data![0].accNo.toString(),
     // );
-    // await preferences.setString(
-    //   StaticValues.ifsc,
-    //   signInModel.data![0].ifsc.toString(),
-    // );
+    await preferences.setString(
+      StaticValues.ifsc,
+      signInModel.data[0].ifscCode.toString(),
+    );
     await preferences.setString(
       StaticValues.userName,
       signInModel.data[0].userName.toString(),
@@ -589,10 +589,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       StaticValues.custType,
       signInModel.data[0].customerType.toString(),
     );
-    // await preferences.setString(
-    //   StaticValues.accountNo,
-    //   signInModel.data![0].accountNo.toString(),
-    // );
+    await preferences.setString(
+      StaticValues.accountNo,
+      signInModel.data[0].accNo.toString(),
+    );
     //  await preferences.setString(StaticValues.userPass, passCtrl.text);
     await preferences.setString(
       StaticValues.address,
@@ -941,12 +941,13 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         response!["ProceedMessage"],
                       );
                     } else {
-                      if (response!["Data"][0]["OTP_Required"] == "Y") {
+                      // if (response!["Data"][0]["OTP_Required"] == "Y") {
+                      if (response!["Data"][0]["Proceed_Status"] == "Y") {
                         // usernameCtrl.clear();
                         // passCtrl.clear();
 
                         debugPrint(
-                          "OTP_Required = ${response!["Data"][0]["OTP_Required"]}",
+                          "OTP_Required = ${response!["Data"][0]["OTP_Required"]}\nProceed_Status = ${response!["Data"][0]["Proceed_Status"]}",
                         );
 
                         ///TODO  for otp while login
@@ -964,16 +965,21 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                     response!["Data"][0]["Proceed_Message"],
                                 cmpCode: response!["Data"][0]["Cmp_Code"],
                                 userId: response!["Data"][0]["User_ID"],
-                                custId: response!["Data"][0]["CustID"],
                                 userName: response!["Data"][0]["User_Name"],
+                                custId: response!["Data"][0]["CustID"],
+                                accId: response!["Data"][0]["Acc_ID"],
+                                accNo: response!["Data"][0]["Acc_No"],
+                                custMobile: response!["Data"][0]["Cust_Mobile"],
                                 profileName:
                                     response!["Data"][0]["ProfileName"],
                                 fullAddress:
                                     response!["Data"][0]["Full_Address"],
                                 brCode: response!["Data"][0]["Br_Code"],
                                 brName: response!["Data"][0]["Br_Name"],
+                                ifscCode: response!["Data"][0]["IFSC_Code"],
                                 customerType:
                                     response!["Data"][0]["Customer_Type"],
+                                transDate: response!["Data"][0]["Trans_Date"],
                               ),
                             ],
                           ),
