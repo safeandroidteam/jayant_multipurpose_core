@@ -13,8 +13,6 @@ import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:passbook_core_jayant/Util/sim_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../Settings/SaveMpinModel.dart';
 import 'Login.dart';
 
 class RegisterUI extends StatefulWidget {
