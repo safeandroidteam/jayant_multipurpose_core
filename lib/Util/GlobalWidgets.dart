@@ -1689,7 +1689,7 @@ class SingleDigitTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? previousValue;
+    // String? previousValue;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -1729,6 +1729,18 @@ class SingleDigitTextField extends StatelessWidget {
             hintStyle: TextStyle(color: Colors.black, fontSize: 20),
           ),
           onChanged: (value) {
+            // if (value.length == 1) {
+            //   FocusScope.of(context).nextFocus();
+            //   if (onChanged != null) {
+            //     onChanged!(value);
+            //   }
+            //   previousValue = value;
+            // } else if (previousValue != null) {
+            //   FocusScope.of(context).previousFocus();
+            //   previousValue = null;
+            // } else if (value.isEmpty) {
+            //   FocusScope.of(context).previousFocus();
+            // }
             if (value.isNotEmpty && nextFocusNode != null) {
               nextFocusNode!.requestFocus();
               onChanged?.call(value);
