@@ -17,48 +17,51 @@ class PassbookListModel {
 }
 
 class PassbookItem {
-  final dynamic custId;
-  final String custName;
-  final String adds;
-  final String brName;
-  final String accNo;
-  final String schCode;
-  final String schName;
-  final String brCode;
-  final String depBranch;
-  final dynamic balance;
-  final String module;
+  dynamic custId;
+  String? custName;
+  String? adds;
+  String? brName;
+  String? accNo;
+  dynamic schCode;
+  String? schName;
+  dynamic brCode;
+  String? depBranch;
+  dynamic balance;
+  String? module;
   String? address;
+  dynamic accId;
 
   PassbookItem({
-    required this.custId,
-    required this.custName,
-    required this.adds,
-    required this.brName,
-    required this.accNo,
-    required this.schCode,
-    required this.schName,
-    required this.brCode,
-    required this.depBranch,
-    required this.balance,
-    required this.module,
+    this.custId,
+    this.custName,
+    this.adds,
+    this.brName,
+    this.accNo,
+    this.schCode,
+    this.schName,
+    this.brCode,
+    this.depBranch,
+    this.balance,
+    this.module,
     this.address,
+    this.accId,
   });
 
   factory PassbookItem.fromJson(Map<String, dynamic> json) {
     return PassbookItem(
-      custId: json['Cust_Id'],
+      custId: json['Cust_ID'],
       custName: json['Cust_Name'],
-      adds: json['Adds'],
+      adds: json['Address'],
       brName: json['Br_Name'],
       accNo: json['Acc_No'],
-      address: json["Adds"],
+      address: json["Address"],
       schCode: json['Sch_Code'],
       schName: json['Sch_Name'],
       brCode: json['Br_Code'],
       depBranch: json['Dep_Branch'],
       balance: json['Balance'],
       module: json['Module'],
+      accId: json["Acc_ID"],
     );
   }
 

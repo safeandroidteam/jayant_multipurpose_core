@@ -40,9 +40,11 @@ class AccShareEvent extends HomeEvent {
 }
 
 class ChittyEvent extends HomeEvent {
-  final String custID;
+   final String custID;
+  final String cmpCode;
+  final String section;
 
-  const ChittyEvent(this.custID);
+  const ChittyEvent(this.custID, this.cmpCode, this.section);
 
   @override
   List<Object> get props => [custID];

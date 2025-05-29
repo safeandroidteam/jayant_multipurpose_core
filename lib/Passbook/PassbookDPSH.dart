@@ -24,6 +24,8 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
   );
   late SharedPreferences preferences;
   var id;
+  var cmpCode;
+  var section;
   @override
   void initState() {
     loadDPShCard();
@@ -36,7 +38,24 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final passBookBloc = PassBookBloc.get(context);
       id = preferences.getString(StaticValues.custID) ?? "";
-      passBookBloc.add(PassBookDPSHCardEvent(id, widget.type ?? ""));
+      cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
+      alertPrint("widget type =${widget.type}");
+      switch (widget.type) {
+        case "DP":
+          section = "Deposit";
+          break;
+        case "SH":
+          section = "Share";
+          break;
+        case "LN":
+          section = "Loan";
+          break;
+        default:
+          section = "Chitty";
+      }
+
+      warningPrint("section =$section");
+      passBookBloc.add(PassBookDPSHCardEvent(id, cmpCode, section ?? ""));
     });
   }
 
@@ -81,14 +100,14 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                 return Center(child: CircularProgressIndicator());
               } else if (state is DPSHCardResponse) {
                 if (state.passbookItemList.isNotEmpty) {
+                  alertPrint(
+                    "accid =${state.passbookItemList.first.accId.toString()}",
+                  );
+
                   passBookBloc.add(
                     DepositShareTransactionEvent(
-                      id,
-                      state.passbookItemList.first.module.toLowerCase() ==
-                          "share",
-                      state.passbookItemList.first.accNo,
-                      state.passbookItemList.first.schCode,
-                      state.passbookItemList.first.brCode,
+                      cmpCode,
+                      state.passbookItemList.first.accId.toString(),
                     ),
                   );
                   return Column(
@@ -154,10 +173,12 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                             dense: true,
                                             isThreeLine: true,
                                             contentPadding: EdgeInsets.all(0.0),
-                                            title: TextView(text:
-                                              state
-                                                  .passbookItemList[index]
-                                                  .accNo,
+                                            title: TextView(
+                                              text:
+                                                  state
+                                                      .passbookItemList[index]
+                                                      .accNo ??
+                                                  "NA",
                                               color: Colors.white,
                                               size: 16.0,
                                               fontWeight: FontWeight.bold,
@@ -167,18 +188,22 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
-                                                TextView(text:
-                                                  state
-                                                      .passbookItemList[index]
-                                                      .schName,
+                                                TextView(
+                                                  text:
+                                                      state
+                                                          .passbookItemList[index]
+                                                          .schName ??
+                                                      "NA",
                                                   color: Colors.white,
                                                   textAlign: TextAlign.start,
                                                   size: 12.0,
                                                 ),
-                                                TextView(text:
-                                                  state
-                                                      .passbookItemList[index]
-                                                      .depBranch,
+                                                TextView(
+                                                  text:
+                                                      state
+                                                          .passbookItemList[index]
+                                                          .depBranch ??
+                                                      "NA",
                                                   color: Colors.white,
                                                   textAlign: TextAlign.start,
                                                   size: 12.0,
@@ -187,32 +212,16 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                                             ),
                                           ),
 
-                                          // Row(
-                                          //   mainAxisAlignment:
-                                          //       MainAxisAlignment.spaceBetween,
-                                          //   children: [
-                                          //     TextView(text:
-                                          //       "sch Code ${state.passbookItemList[index].schCode}",
-                                          //       color: Colors.white,
-                                          //       size: 15,
-                                          //     ),
-                                          //     TextView(text:
-                                          //       "Br Code ${state.passbookItemList[index].brCode}",
-                                          //       color: Colors.white,
-                                          //       size: 15,
-                                          //     ),
-                                          //   ],
-                                          // ),
-                                          TextView(text:
-                                            state
+                                          TextView(
+                                            text: state
                                                 .passbookItemList[index]
                                                 .balance
                                                 .toStringAsFixed(2),
                                             color: Colors.white,
                                             size: 28,
                                           ),
-                                          TextView(text:
-                                            "Available Balance",
+                                          TextView(
+                                            text: "Available Balance",
                                             color: Colors.white,
                                             size: 13,
                                           ),
@@ -235,12 +244,8 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
 
                             passBookBloc.add(
                               DepositShareTransactionEvent(
-                                preferences.getString(StaticValues.custID) ??
-                                    "",
-                                widget.type!.toLowerCase() == 'share',
-                                state.passbookItemList[index].accNo,
-                                state.passbookItemList[index].schCode,
-                                state.passbookItemList[index].brCode,
+                                cmpCode,
+                                state.passbookItemList[index].accId.toString(),
                               ),
                             );
                           },
@@ -275,8 +280,9 @@ class _PassbookDPSHState extends State<PassbookDPSH> {
                 return Stack(
                   children: [
                     Center(
-                      child: TextView(text:
-                        "You don't have a ${widget.type == "DP" ? 'deposit' : 'share'} in this bank",
+                      child: TextView(
+                        text:
+                            "You don't have a ${widget.type == "DP" ? 'deposit' : 'share'} in this bank",
                       ),
                     ),
                   ],

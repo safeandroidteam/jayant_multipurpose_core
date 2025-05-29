@@ -75,8 +75,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(ChittyLoading());
     customPrint("chitty Loading");
     try {
-      final response = await RestAPI().get(
-        "${APis.otherAccListInfo}${event.custID}&Acc_Type=MMBS",
+      Map<String, dynamic> accChittyBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+        "Section": event.section,
+      };
+      final response = await RestAPI().post(
+        APis.fetchAccDetailsbySection,
+        params: accChittyBody,
       );
       customPrint("response=$response");
       emit(ChittyResponse(PassbookListModel.fromJson(response)));

@@ -1,5 +1,6 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/Account/Model/AccountsDepositModel.dart';
 import 'package:passbook_core_jayant/Account/Model/AccountsLoanModel.dart';
 import 'package:passbook_core_jayant/Passbook/Model/PassbookListModel.dart';
@@ -56,14 +57,14 @@ class DepositCardModel extends StatelessWidget {
             Column(
               children: [
                 TextView(
-                  text: accountsDeposit!.accType!,
+                  text: accountsDeposit!.accType ?? "NA",
                   size: 16.0,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
                 ),
                 SizedBox(height: 5.0),
                 TextView(
-                  text: accountsDeposit!.depBranch!,
+                  text: accountsDeposit!.depBranch ?? "NA",
                   size: 16.0,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -75,7 +76,7 @@ class DepositCardModel extends StatelessWidget {
               child: TextView(
                 text:
                     //  accountsDeposit.accNo.replaceAllMapped(RegExp(r".{5}"), (match) => "${match.group(0)} "),
-                    accountsDeposit!.accNo!,
+                    accountsDeposit!.accNo ?? "NA",
                 size: 22,
                 color: Colors.white54,
               ),
@@ -83,7 +84,8 @@ class DepositCardModel extends StatelessWidget {
             Align(
               alignment: Alignment.bottomRight,
               child: TextView(
-                text: "${StaticValues.rupeeSymbol}${accountsDeposit!.balance}",
+                text:
+                    "${StaticValues.rupeeSymbol}${accountsDeposit!.balance ?? "NA"}",
                 color: Colors.white,
                 size: 20.0,
                 fontWeight: FontWeight.bold,
@@ -107,7 +109,7 @@ class DepositCardModel extends StatelessWidget {
                         ),
                         SizedBox(height: 5.0),
                         TextView(
-                          text: accountsDeposit!.nominee ?? "",
+                          text: accountsDeposit!.nominee ?? "NA",
                           textAlign: TextAlign.center,
                           color: Colors.white,
                         ),
@@ -127,7 +129,7 @@ class DepositCardModel extends StatelessWidget {
                         ),
                         SizedBox(height: 5.0),
                         TextView(
-                          text: accountsDeposit!.dueDate!,
+                          text: accountsDeposit!.dueDate ?? "NA",
                           textAlign: TextAlign.center,
                           color: Colors.white,
                         ),
@@ -150,8 +152,9 @@ class LoanCardModel extends StatelessWidget {
 
   const LoanCardModel({super.key, this.accountsLoanTable, this.onPressed});
 
-  List<String> getDate(DateTime createdAt) {
-    String s = formatDate(createdAt, [M, '\n', dd, '\n', yyyy]).toString();
+  List<String> getDate(String rawDate) {
+    final DateTime createdAt = DateFormat("dd/MM/yyyy").parse(rawDate);
+    String s = formatDate(createdAt, [M, '\n', dd, '\n', yyyy]);
     var sp = s.split("\n");
     print("SP:: $sp");
     return sp;
@@ -159,17 +162,7 @@ class LoanCardModel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> dateSplit = getDate(
-      // DateFormat().add_yMd().parse(accountsLoanTable!.dueDate!),
-      DateTime.parse(accountsLoanTable!.dueDate!),
-    );
-
-    // String dateSplit = DateFormat(
-    //   'dd-MM-yyyy',
-    // ).format(DateTime.parse(accountsLoanTable!.dueDate!));
-
-    // String text = accountsLoanTable!.dueDate!;
-    // List<String> result = text.split('/');
+    List<String> dateSplit = getDate(accountsLoanTable!.dueDate!);
 
     return InkWell(
       borderRadius: BorderRadius.circular(15.0),
@@ -208,7 +201,10 @@ class LoanCardModel extends StatelessWidget {
                         child: CustomText(
                           children: [
                             TextSpan(
-                              text: "${dateSplit[0]}\n",
+                              text:
+                                  dateSplit.isNotEmpty
+                                      ? "${dateSplit[0]}\n"
+                                      : "NA",
                               // text: "${result[0]}\n",
                               style: TextStyle(
                                 fontSize: 16.0,
@@ -216,7 +212,10 @@ class LoanCardModel extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: "${dateSplit[1]}\n",
+                              text:
+                                  dateSplit.isNotEmpty
+                                      ? "${dateSplit[1]}\n"
+                                      : "NA",
                               // text: "${result[1]}\n",
                               style: TextStyle(
                                 fontSize: 24.0,
@@ -225,7 +224,10 @@ class LoanCardModel extends StatelessWidget {
                               ),
                             ),
                             TextSpan(
-                              text: "${dateSplit[2]}\n",
+                              text:
+                                  dateSplit.isNotEmpty
+                                      ? "${dateSplit[2]}\n"
+                                      : "NA",
                               // text: "${result[2]}\n",
                               style: TextStyle(
                                 fontSize: 14.0,
@@ -287,7 +289,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: accountsLoanTable.balance!.toStringAsFixed(2),
+                text: accountsLoanTable.balance!.toStringAsFixed(2) ?? "NA",
                 size: 16.0,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -310,7 +312,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: "${accountsLoanTable.odAmount}",
+                text: "${accountsLoanTable.odAmount ?? "NA"}",
                 size: valueSize,
                 color: Colors.white,
               ),
@@ -332,7 +334,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: "${accountsLoanTable.odInterest}",
+                text: "${accountsLoanTable.odInterest ?? "NA"}",
                 size: valueSize,
                 color: Colors.white,
               ),
@@ -345,7 +347,8 @@ class LoanCardModel extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: spaceBetween),
                 child: TextView(
-                  text: "Interest @${accountsLoanTable.intRate}%",
+                  text:
+                      "Interest @${accountsLoanTable.intRate.toString().isNotEmpty ? "${accountsLoanTable.intRate}%" : " NA"}",
                   size: keySize,
                   color: Colors.white,
                 ),
@@ -354,7 +357,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: "${accountsLoanTable.interest}",
+                text: "${accountsLoanTable.interest ?? "NA"}",
                 size: valueSize,
                 color: Colors.white,
               ),
@@ -376,7 +379,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: accountsLoanTable.loanNo!,
+                text: accountsLoanTable.loanNo ?? "NA",
                 size: valueSize,
                 color: Colors.white,
               ),
@@ -398,7 +401,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: accountsLoanTable.loanType!,
+                text: accountsLoanTable.loanType ?? "NA",
                 color: Colors.white,
                 size: valueSize,
               ),
@@ -420,7 +423,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: accountsLoanTable.loanBrCode.toString(),
+                text: accountsLoanTable.loanBrName ?? "NA",
                 size: valueSize,
                 color: Colors.white,
               ),
@@ -442,7 +445,7 @@ class LoanCardModel extends StatelessWidget {
             TableCell(child: TextView(text: ":", color: Colors.white)),
             TableCell(
               child: TextView(
-                text: accountsLoanTable.surety!,
+                text: accountsLoanTable.surety ?? "NA",
                 color: Colors.white,
                 size: valueSize,
               ),
@@ -479,7 +482,10 @@ class ChittyCardModel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextView(
-                  text: chittyListTable!.schName,
+                  text:
+                      chittyListTable!.schName!.isNotEmpty
+                          ? chittyListTable!.schName!
+                          : "NA",
                   size: 16.0,
                   color: Colors.white,
                   textAlign: TextAlign.start,
@@ -487,7 +493,10 @@ class ChittyCardModel extends StatelessWidget {
                 ),
                 SizedBox(height: 5.0),
                 TextView(
-                  text: chittyListTable!.depBranch,
+                  text:
+                      chittyListTable!.depBranch!.isNotEmpty
+                          ? chittyListTable!.depBranch!
+                          : "NA",
                   size: 16.0,
                   color: Colors.white,
                   textAlign: TextAlign.start,
@@ -499,8 +508,9 @@ class ChittyCardModel extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextView(
                 text:
-                    //   chittyListTable.accNo.replaceAllMapped(RegExp(r".{5}"), (match) => "${match.group(0)} "),
-                    chittyListTable!.accNo,
+                    chittyListTable!.accNo!.isNotEmpty
+                        ? chittyListTable!.accNo!
+                        : "NA",
                 size: 22,
                 color: Colors.white54,
               ),
@@ -547,7 +557,7 @@ class ShareCardModel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextView(
-                  text: accountsShare!.schName!,
+                  text: accountsShare!.schName ?? "NA",
                   size: 16.0,
                   color: Colors.white,
                   textAlign: TextAlign.start,
@@ -555,7 +565,7 @@ class ShareCardModel extends StatelessWidget {
                 ),
                 SizedBox(height: 5.0),
                 TextView(
-                  text: accountsShare!.shareBranch!,
+                  text: accountsShare!.shareBranch ?? "NA",
                   size: 16.0,
                   color: Colors.white,
                   textAlign: TextAlign.start,
@@ -568,7 +578,7 @@ class ShareCardModel extends StatelessWidget {
               child: TextView(
                 text:
                     //  shareListTable.accNo.replaceAllMapped(RegExp(r".{5}"), (match) => "${match.group(0)} "),
-                    accountsShare!.accNo!,
+                    accountsShare!.accNo ?? "NA",
                 size: 22,
                 color: Colors.white54,
               ),

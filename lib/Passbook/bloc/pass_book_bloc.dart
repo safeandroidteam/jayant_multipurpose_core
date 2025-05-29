@@ -27,26 +27,34 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
     emit(DPSHCardLoading());
 
     try {
-      final response = await RestAPI().get(
-        "${APis.otherAccListInfo}${event.custID}&Acc_Type=${event.widgetType}",
-      );
+      Map<String, dynamic> pasbbokDPSHBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+        "Section": event.section,
+      };
+      alertPrint("passbook dpsh card boay =$pasbbokDPSHBody");
 
+      final response = await RestAPI().post(
+        APis.fetchAccDetailsbySection,
+        params: pasbbokDPSHBody,
+      );
       final dpshCardList =
-          (response["Table"] as List<dynamic>)
+          (response["Data"] as List<dynamic>)
               .map(
                 (e) => PassbookItem(
-                  custId: e['Cust_Id'],
-                  custName: e['Cust_Name'],
-                  adds: e['Adds'],
-                  brName: e['Br_Name'],
-                  accNo: e['Acc_No'],
-                  address: e["Adds"],
-                  schCode: e['Sch_Code'],
-                  schName: e['Sch_Name'],
-                  brCode: e['Br_Code'],
-                  depBranch: e['Dep_Branch'],
-                  balance: e['Balance'],
-                  module: e['Module'],
+                  custId: e['Cust_ID'] ?? "",
+                  custName: e['Cust_Name'] ?? "",
+                  adds: e['Full_Address'] ?? "",
+                  brName: e['Br_Name'] ?? "",
+                  accNo: e['ACC_No'] ?? "",
+                  address: e["Full_Address"] ?? "",
+                  schCode: e['Sch_Code'] ?? "",
+                  schName: e['Sch_Name'] ?? "",
+                  brCode: e['Br_Code'] ?? "",
+                  depBranch: e['Dep_Branch'] ?? "",
+                  balance: e['Balance'] ?? "",
+                  module: e['Module'] ?? "",
+                  accId: e["Acc_ID"] ?? "",
                 ),
               )
               .toList();
@@ -56,7 +64,7 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
       successPrint("DPSH Card Length =${dpshCardList.length}");
     } on RestException catch (e) {
       emit(DPSHCardErrorException(e));
-      errorPrint("DPSHCardResponse Error=$e");
+      errorPrint("DPSHCardResponse Error=");
     }
   }
 
@@ -67,32 +75,28 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
     emit(DepositShareTransactionLoading());
 
     try {
-      final response = await RestAPI().get(
-        "${event.isShare ? APis.getShareTransaction : APis.getDepositTransaction}${event.custID}&Acc_no=${event.accNo}&Sch_code=${event.schCode}&Br_code=${event.brCode}&Frm_Date=${""}",
+      Map<String, dynamic> transactionBody = {
+        "Cmp_Code": event.cmpCode,
+        "Acc_ID": event.accid,
+      };
+      final response = await RestAPI().post(
+        APis.fetchTransactions,
+        params: transactionBody,
       );
-      alertPrint("requestedData====requestedData");
-      alertPrint("isShare====${event.isShare}");
-      alertPrint("custID====${event.custID}");
-      alertPrint("accNo====${event.accNo}");
-      alertPrint("accNo====${event.brCode}");
+
+      alertPrint("requestedData====$transactionBody");
       final transactionList =
-          (response["Table"] as List<dynamic>)
+          (response["Data"] as List<dynamic>)
               .map(
                 (e) => TransactionItem(
-                  id: e['ID'],
-                  accNo: e['Acc_No'],
-                  schCode: e['Sch_Code'],
-                  brCode: e['Br_Code'],
-                  trDate: DateTime.parse(e['Tr_Date']),
-                  tranType: e['Tran_Type'],
-                  display: e['Display'],
-                  amount: e['Amount'],
-                  narration: e['Narration'],
-                  balance: e['balance'],
-                  seqNo: e['Seq_No'],
-                  show: e['Show'],
-                  dailyBalance: e['DailyBalance'],
-                  tranBalance: e['TranBalance'],
+                  id: e["Tran_ID"],
+                  trDate: e["Tr_Date"],
+                  caption: e["Caption"],
+                  amount: e["Amount"],
+                  tranType: e["Tran_Type"],
+                  balance: e["Bal_Amt"],
+                  balType: e["Bal_Type"],
+                  remarks: e["Remarks"],
                 ),
               )
               .toList();
@@ -121,32 +125,50 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
     emit(ChittyLoanLoading());
 
     try {
-      final response = await RestAPI().get(
-        "${APis.otherAccListInfo}${event.custID}&Acc_Type=${event.type ?? "LN"}",
+      Map<String, dynamic> chittyLoanBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": 2,
+        "Section": event.section,
+      };
+      alertPrint("passbook chitty Loan card boay =$chittyLoanBody");
+
+      final response = await RestAPI().post(
+        APis.fetchAccDetailsbySection,
+        params: chittyLoanBody,
       );
 
       final chittyLoanList =
-          (response["Table"] as List<dynamic>)
+          (response["Data"] as List<dynamic>)
               .map(
                 (e) => PassbookItem(
-                  custId: e['Cust_Id'],
-                  custName: e['Cust_Name'],
-                  adds: e['Adds'],
-                  brName: e['Br_Name'],
-                  accNo: e['Acc_No'],
-                  address: e["Adds"],
-                  schCode: e['Sch_Code'],
-                  schName: e['Sch_Name'],
-                  brCode: e['Br_Code'],
-                  depBranch: e['Dep_Branch'],
-                  balance: e['Balance'],
-                  module: e['Module'],
+                  custId: e['Cust_ID'] ?? "",
+                  custName: e['Cust_Name'] ?? "",
+                  adds: e['Full_Address'] ?? "",
+                  brName: e['Br_Name'] ?? "",
+                  accNo:
+                      event.section.toLowerCase() == "loan"
+                          ? e['LoanNo']
+                          : e['ACC_No'] ?? "",
+                  address: e["Full_Address"] ?? "",
+                  schCode: e['Sch_Code'] ?? "",
+                  schName:
+                      event.section.toLowerCase() == "loan"
+                          ? e['Loan_Type']
+                          : e['Sch_Name'] ?? "",
+                  brCode: e['Br_Code'] ?? "",
+                  depBranch:
+                      event.section.toLowerCase() == "loan"
+                          ? e['Loan_BrName']
+                          : e['MSS_Branch'] ?? "",
+                  balance: e['Balance'] ?? "",
+                  module: e['Module'] ?? "",
+                  accId: e["Acc_ID"] ?? "",
                 ),
               )
               .toList();
       emit(ChittyLoanResponse(chittyLoanList));
 
-      successPrint("ChittyLoanResponse =$response");
+      successPrint("Chitty LoanResponse =$response");
       successPrint("CHitty Loan Length =${chittyLoanList.length}");
     } on RestException catch (e) {
       emit(ChittyLoanErrorException(e));
@@ -169,7 +191,7 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
           (response["Table"] as List<dynamic>)
               .map(
                 (e) => LoanTransTable(
-                   trdate: e["TRDATE"],
+                  trdate: e["TRDATE"],
                   amount: e["AMOUNT"],
                   drcr: e["DRCR"],
                   interest: e["INTEREST"],

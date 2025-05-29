@@ -55,6 +55,7 @@ class AccountsLoanTable {
   final double? intRate;
   final String? openDate;
   final String? dueDate;
+  final String? loanBrName;
 
   AccountsLoanTable({
     this.accId,
@@ -75,6 +76,7 @@ class AccountsLoanTable {
     this.intRate,
     this.openDate,
     this.dueDate,
+    this.loanBrName
   });
 
   factory AccountsLoanTable.fromJson(Map<String, dynamic> json) =>
@@ -97,6 +99,7 @@ class AccountsLoanTable {
         intRate: json["IntRate"],
         openDate: json["OpenDate"],
         dueDate: json["DueDate"],
+        loanBrName:json["Loan_BrName"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -118,5 +121,6 @@ class AccountsLoanTable {
     "IntRate": intRate,
     "OpenDate": openDate,
     "DueDate": dueDate,
+    "Loan_BrName":loanBrName
   };
 }

@@ -208,8 +208,8 @@ class APis {
       "$_superLink/Validate_UserLoginOTPVerification";
   static String mobileGetVersion = "$_superLink/FetchMobAppVersion";
   //Account section
-  static String fetchAccDetailsbySection =
-      "$_superLink/Fetch_AccountDetailsBySection";
+  static String fetchAccDetailsbySection ="$_superLink/Fetch_AccountDetailsBySection";
+  static String fetchTransactions ="$_superLink/Fetch_TransactionHistory";
 
   ///OLD
   static String generateRefID(String key) =>

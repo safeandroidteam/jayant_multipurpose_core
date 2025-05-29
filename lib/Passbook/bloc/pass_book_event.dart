@@ -9,31 +9,27 @@ abstract class PassBookEvent extends Equatable {
 
 class PassBookDPSHCardEvent extends PassBookEvent {
   final String custID;
-  final String widgetType;
+  final String cmpCode;
+  final String section;
 
-  const PassBookDPSHCardEvent(this.custID, this.widgetType);
+  const PassBookDPSHCardEvent(this.custID, this.cmpCode, this.section);
 
   @override
   List<Object> get props => [custID];
 }
 
 class DepositShareTransactionEvent extends PassBookEvent {
-  final bool isShare;
-  final String custID;
-  final String accNo;
-  final String schCode;
-  final String brCode;
+    final String cmpCode;
+  final String accid;
 
   const DepositShareTransactionEvent(
-    this.custID,
-    this.isShare,
-    this.accNo,
-    this.schCode,
-    this.brCode,
+    this.cmpCode,
+    this.accid,
+
   );
 
   @override
-  List<Object> get props => [custID, isShare, accNo, schCode, brCode];
+  List<Object> get props => [cmpCode, accid ];
 }
 
 class CurrentPageChanged extends PassBookEvent {
@@ -46,13 +42,13 @@ class CurrentPageChanged extends PassBookEvent {
 }
 
 class ChittyLoanEvent extends PassBookEvent {
-  final String custID;
-  final String type;
-
-  const ChittyLoanEvent(this.custID, this.type);
+   final String custID;
+  final String cmpCode;
+  final String section;
+  const ChittyLoanEvent(this.custID, this.cmpCode,this.section);
 
   @override
-  List<Object> get props => [custID, type];
+  List<Object> get props => [custID, cmpCode,section];
 }
 
 class LoanTransEvent extends PassBookEvent {

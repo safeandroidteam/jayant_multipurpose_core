@@ -386,7 +386,7 @@ class _AccountMenusState extends State<AccountMenus>
 
     _homeBloc.add(AccDepositEvent(userId, cmpCode, "DEPOSIT"));
     _homeBloc.add(AccLoanEvent(userId, cmpCode, "LOAN"));
-    _homeBloc.add(ChittyEvent(userId));
+    _homeBloc.add(ChittyEvent(userId,cmpCode,"Chitty"));
     _homeBloc.add(AccShareEvent(userId, cmpCode, "SHARE"));
   }
 

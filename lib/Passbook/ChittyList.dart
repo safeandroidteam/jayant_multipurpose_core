@@ -116,7 +116,7 @@ class _ChittyListState extends State<ChittyList> {
                                           isThreeLine: true,
                                           contentPadding: EdgeInsets.all(0.0),
                                           title: TextView(text:
-                                            transactionList![index].accNo,
+                                            transactionList![index].accNo??"",
                                             color: Colors.white,
                                             size: 16.0,
                                             fontWeight: FontWeight.bold,
@@ -127,14 +127,14 @@ class _ChittyListState extends State<ChittyList> {
                                                 CrossAxisAlignment.start,
                                             children: <Widget>[
                                               TextView(text:
-                                                transactionList![index].schName,
+                                                transactionList![index].schName??"",
                                                 color: Colors.white,
                                                 textAlign: TextAlign.start,
                                                 size: 12.0,
                                               ),
                                               TextView(text:
                                                 transactionList![index]
-                                                    .depBranch,
+                                                    .depBranch??"",
                                                 color: Colors.white,
                                                 textAlign: TextAlign.start,
                                                 size: 12.0,

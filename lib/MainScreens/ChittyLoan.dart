@@ -23,7 +23,9 @@ class ChittyLoan extends StatefulWidget {
 
 class _ChittyLoanState extends State<ChittyLoan> {
   bool? isShare; // Initialize with default value
-
+  var id;
+  var cmpCode;
+  var section;
   static const double spaceBetween = 3.0;
   late SharedPreferences preferences;
   loadDPShCard() async {
@@ -31,8 +33,26 @@ class _ChittyLoanState extends State<ChittyLoan> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final passBookBloc = PassBookBloc.get(context);
-      var id = preferences.getString(StaticValues.custID) ?? "";
-      passBookBloc.add(ChittyLoanEvent(id, widget.type ?? ""));
+
+      id = preferences.getString(StaticValues.custID) ?? "";
+      cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
+      alertPrint("widget type =${widget.type}");
+      switch (widget.type) {
+        case "DP":
+          section = "Deposit";
+          break;
+        case "SH":
+          section = "Share";
+          break;
+        case "LN":
+          section = "Loan";
+          break;
+        default:
+          section = "Chitty";
+      }
+
+      warningPrint("section =$section");
+      passBookBloc.add(ChittyLoanEvent(id, cmpCode, section ?? ""));
     });
   }
 
@@ -68,16 +88,16 @@ class _ChittyLoanState extends State<ChittyLoan> {
                         padding: const EdgeInsets.symmetric(
                           vertical: spaceBetween,
                         ),
-                        child: TextView(text:
-                          "Balance ${StaticValues.rupeeSymbol}",
+                        child: TextView(
+                          text: "Balance ${StaticValues.rupeeSymbol}",
                           size: 12.0,
                         ),
                       ),
                     ),
-                    TableCell(child: TextView(text:":")),
+                    TableCell(child: TextView(text: ":")),
                     TableCell(
-                      child: TextView(text:
-                        passbookTable.balance!.toStringAsFixed(2),
+                      child: TextView(
+                        text: passbookTable.balance!.toStringAsFixed(2),
                         size: 16.0,
                         fontWeight: FontWeight.bold,
                       ),
@@ -91,11 +111,16 @@ class _ChittyLoanState extends State<ChittyLoan> {
                         padding: const EdgeInsets.symmetric(
                           vertical: spaceBetween,
                         ),
-                        child: TextView(text:"Account Number", size: 12.0),
+                        child: TextView(text: "Account Number", size: 12.0),
                       ),
                     ),
-                    TableCell(child: TextView(text:":")),
-                    TableCell(child: TextView(text:passbookTable.accNo, size: 12.0)),
+                    TableCell(child: TextView(text: ":")),
+                    TableCell(
+                      child: TextView(
+                        text: passbookTable.accNo ?? "",
+                        size: 12.0,
+                      ),
+                    ),
                   ],
                 ),
                 TableRow(
@@ -105,19 +130,23 @@ class _ChittyLoanState extends State<ChittyLoan> {
                         padding: const EdgeInsets.symmetric(
                           vertical: spaceBetween,
                         ),
-                        child: TextView(text:
-                          isShare == null
-                              ? "Loan"
-                              : isShare == true
-                              ? "Share Type"
-                              : "Chitty Type",
+                        child: TextView(
+                          text:
+                              isShare == null
+                                  ? "Loan"
+                                  : isShare == true
+                                  ? "Share Type"
+                                  : "Chitty Type",
                           size: 12.0,
                         ),
                       ),
                     ),
-                    TableCell(child: TextView(text:":")),
+                    TableCell(child: TextView(text: ":")),
                     TableCell(
-                      child: TextView(text:passbookTable.schName, size: 12.0),
+                      child: TextView(
+                        text: passbookTable.schName ?? "",
+                        size: 12.0,
+                      ),
                     ),
                   ],
                 ),
@@ -126,12 +155,15 @@ class _ChittyLoanState extends State<ChittyLoan> {
                     TableCell(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: spaceBetween),
-                        child: TextView(text:"Account Branch", size: 12.0),
+                        child: TextView(text: "Account Branch", size: 12.0),
                       ),
                     ),
-                    TableCell(child: TextView(text:":")),
+                    TableCell(child: TextView(text: ":")),
                     TableCell(
-                      child: TextView(text:passbookTable.depBranch, size: 12.0),
+                      child: TextView(
+                        text: passbookTable.depBranch ?? "",
+                        size: 12.0,
+                      ),
                     ),
                   ],
                 ),
@@ -161,11 +193,11 @@ class _ChittyLoanState extends State<ChittyLoan> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100.0),
                   ),
-                  color: Theme.of(context).dividerColor,
+                  color: Theme.of(context).primaryColor,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextView(text:
-                      "view details",
+                    child: TextView(
+                      text: "view details",
                       size: 12.0,
                       color: Colors.white,
                     ),
@@ -204,7 +236,7 @@ class _ChittyLoanState extends State<ChittyLoan> {
             (previous, current) =>
                 current is ChittyLoanLoading ||
                 current is ChittyLoanResponse ||
-                current is ChittyLoanErrorException ,
+                current is ChittyLoanErrorException,
 
         builder: (context, state) {
           if (state is PassBookBlocInitial) {
@@ -221,13 +253,18 @@ class _ChittyLoanState extends State<ChittyLoan> {
               return Stack(
                 children: [
                   Center(
-                    child: TextView(text:
-                      "You don't have a ${widget.type == "" ? 'loan' : 'chitty'} in this bank",
+                    child: TextView(
+                      text:
+                          "You don't have a ${widget.type == "" ? 'loan' : 'chitty'} in this bank",
                     ),
                   ),
                 ],
               );
             } else {
+              var address = state.passbookItemList[0].address ?? "";
+              var clenaedAddress =
+                  address.replaceAll(RegExp(r'\s+'), ' ').trim();
+              successPrint("clean address =$address");
               return SingleChildScrollView(
                 child: SafeArea(
                   child: Padding(
@@ -239,19 +276,15 @@ class _ChittyLoanState extends State<ChittyLoan> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              TextView(text:
-                                state.passbookItemList[0].custName,
+                              TextView(
+                                text: state.passbookItemList[0].custName ?? "",
                                 size: 16.0,
                               ),
-                              Text(
-                                state.passbookItemList[0].address!
-                                    .split(",")
-                                    .join(","),
-                              ),
+                              Text(clenaedAddress),
                             ],
                           ),
                           subtitle: Text(
-                            state.passbookItemList[0].brName,
+                            state.passbookItemList[0].brName ?? "",
                             style: TextStyle(fontSize: 12.0),
                           ),
                         ),
@@ -273,14 +306,17 @@ class _ChittyLoanState extends State<ChittyLoan> {
             }
           } else if (state is ChittyLoanErrorException) {
             return Stack(
-              children: [Center(child: TextView(text:"Error :${state.error}"))],
+              children: [
+                Center(child: TextView(text: "Error :${state.error}")),
+              ],
             );
           } else {
             return Stack(
               children: [
                 Center(
-                  child: TextView(text:
-                    "You don't have a ${widget.type == "LN" ? 'loan' : 'chitty'} in this bank",
+                  child: TextView(
+                    text:
+                        "You don't have a ${widget.type == "LN" ? 'loan' : 'chitty'} in this bank",
                   ),
                 ),
               ],

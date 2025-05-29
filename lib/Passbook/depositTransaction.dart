@@ -33,32 +33,12 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
       "deposit transaction passed data =${widget.depositTransaction.toJson()}",
     );
 
-    isShare = widget.depositTransaction.module.toLowerCase() == "share";
+    isShare = widget.depositTransaction.module?.toLowerCase() == "share";
     if (!hasFetchedTransactions) {
       // getTransactions(isInitial: true);
       hasFetchedTransactions = true;
     }
     super.initState();
-  }
-
-  getTransactions({bool isInitial = false}) async {
-    preferences = await SharedPreferences.getInstance();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final passBookBloc = PassBookBloc.get(context);
-      var id = preferences.getString(StaticValues.custID) ?? "";
-
-      passBookBloc.add(
-        DepositShareTransactionEvent(
-          id,
-          isShare,
-          widget.depositTransaction.accNo,
-          widget.depositTransaction.schCode,
-          widget.depositTransaction.brCode,
-        ),
-      );
-      hasFetchedTransactions = true;
-    });
   }
 
   @override
@@ -95,8 +75,8 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                       TableRow(
                         children: [
                           TableCell(
-                            child: TextView(text:
-                              "Date",
+                            child: TextView(
+                              text: "Date",
                               fontWeight: FontWeight.bold,
                               textAlign: TextAlign.start,
                               size: 12,
@@ -104,8 +84,8 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                           ),
                           isShare
                               ? TableCell(
-                                child: TextView(text:
-                                  "Type",
+                                child: TextView(
+                                  text: "Type",
                                   fontWeight: FontWeight.bold,
                                   textAlign: TextAlign.center,
                                   size: 12,
@@ -154,8 +134,8 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                         ),
                                       ],
                                     )
-                                    : TextView(text:
-                                      "Balance",
+                                    : TextView(
+                                      text: "Balance",
                                       fontWeight: FontWeight.bold,
                                       textAlign: TextAlign.end,
                                       size: 12,
@@ -200,20 +180,21 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: <Widget>[
-                                          TextView(text:
-                                            DateFormat("dd-MM-yyyy").format(
-                                              state
-                                                  .transactionList[index]
-                                                  .trDate,
-                                            ),
+                                          TextView(
+                                            text:
+                                                state
+                                                    .transactionList[index]
+                                                    .trDate,
+
                                             fontWeight: FontWeight.bold,
                                             size: 12,
                                             textAlign: TextAlign.start,
                                           ),
-                                          TextView(text:
-                                            state
-                                                .transactionList[index]
-                                                .narration,
+                                          TextView(
+                                            text:
+                                                state
+                                                    .transactionList[index]
+                                                    .remarks,
                                             textAlign: TextAlign.start,
                                             size: 10,
                                           ),
@@ -222,45 +203,23 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                     ),
                                   ),
                                   TableCell(
-                                    child:
-                                        isShare
-                                            ? TextView(text:
-                                              toBeginningOfSentenceCase(
-                                                state
-                                                    .transactionList[index]
-                                                    .show
-                                                    .toLowerCase(),
-                                              ),
-                                              textAlign: TextAlign.center,
-                                              size: 12,
-                                              fontWeight: FontWeight.bold,
-                                            )
-                                            : TextView(text:
-                                              state
-                                                  .transactionList[index]
-                                                  .amount!
-                                                  .toStringAsFixed(2),
-                                              textAlign: TextAlign.end,
-                                              fontWeight: FontWeight.bold,
-                                              color:
-                                                  state
-                                                              .transactionList[index]
-                                                              .tranType
-                                                              .toLowerCase() ==
-                                                          'c'
-                                                      ? Colors.green
-                                                      : Colors.red,
-                                            ),
+                                    child: TextView(
+                                      text: state.transactionList[index].amount!
+                                          .toStringAsFixed(2),
+                                      textAlign: TextAlign.end,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          state.transactionList[index].tranType
+                                                      .toString() ==
+                                                  "1"
+                                              ? Colors.green
+                                              : Colors.red,
+                                    ),
                                   ),
                                   TableCell(
-                                    child: TextView(text:
-                                      isShare
-                                          ? state.transactionList[index].amount!
-                                              .toStringAsFixed(2)
-                                          : state
-                                              .transactionList[index]
-                                              .tranBalance!
-                                              .toStringAsFixed(2),
+                                    child: TextView(
+                                      text: state.transactionList[index].amount!
+                                          .toStringAsFixed(2),
                                       textAlign: TextAlign.end,
                                       size: 12,
                                       fontWeight: FontWeight.bold,
@@ -269,7 +228,7 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                               ? state
                                                           .transactionList[index]
                                                           .tranType
-                                                          .toLowerCase() ==
+                                                          .toString() ==
                                                       'c'
                                                   ? Colors.green
                                                   : Colors.red
