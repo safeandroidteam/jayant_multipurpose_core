@@ -482,6 +482,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   TextEditingController usernameCtrl = TextEditingController();
   TextEditingController passCtrl = TextEditingController();
+  final FocusNode focusNode1 = FocusNode();
+  final FocusNode focusNode2 = FocusNode();
+  final FocusNode focusNode3 = FocusNode();
+  final FocusNode focusNode4 = FocusNode();
   TextEditingController mpinCtrl = TextEditingController();
   TextEditingController mPinCtrl1 = TextEditingController();
   TextEditingController mPinCtrl2 = TextEditingController();
@@ -635,6 +639,15 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    focusNode1.dispose();
+    focusNode2.dispose();
+    focusNode3.dispose();
+    focusNode4.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -709,21 +722,31 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                 SingleDigitTextField(
                                   controller: mPinCtrl1,
                                   autoFocus: false,
+                                  focusNode: focusNode1,
+                                  nextFocusNode: focusNode2,
                                   obscureText: true,
                                 ),
                                 SingleDigitTextField(
                                   controller: mPinCtrl2,
                                   autoFocus: false,
+                                  focusNode: focusNode2,
+                                  nextFocusNode: focusNode3,
+                                  prevFocusNode: focusNode1,
                                   obscureText: true,
                                 ),
                                 SingleDigitTextField(
                                   controller: mPinCtrl3,
                                   autoFocus: false,
+                                  focusNode: focusNode3,
+                                  nextFocusNode: focusNode4,
+                                  prevFocusNode: focusNode2,
                                   obscureText: true,
                                 ),
                                 SingleDigitTextField(
                                   controller: mPinCtrl4,
                                   autoFocus: false,
+                                  focusNode: focusNode4,
+                                  prevFocusNode: focusNode3,
                                   obscureText: true,
                                 ),
                               ],
@@ -941,8 +964,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         response!["ProceedMessage"],
                       );
                     } else {
-                      // if (response!["Data"][0]["OTP_Required"] == "Y") {
-                      if (response!["Data"][0]["Proceed_Status"] == "Y") {
+                      if (response!["Data"][0]["OTP_Required"] == "Y") {
+                        // if (response!["Data"][0]["Proceed_Status"] == "Y") {
                         // usernameCtrl.clear();
                         // passCtrl.clear();
 
@@ -959,10 +982,12 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                             proceedMessage: response!["ProceedMessage"],
                             data: [
                               SignInData(
-                                proceedStatus:
+                                proceed_Status:
                                     response!["Data"][0]["Proceed_Status"],
-                                proceedMessage:
+                                proceed_Message:
                                     response!["Data"][0]["Proceed_Message"],
+                                otpRequired:
+                                    response!["Data"][0]["OTP_Required"],
                                 cmpCode: response!["Data"][0]["Cmp_Code"],
                                 userId: response!["Data"][0]["User_ID"],
                                 userName: response!["Data"][0]["User_Name"],
@@ -1021,23 +1046,31 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   if (storedMpin != allMpinCtrl.text) {
                     GlobalWidgets().showSnackBar(
                       context,
-                      "Mpin Mismatch Please use Login with username&password Method",
+                      "Mpin Mismatched. Please use Login with Username & Password Method",
                     );
                     _isLoading = false;
                   } else {
                     // getMPinCtrlValues();
 
-                    response = await RestAPI().get(
-                      // "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${mpinCtrl.text}",
-                      "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${allMpinCtrl.text}",
-                    );
+                    // response = await RestAPI().get(
+                    //   // "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${mpinCtrl.text}",
+                    //   "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${allMpinCtrl.text}",
+                    // );
                     /*   response = await RestAPI().post(APis.loginMpin,params: {
-
                       "CustID": "1010001",
                       "MPIN": mpinCtrl.text
-                    });*/
+                    }); */
 
-                    setState(() async {
+                    response = await RestAPI().post(
+                      APis.loginMPin,
+                      params: {
+                        "Cmp_Code": cmpCode ?? "",
+                        "User_Name": pref.getString(StaticValues.userName),
+                        "MPIN": allMpinCtrl.text,
+                      },
+                    );
+
+                    setState(() {
                       _isLoading = false;
                       /*     if ((response["Table"][0] as Map).containsKey("Invalid")) {
                     //  if (response["Table"][0]["Cust_id"] == "Invalid"){
@@ -1051,56 +1084,117 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         GlobalWidgets()
                             .showSnackBar(widget.scaffold, "Your Account is Blocked");
                       }*/
-                      if ((response!["Table"][0]["Cust_id"]) == "Invalid") {
-                        print("LIJITH");
-                        setState(() {
-                          _isLoading = false;
-                        });
+                      if (response!.toString().isEmpty ||
+                          response == null ||
+                          response!.isEmpty) {
                         GlobalWidgets().showSnackBar(
                           context,
-                          response!["Table"][0]["Cust_id"],
+                          "Something went wrong",
                         );
+                        return;
                       }
-                      if (response!["Table"][0]["Cust_id"] == "Blocked") {
-                        //  if (response["Table"][0]["Cust_id"] == "Invalid"){
+                      if (response!["ProceedStatus"] == "N") {
                         setState(() {
                           _isLoading = false;
                         });
-                        print("Blocked");
+                        print("LIJITH");
+                        debugPrint(
+                          "ProceedMessage ::: ${response!["ProceedMessage"]}",
+                        );
                         GlobalWidgets().showSnackBar(
                           context,
-                          response!["Table"][0]["Msg"],
+                          response!["ProceedMessage"],
                         );
                       } else {
-                        var response1 = await RestAPI().post(
-                          APis.GenerateOTP,
-                          params: {
-                            "MobileNo": response!["Table"][0]["Mobile"],
-                            "Amt": "0",
-                            "SMS_Module": "GENERAL",
-                            "SMS_Type": "GENERAL_OTP",
-                            "OTP_Return": "Y",
-                          },
-                        );
-                        print("rechargeResponse::: $response1");
-                        str_Otp = response1[0]["OTP"];
+                        if (response!["Data"][0]["Proceed_Status"] == "Y" &&
+                            response!["Data"][0]["OTP_Required"] == "N") {
+                          // if (response!["Data"][0]["Proceed_Status"] == "Y") {
+                          // usernameCtrl.clear();
+                          // passCtrl.clear();
 
-                        //   getMobileRecharge();
-                        setState(() {
-                          //     isLoading = false;
+                          debugPrint(
+                            "OTP_Required = ${response!["Data"][0]["OTP_Required"]}\nProceed_Status = ${response!["Data"][0]["Proceed_Status"]}",
+                          );
 
-                          Timer(Duration(minutes: 5), () {
-                            setState(() {
-                              str_Otp = "";
-                            });
-                          });
-                        });
+                          ///TODO  for otp while login
+                          // _loginConfirmation("0");
 
-                        ///TODO  for otp while login
-                        _loginConfirmation("0");
+                          saveData(
+                            SignInModel(
+                              proceedStatus: response!["ProceedStatus"],
+                              proceedMessage: response!["ProceedMessage"],
+                              data: [
+                                SignInData(
+                                  proceed_Status:
+                                      response!["Data"][0]["Proceed_Status"],
+                                  proceed_Message:
+                                      response!["Data"][0]["Proceed_Message"],
+                                  otpRequired:
+                                      response!["Data"][0]["OTP_Required"],
+                                  cmpCode: response!["Data"][0]["Cmp_Code"],
+                                  userId: response!["Data"][0]["User_ID"],
+                                  userName: response!["Data"][0]["User_Name"],
+                                  custId: response!["Data"][0]["CustID"],
+                                  accId: response!["Data"][0]["Acc_ID"],
+                                  accNo: response!["Data"][0]["Acc_No"],
+                                  custMobile:
+                                      response!["Data"][0]["Cust_Mobile"],
+                                  profileName:
+                                      response!["Data"][0]["ProfileName"],
+                                  fullAddress:
+                                      response!["Data"][0]["Full_Address"],
+                                  brCode: response!["Data"][0]["Br_Code"],
+                                  brName: response!["Data"][0]["Br_Name"],
+                                  ifscCode: response!["Data"][0]["IFSC_Code"],
+                                  customerType:
+                                      response!["Data"][0]["Customer_Type"],
+                                  transDate: response!["Data"][0]["Trans_Date"],
+                                ),
+                              ],
+                            ),
+                          );
 
-                        /* LoginModel login = LoginModel.fromJson(response);
-                        saveData(login);*/
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            response!["Data"][0]["Proceed_Message"],
+                          );
+                        }
+                        // else {
+                        //   saveData(
+                        //     SignInModel(
+                        //       proceedStatus: response!["ProceedStatus"],
+                        //       proceedMessage: response!["ProceedMessage"],
+                        //       data: [
+                        //         SignInData(
+                        //           proceedStatus:
+                        //               response!["Data"][0]["Proceed_Status"],
+                        //           proceedMessage:
+                        //               response!["Data"][0]["Proceed_Message"],
+                        //           otpRequired:
+                        //               response!["Data"][0]["OTP_Required"],
+                        //           cmpCode: response!["Data"][0]["Cmp_Code"],
+                        //           userId: response!["Data"][0]["User_ID"],
+                        //           userName: response!["Data"][0]["User_Name"],
+                        //           custId: response!["Data"][0]["CustID"],
+                        //           accId: response!["Data"][0]["Acc_ID"],
+                        //           accNo: response!["Data"][0]["Acc_No"],
+                        //           custMobile:
+                        //               response!["Data"][0]["Cust_Mobile"],
+                        //           profileName:
+                        //               response!["Data"][0]["ProfileName"],
+                        //           fullAddress:
+                        //               response!["Data"][0]["Full_Address"],
+                        //           brCode: response!["Data"][0]["Br_Code"],
+                        //           brName: response!["Data"][0]["Br_Name"],
+                        //           ifscCode: response!["Data"][0]["IFSC_Code"],
+                        //           customerType:
+                        //               response!["Data"][0]["Customer_Type"],
+                        //           transDate: response!["Data"][0]["Trans_Date"],
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   );
+                        // }
                       }
                     });
                   }
@@ -1110,7 +1204,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   _isLoading = false;
                 });
 
-                GlobalWidgets().showSnackBar(context, e.message);
+                GlobalWidgets().showSnackBar(
+                  context,
+                  e.message["ProceedMessage"].toString(),
+                );
               }
             }
             // }
@@ -1208,6 +1305,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
 
                         // if (pass == str_Otp) {
                         if (pass!.isNotEmpty) {
+                          ///MPIN Login
                           if (loginType == "0") {
                             preferences.setString(
                               StaticValues.userPass,
@@ -1248,8 +1346,45 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                               "Username get after new set to SharedPref1 : ${preferences.getString(StaticValues.userName)}",
                             );
                             // saveData(login);
+                            saveData(
+                              SignInModel(
+                                proceedStatus: response!["ProceedStatus"],
+                                proceedMessage: response!["ProceedMessage"],
+                                data: [
+                                  SignInData(
+                                    proceed_Status:
+                                        response!["Data"][0]["Proceed_Status"],
+                                    proceed_Message:
+                                        response!["Data"][0]["Proceed_Message"],
+                                    otpRequired:
+                                        response!["Data"][0]["OTP_Required"],
+                                    cmpCode: response!["Data"][0]["Cmp_Code"],
+                                    userId: response!["Data"][0]["User_ID"],
+                                    userName: response!["Data"][0]["User_Name"],
+                                    custId: response!["Data"][0]["CustID"],
+                                    accId: response!["Data"][0]["Acc_ID"],
+                                    accNo: response!["Data"][0]["Acc_No"],
+                                    custMobile:
+                                        response!["Data"][0]["Cust_Mobile"],
+                                    profileName:
+                                        response!["Data"][0]["ProfileName"],
+                                    fullAddress:
+                                        response!["Data"][0]["Full_Address"],
+                                    brCode: response!["Data"][0]["Br_Code"],
+                                    brName: response!["Data"][0]["Br_Name"],
+                                    ifscCode: response!["Data"][0]["IFSC_Code"],
+                                    customerType:
+                                        response!["Data"][0]["Customer_Type"],
+                                    transDate:
+                                        response!["Data"][0]["Trans_Date"],
+                                  ),
+                                ],
+                              ),
+                            );
                             print("LIJU");
-                          } else {
+                          }
+                          ///UN & PW Login
+                          else {
                             try {
                               debugPrint("OTP: $pass");
                               setState(() {

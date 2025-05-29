@@ -1672,12 +1672,18 @@ class SingleDigitTextField extends StatelessWidget {
     super.key,
     required this.controller,
     required this.autoFocus,
+    this.prevFocusNode,
+    required this.focusNode,
+    this.nextFocusNode,
     this.obscureText,
     this.onChanged,
   });
 
   final TextEditingController controller;
   final bool autoFocus;
+  final FocusNode? prevFocusNode;
+  final FocusNode focusNode;
+  final FocusNode? nextFocusNode;
   bool? obscureText = false;
   final void Function(String)? onChanged;
 
@@ -1704,6 +1710,8 @@ class SingleDigitTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: TextField(
+          controller: controller,
+          focusNode: focusNode,
           autofocus: autoFocus,
           textAlign: TextAlign.center,
           keyboardType: TextInputType.number,
@@ -1713,7 +1721,6 @@ class SingleDigitTextField extends StatelessWidget {
           ],
           obscureText: obscureText == true ? true : false,
           obscuringCharacter: "*",
-          controller: controller,
           maxLength: 1,
           cursorColor: Theme.of(context).primaryColor,
           decoration: const InputDecoration(
@@ -1722,17 +1729,11 @@ class SingleDigitTextField extends StatelessWidget {
             hintStyle: TextStyle(color: Colors.black, fontSize: 20),
           ),
           onChanged: (value) {
-            if (value.length == 1) {
-              FocusScope.of(context).nextFocus();
-              if (onChanged != null) {
-                onChanged!(value);
-              }
-              previousValue = value;
-            } else if (previousValue != null) {
-              FocusScope.of(context).previousFocus();
-              previousValue = null;
-            } else if (value.isEmpty) {
-              FocusScope.of(context).previousFocus();
+            if (value.isNotEmpty && nextFocusNode != null) {
+              nextFocusNode!.requestFocus();
+              onChanged?.call(value);
+            } else if (value.isEmpty && prevFocusNode != null) {
+              prevFocusNode!.requestFocus();
             }
           },
         ),

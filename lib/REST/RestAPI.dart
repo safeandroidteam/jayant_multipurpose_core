@@ -203,7 +203,8 @@ class APis {
 
   //Login
   static String loginUrl = "$_superLink/ValidateUserLogin";
-  static String loginMPin = "$_superLink/get_MpinLogin?";
+  // static String loginMPin = "$_superLink/get_MpinLogin?";
+  static String loginMPin = "$_superLink/ValidateUserLoginMPIN";
   static String loginOtpVerify =
       "$_superLink/Validate_UserLoginOTPVerification";
   static String mobileGetVersion = "$_superLink/FetchMobAppVersion";

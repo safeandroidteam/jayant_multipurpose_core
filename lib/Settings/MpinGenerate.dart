@@ -16,6 +16,15 @@ class MpinGenerate extends StatefulWidget {
 }
 
 class _MpinGenerateState extends State<MpinGenerate> {
+  final FocusNode focusNode1 = FocusNode();
+  final FocusNode focusNode2 = FocusNode();
+  final FocusNode focusNode3 = FocusNode();
+  final FocusNode focusNode4 = FocusNode();
+  final FocusNode focusNode5 = FocusNode();
+  final FocusNode focusNode6 = FocusNode();
+  final FocusNode focusNode7 = FocusNode();
+  final FocusNode focusNode8 = FocusNode();
+
   TextEditingController mpinCtrl = TextEditingController();
   TextEditingController reMpinCtrl = TextEditingController();
   TextEditingController setMPinCtrl1 = TextEditingController();
@@ -108,6 +117,19 @@ class _MpinGenerateState extends State<MpinGenerate> {
   }
 
   @override
+  void dispose() {
+    focusNode1.dispose();
+    focusNode2.dispose();
+    focusNode3.dispose();
+    focusNode4.dispose();
+    focusNode5.dispose();
+    focusNode6.dispose();
+    focusNode7.dispose();
+    focusNode8.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -150,21 +172,32 @@ class _MpinGenerateState extends State<MpinGenerate> {
                     SingleDigitTextField(
                       controller: setMPinCtrl1,
                       autoFocus: false,
+                      focusNode: focusNode1,
+                      nextFocusNode: focusNode2,
                       obscureText: true,
                     ),
                     SingleDigitTextField(
                       controller: setMPinCtrl2,
                       autoFocus: false,
+                      focusNode: focusNode2,
+                      nextFocusNode: focusNode3,
+                      prevFocusNode: focusNode1,
                       obscureText: true,
                     ),
                     SingleDigitTextField(
                       controller: setMPinCtrl3,
                       autoFocus: false,
+                      focusNode: focusNode3,
+                      nextFocusNode: focusNode4,
+                      prevFocusNode: focusNode2,
                       obscureText: true,
                     ),
                     SingleDigitTextField(
                       controller: setMPinCtrl4,
                       autoFocus: false,
+                      focusNode: focusNode4,
+                      nextFocusNode: focusNode5,
+                      prevFocusNode: focusNode3,
                       obscureText: true,
                     ),
                   ],
@@ -185,21 +218,32 @@ class _MpinGenerateState extends State<MpinGenerate> {
                     SingleDigitTextField(
                       controller: confirmMPinCtrl1,
                       autoFocus: false,
+                      focusNode: focusNode5,
+                      nextFocusNode: focusNode6,
+                      prevFocusNode: focusNode4,
                       obscureText: true,
                     ),
                     SingleDigitTextField(
                       controller: confirmMPinCtrl2,
                       autoFocus: false,
+                      focusNode: focusNode6,
+                      nextFocusNode: focusNode7,
+                      prevFocusNode: focusNode5,
                       obscureText: true,
                     ),
                     SingleDigitTextField(
                       controller: confirmMPinCtrl3,
                       autoFocus: false,
+                      focusNode: focusNode7,
+                      nextFocusNode: focusNode8,
+                      prevFocusNode: focusNode6,
                       obscureText: true,
                     ),
                     SingleDigitTextField(
                       controller: confirmMPinCtrl4,
                       autoFocus: false,
+                      focusNode: focusNode8,
+                      prevFocusNode: focusNode7,
                       obscureText: true,
                     ),
                   ],

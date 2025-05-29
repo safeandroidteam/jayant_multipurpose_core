@@ -31,8 +31,9 @@ class SignInModel {
 
 class SignInData {
   SignInData({
-    required this.proceedStatus,
-    required this.proceedMessage,
+    required this.proceed_Status,
+    required this.proceed_Message,
+    required this.otpRequired,
     required this.cmpCode,
     required this.userId,
     required this.userName,
@@ -49,8 +50,9 @@ class SignInData {
     required this.transDate,
   });
 
-  final String? proceedStatus;
-  final String? proceedMessage;
+  final String? proceed_Status;
+  final String? proceed_Message;
+  final String? otpRequired;
   final int? cmpCode;
   final String? userId;
   final String? userName;
@@ -68,8 +70,9 @@ class SignInData {
 
   factory SignInData.fromJson(Map<String, dynamic> json) {
     return SignInData(
-      proceedStatus: json["Proceed_Status"],
-      proceedMessage: json["Proceed_Message"],
+      proceed_Status: json["Proceed_Status"],
+      proceed_Message: json["Proceed_Message"],
+      otpRequired: json["OTP_Required"],
       cmpCode: json["Cmp_Code"],
       userId: json["User_ID"],
       userName: json["User_Name"],
@@ -88,8 +91,9 @@ class SignInData {
   }
 
   Map<String, dynamic> toJson() => {
-    "Proceed_Status": proceedStatus,
-    "Proceed_Message": proceedMessage,
+    "Proceed_Status": proceed_Status,
+    "Proceed_Message": proceed_Message,
+    "OTP_Required": otpRequired,
     "Cmp_Code": cmpCode,
     "User_ID": userId,
     "User_Name": userName,
