@@ -127,7 +127,7 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
     try {
       Map<String, dynamic> chittyLoanBody = {
         "Cmp_Code": event.cmpCode,
-        "Cust_ID": 2,
+        "Cust_ID": event.custID,
         "Section": event.section,
       };
       alertPrint("passbook chitty Loan card boay =$chittyLoanBody");
