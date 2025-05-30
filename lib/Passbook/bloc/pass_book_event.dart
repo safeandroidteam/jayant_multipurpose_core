@@ -19,17 +19,13 @@ class PassBookDPSHCardEvent extends PassBookEvent {
 }
 
 class DepositShareTransactionEvent extends PassBookEvent {
-    final String cmpCode;
+  final String cmpCode;
   final String accid;
 
-  const DepositShareTransactionEvent(
-    this.cmpCode,
-    this.accid,
-
-  );
+  const DepositShareTransactionEvent(this.cmpCode, this.accid);
 
   @override
-  List<Object> get props => [cmpCode, accid ];
+  List<Object> get props => [cmpCode, accid];
 }
 
 class CurrentPageChanged extends PassBookEvent {
@@ -42,20 +38,24 @@ class CurrentPageChanged extends PassBookEvent {
 }
 
 class ChittyLoanEvent extends PassBookEvent {
-   final String custID;
+  final String custID;
   final String cmpCode;
   final String section;
-  const ChittyLoanEvent(this.custID, this.cmpCode,this.section);
+  const ChittyLoanEvent(this.custID, this.cmpCode, this.section);
 
   @override
-  List<Object> get props => [custID, cmpCode,section];
+  List<Object> get props => [custID, cmpCode, section];
 }
 
 class LoanTransEvent extends PassBookEvent {
-  final String accNo;
+  // final String accNo;
+  final String cmpCode;
+  final int accID;
 
-  const LoanTransEvent(this.accNo);
+  // const LoanTransEvent(this.accNo);
+  const LoanTransEvent(this.cmpCode, this.accID);
 
   @override
-  List<Object> get props => [accNo];
+  // List<Object> get props => [accNo];
+  List<Object> get props => [cmpCode, accID];
 }

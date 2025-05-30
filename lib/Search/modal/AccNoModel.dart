@@ -1,108 +1,142 @@
-// To parse this JSON data, do
+// // To parse this JSON data, do
+// //
+// //     final getAccNo = getAccNoFromJson(jsonString);
 //
-//     final getAccNo = getAccNoFromJson(jsonString);
+// import 'dart:convert';
+//
+// GetAccNo getAccNoFromJson(String str) => GetAccNo.fromJson(json.decode(str));
+//
+// String getAccNoToJson(GetAccNo data) => json.encode(data.toJson());
+//
+// class GetAccNo {
+//   GetAccNo({
+//     this.accTable,
+//   });
+//
+//   List<AccTable>? accTable;
+//
+//   factory GetAccNo.fromJson(Map<String, dynamic> json) => GetAccNo(
+//     accTable: List<AccTable>.from(json["Table"].map((x) => AccTable.fromJson(x))),
+//   );
+//
+//   Map<String, dynamic> toJson() => {
+//     "Table": List<dynamic>.from(accTable!.map((x) => x.toJson())),
+//   };
+// }
+//
+// class AccTable {
+//   AccTable({
+//     this.custId,
+//     this.column1,
+//     this.adds,
+//     this.brName,
+//     this.accNo,
+//     this.schCode,
+//     this.schName,
+//     this.brCode,
+//     this.depBranch,
+//     this.balance,
+//     this.module,
+//   });
+//
+//   int? custId;
+//   Column1? column1;
+//   Adds? adds;
+//   BrName? brName;
+//   String? accNo;
+//   String? schCode;
+//   String? schName;
+//   String? brCode;
+//   BrName? depBranch;
+//   double? balance;
+//   Module? module;
+//
+//   factory AccTable.fromJson(Map<String, dynamic> json) => AccTable(
+//     custId: json["Cust_Id"],
+//     column1: column1Values.map[json["Column1"]],
+//     adds: addsValues.map[json["Adds"]],
+//     brName: brNameValues.map[json["Br_Name"]],
+//     accNo: json["Acc_No"],
+//     schCode: json["Sch_Code"],
+//     schName: json["Sch_Name"],
+//     brCode: json["Br_Code"],
+//     depBranch: brNameValues.map[json["Dep_Branch"]],
+//     balance: json["Balance"].toDouble(),
+//     module: moduleValues.map[json["Module"]],
+//   );
+//
+//   Map<String, dynamic> toJson() => {
+//     "Cust_Id": custId,
+//     "Column1": column1Values.reverse![column1!],
+//     "Adds": addsValues.reverse![adds!],
+//     "Br_Name": brNameValues.reverse![brName!],
+//     "Acc_No": accNo,
+//     "Sch_Code": schCode,
+//     "Sch_Name": schName,
+//     "Br_Code": brCode,
+//     "Dep_Branch": brNameValues.reverse![depBranch!],
+//     "Balance": balance,
+//     "Module": moduleValues.reverse![module!],
+//   };
+// }
 
 import 'dart:convert';
 
-GetAccNo getAccNoFromJson(String str) => GetAccNo.fromJson(json.decode(str));
+AccNoModel accNoModelFromJson(String str) =>
+    AccNoModel.fromJson(json.decode(str));
 
-String getAccNoToJson(GetAccNo data) => json.encode(data.toJson());
+String accNoModelToJson(AccNoModel data) => json.encode(data.toJson());
 
-class GetAccNo {
-  GetAccNo({
-    this.accTable,
-  });
+class AccNoModel {
+  String? proceedStatus;
+  String? proceedMessage;
+  List<AccNoData>? data;
 
-  List<AccTable>? accTable;
+  AccNoModel({this.proceedStatus, this.proceedMessage, this.data});
 
-  factory GetAccNo.fromJson(Map<String, dynamic> json) => GetAccNo(
-    accTable: List<AccTable>.from(json["Table"].map((x) => AccTable.fromJson(x))),
+  factory AccNoModel.fromJson(Map<String, dynamic> json) => AccNoModel(
+    data: List<AccNoData>.from(json["Data"].map((x) => AccNoData.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "Table": List<dynamic>.from(accTable!.map((x) => x.toJson())),
+    "ProceedStatus": proceedStatus,
+    "ProceedMessage": proceedMessage,
+    "Data": List<dynamic>.from(data!.map((x) => x.toJson())),
   };
 }
 
-class AccTable {
-  AccTable({
-    this.custId,
-    this.column1,
-    this.adds,
-    this.brName,
-    this.accNo,
-    this.schCode,
-    this.schName,
-    this.brCode,
-    this.depBranch,
-    this.balance,
-    this.module,
-  });
+class AccNoData {
+  AccNoData({this.accId, this.accNo});
 
-  int? custId;
-  Column1? column1;
-  Adds? adds;
-  BrName? brName;
+  int? accId;
   String? accNo;
-  String? schCode;
-  String? schName;
-  String? brCode;
-  BrName? depBranch;
-  double? balance;
-  Module? module;
 
-  factory AccTable.fromJson(Map<String, dynamic> json) => AccTable(
-    custId: json["Cust_Id"],
-    column1: column1Values.map[json["Column1"]],
-    adds: addsValues.map[json["Adds"]],
-    brName: brNameValues.map[json["Br_Name"]],
-    accNo: json["Acc_No"],
-    schCode: json["Sch_Code"],
-    schName: json["Sch_Name"],
-    brCode: json["Br_Code"],
-    depBranch: brNameValues.map[json["Dep_Branch"]],
-    balance: json["Balance"].toDouble(),
-    module: moduleValues.map[json["Module"]],
-  );
+  factory AccNoData.fromJson(Map<String, dynamic> json) =>
+      AccNoData(accId: json["Acc_ID"], accNo: json["Acc_No"]);
 
-  Map<String, dynamic> toJson() => {
-    "Cust_Id": custId,
-    "Column1": column1Values.reverse![column1!],
-    "Adds": addsValues.reverse![adds!],
-    "Br_Name": brNameValues.reverse![brName!],
-    "Acc_No": accNo,
-    "Sch_Code": schCode,
-    "Sch_Name": schName,
-    "Br_Code": brCode,
-    "Dep_Branch": brNameValues.reverse![depBranch!],
-    "Balance": balance,
-    "Module": moduleValues.reverse![module!],
-  };
+  Map<String, dynamic> toJson() => {"Acc_ID": accId, "Acc_No": accNo};
 }
 
 enum Adds { PLOT_NO_01_BRAR_FRAM_HOUSE_GURGAON_122017 }
 
 final addsValues = EnumValues({
-  "PLOT NO.01,,BRAR FRAM HOUSE,,,GURGAON,122017": Adds.PLOT_NO_01_BRAR_FRAM_HOUSE_GURGAON_122017
+  "PLOT NO.01,,BRAR FRAM HOUSE,,,GURGAON,122017":
+      Adds.PLOT_NO_01_BRAR_FRAM_HOUSE_GURGAON_122017,
 });
 
 enum BrName { GURUGRAM_MAIN_BRANCH }
 
 final brNameValues = EnumValues({
-  "GURUGRAM MAIN BRANCH": BrName.GURUGRAM_MAIN_BRANCH
+  "GURUGRAM MAIN BRANCH": BrName.GURUGRAM_MAIN_BRANCH,
 });
 
 enum Column1 { NIRANJAN_VERMA }
 
-final column1Values = EnumValues({
-  "NIRANJAN  VERMA  ": Column1.NIRANJAN_VERMA
-});
+final column1Values = EnumValues({"NIRANJAN  VERMA  ": Column1.NIRANJAN_VERMA});
 
 enum Module { DEPOSIT }
 
-final moduleValues = EnumValues({
-  "Deposit": Module.DEPOSIT
-});
+final moduleValues = EnumValues({"Deposit": Module.DEPOSIT});
 
 class EnumValues<T> {
   Map<String, T> map;

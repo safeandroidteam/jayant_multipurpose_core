@@ -1,4 +1,3 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passbook_core_jayant/Passbook/Model/LoanTransModel.dart';
@@ -183,22 +182,52 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
     emit(LoanTransactionLoading());
 
     try {
-      final response = await RestAPI().get(
-        "${APis.getLoanPassbook}${event.accNo}",
+      // final response = await RestAPI().get(
+      //   "${APis.getLoanPassbook}${event.accNo}",
+      // );
+
+      Map<String, dynamic> loanBody = {
+        "Cmp_Code": event.cmpCode,
+        "Acc_ID": event.accID,
+      };
+      final response = await RestAPI().post(
+        APis.fetchLoanPassbookDetails,
+        params: loanBody,
       );
 
+      // final LoanTransList =
+      //     (response["Table"] as List<dynamic>)
+      //         .map(
+      //           (e) => LoanTransTable(
+      //             trdate: e["TRDATE"],
+      //             amount: e["AMOUNT"],
+      //             drcr: e["DRCR"],
+      //             interest: e["INTEREST"],
+      //             charges: e["CHARGES"],
+      //             total: e["TOTAL"],
+      //             balance: e["BALANCE"],
+      //             narration: e["NARRATION"],
+      //           ),
+      //         )
+      //         .toList();
+
       final LoanTransList =
-          (response["Table"] as List<dynamic>)
+          (response["Data"] as List<dynamic>)
               .map(
-                (e) => LoanTransTable(
-                  trdate: e["TRDATE"],
-                  amount: e["AMOUNT"],
-                  drcr: e["DRCR"],
-                  interest: e["INTEREST"],
-                  charges: e["CHARGES"],
-                  total: e["TOTAL"],
-                  balance: e["BALANCE"],
-                  narration: e["NARRATION"],
+                (e) => LoanTransData(
+                  trDate: e["Tr_Date"],
+                  creditAmt: e["Credit_Amt"],
+                  debitAmt: e["Debit_Amt"],
+                  interestCr: e["Interest_Cr"],
+                  interestDr: e["Interest_Dr"],
+                  chrgCr: e["Chrg_Cr"],
+                  chrgDr: e["Chrg_Dr"],
+                  totalCr: e["Total_Cr"],
+                  totalDr: e["Total_Dr"],
+                  totalAmt: e["Total_Amt"],
+                  balAmt: e["Bal_Amt"],
+                  balType: e["Bal_Type"],
+                  remarks: e["Remarks"],
                 ),
               )
               .toList();

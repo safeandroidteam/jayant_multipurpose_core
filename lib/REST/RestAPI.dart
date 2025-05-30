@@ -209,8 +209,15 @@ class APis {
       "$_superLink/Validate_UserLoginOTPVerification";
   static String mobileGetVersion = "$_superLink/FetchMobAppVersion";
   //Account section
-  static String fetchAccDetailsbySection ="$_superLink/Fetch_AccountDetailsBySection";
-  static String fetchTransactions ="$_superLink/Fetch_TransactionHistory";
+  static String fetchAccDetailsbySection =
+      "$_superLink/Fetch_AccountDetailsBySection";
+  static String fetchTransactions = "$_superLink/Fetch_TransactionHistory";
+  static String fetchLoanPassbookDetails =
+      "$_superLink/Fetch_LoanPassbookDetails";
+
+  //Search
+  static String fillAccountList = "$_superLink/Fill_AccountList";
+  static String fetchAccountStatement = "$_superLink/Fetch_AccountStatement";
 
   ///OLD
   static String generateRefID(String key) =>

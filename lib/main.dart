@@ -10,7 +10,6 @@ import 'package:passbook_core_jayant/MainScreens/sub_page.dart';
 import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
 import 'package:passbook_core_jayant/Search/bloc/search_bloc.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
-import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:passbook_core_jayant/styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

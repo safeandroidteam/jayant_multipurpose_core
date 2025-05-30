@@ -37,9 +37,11 @@ class _AccountSearchState extends State<AccountSearch> {
   TextEditingController toDateController = TextEditingController();
   TextEditingController fromDateFormattedCtrl = TextEditingController();
   TextEditingController toDateFormattedCtrl = TextEditingController();
+  TextEditingController fromDateDDMMYYYYCtrl = TextEditingController();
+  TextEditingController toDateDDMMYYYYCtrl = TextEditingController();
   List<DepositTable>? depositTable = [];
   SharedPreferences? preferences;
-  String? userId, schemeCode1, branchCode1, custName;
+  String? userId, schemeCode1, branchCode1, custName, cmpCode;
 
   final _forkKey = GlobalKey<FormState>();
 
@@ -59,14 +61,15 @@ class _AccountSearchState extends State<AccountSearch> {
 
   getAccDeposit() async {
     preferences = StaticValues.sharedPreferences;
-
+    cmpCode = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
     userId = preferences?.getString(StaticValues.custID) ?? "";
     schemeCode1 = preferences?.getString(StaticValues.schemeCode) ?? "";
     branchCode1 = preferences?.getString(StaticValues.branchCode) ?? "";
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final searchBloc = SearchBloc.get(context);
 
-      searchBloc.add(AccNoDepositEvent(userId ?? "", str_accType ?? ""));
+      // searchBloc.add(AccNoDepositEvent(userId ?? "", str_accType ?? ""));
+      searchBloc.add(AccNoDepositEvent(cmpCode ?? "", userId ?? ""));
     });
   }
 
@@ -87,6 +90,9 @@ class _AccountSearchState extends State<AccountSearch> {
         fromDateFormattedCtrl.text = DateFormat(
           'dd MMM yyyy',
         ).format(selectedFromDate);
+        fromDateDDMMYYYYCtrl.text = DateFormat(
+          'MM-dd-yyyy',
+        ).format(selectedFromDate);
         depositTable?.clear();
       });
   }
@@ -105,6 +111,9 @@ class _AccountSearchState extends State<AccountSearch> {
         toDateController.text = DateFormat("yyyy-MM-dd").format(selectedToDate);
         toDateFormattedCtrl.text = DateFormat(
           'dd MMM yyyy',
+        ).format(selectedToDate);
+        toDateDDMMYYYYCtrl.text = DateFormat(
+          'MM-dd-yyyy',
         ).format(selectedToDate);
         depositTable?.clear();
       });
@@ -406,14 +415,15 @@ class _AccountSearchState extends State<AccountSearch> {
                       } else if (state is AccDepositLoading) {
                         return Center(child: CircularProgressIndicator());
                       } else if (state is AccDepositResponse) {
-                        if (state.accTable.isNotEmpty) {
+                        if (state.accNoData.isNotEmpty) {
                           return DropdownButton(
                             hint: Text("Account No"),
                             value: _mySelection,
                             items:
-                                state.accTable.map((item) {
+                                state.accNoData.map((item) {
                                   return DropdownMenuItem(
-                                    value: item.accNo,
+                                    // value: item.accNo,
+                                    value: item.accId.toString(),
                                     child: Text(item.accNo!),
                                   );
                                 }).toList(),
@@ -513,15 +523,26 @@ class _AccountSearchState extends State<AccountSearch> {
                       });
 
                       // var response = await RestAPI().get(url);
-                      var response = await RestAPI().get(
-                        APis.getDepositTransactionList({
-                          "Cust_id": userId,
-                          "Acc_no": _mySelection,
-                          "Sch_code": schemeCode1,
-                          "Br_code": branchCode1,
-                          "Frm_Date": fromDateController.text,
-                          "Todate": toDateController.text,
-                        }),
+                      // var response = await RestAPI().get(
+                      //   APis.getDepositTransactionList({
+                      //     "Cust_id": userId,
+                      //     "Acc_no": _mySelection,
+                      //     "Sch_code": schemeCode1,
+                      //     "Br_code": branchCode1,
+                      //     "Frm_Date": fromDateController.text,
+                      //     "Todate": toDateController.text,
+                      //   }),
+                      // );
+
+                      Map<String, dynamic> fetchAccStatementBody = {
+                        "Cmp_Code": cmpCode,
+                        "Acc_ID": _mySelection,
+                        "StartDate": fromDateDDMMYYYYCtrl.text,
+                        "EndDate": toDateDDMMYYYYCtrl.text,
+                      };
+                      var response = await RestAPI().post(
+                        APis.fetchAccountStatement,
+                        params: fetchAccStatementBody,
                       );
 
                       setState(() {

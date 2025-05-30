@@ -5,11 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
-import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
-import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KSEBNKWA extends StatefulWidget {
@@ -43,7 +41,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
   String? str_OrderId, str_Message, str_Status;
 
   Map<String, dynamic>? _referanceNo = Map();
- 
+
   @override
   void dispose() {
     _transferBloc.close();
@@ -458,8 +456,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) => Receipt(
-                                        pushReplacementNamed:
-                                        "/HomePage",
+                                        pushReplacementNamed: "/HomePage",
 
                                         amount: amt.text,
                                         transID:
@@ -479,8 +476,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                   builder:
                                       (context) => Receipt(
                                         isFailure: true,
-                                        pushReplacementNamed:
-                                           "/HomePage",
+                                        pushReplacementNamed: "/HomePage",
 
                                         amount: amt.text,
                                         paidTo: widget.title,
@@ -584,8 +580,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) => Receipt(
-                                        pushReplacementNamed:
-                                         "/HomePage",
+                                        pushReplacementNamed: "/HomePage",
 
                                         amount: amt.text,
                                         transID:
@@ -606,8 +601,7 @@ class _KSEBNKWAState extends State<KSEBNKWA> {
                                   builder:
                                       (context) => Receipt(
                                         isFailure: true,
-                                        pushReplacementNamed:
-                                          "/HomePage",
+                                        pushReplacementNamed: "/HomePage",
 
                                         amount: amt.text,
                                         paidTo: "KWA",

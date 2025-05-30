@@ -93,7 +93,8 @@ class LoanTransactionLoading extends PassBookState {
 }
 
 class LoanTransactionResponse extends PassBookState {
-  final List<LoanTransTable> loanTransList;
+  // final List<LoanTransTable> loanTransList;
+  final List<LoanTransData> loanTransList;
 
   const LoanTransactionResponse(this.loanTransList);
 }

@@ -181,7 +181,7 @@ class _ChittyLoanState extends State<ChittyLoan> {
                             (context) =>
                                 isShare == null
                                     ? LoanTransaction(
-                                      accNo: passbookTable.accNo,
+                                      accID: passbookTable.accId,
                                     )
                                     : ChittyTransaction(
                                       accNo: passbookTable.accNo,

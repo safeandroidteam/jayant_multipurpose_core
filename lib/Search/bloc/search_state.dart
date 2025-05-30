@@ -2,12 +2,13 @@ part of 'search_bloc.dart';
 
 abstract class SearchState extends Equatable {
   const SearchState();
-  
+
   @override
   List<Object> get props => [];
 }
 
 class SearchInitial extends SearchState {}
+
 class AccDepositLoading extends SearchState {
   final bool isAccDepositLoading = false;
   @override
@@ -15,9 +16,9 @@ class AccDepositLoading extends SearchState {
 }
 
 class AccDepositResponse extends SearchState {
-  final List<AccTable> accTable;
+  final List<AccNoData> accNoData;
 
-  const AccDepositResponse(this.accTable);
+  const AccDepositResponse(this.accNoData);
 }
 
 class AccDepositErrorException extends SearchState {

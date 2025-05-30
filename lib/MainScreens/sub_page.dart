@@ -13,7 +13,6 @@ import 'package:passbook_core_jayant/PayBills/Recharge.dart';
 import 'package:passbook_core_jayant/Search/SearchHome.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
-import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../configuration.dart';

@@ -386,7 +386,7 @@ class _AccountMenusState extends State<AccountMenus>
 
     _homeBloc.add(AccDepositEvent(userId, cmpCode, "DEPOSIT"));
     _homeBloc.add(AccLoanEvent(userId, cmpCode, "LOAN"));
-    _homeBloc.add(ChittyEvent(userId,cmpCode,"Chitty"));
+    _homeBloc.add(ChittyEvent(userId, cmpCode, "Chitty"));
     _homeBloc.add(AccShareEvent(userId, cmpCode, "SHARE"));
   }
 
@@ -414,6 +414,12 @@ class _AccountMenusState extends State<AccountMenus>
                 centerTitle: true,
                 pinned: true,
                 stretch: true,
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
                 title: TextView(
                   text: "Account",
                   size: 20.0,

@@ -13,6 +13,7 @@ class _SearchHomeState extends State<SearchHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text("Search Home", style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),

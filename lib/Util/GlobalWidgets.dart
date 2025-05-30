@@ -10,11 +10,11 @@ import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/QRScan.dart';
 import 'package:passbook_core_jayant/Util/StaticValue.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
-import 'package:passbook_core_jayant/passbook_core.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../FundTransfer/bloc/transfer_bloc.dart';
+import '../configuration.dart';
 
 class GlobalWidgets {
   addressCorrection(String address) {
