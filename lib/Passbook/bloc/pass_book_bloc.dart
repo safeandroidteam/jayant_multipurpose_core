@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passbook_core_jayant/Passbook/Model/LoanTransModel.dart';
+import 'package:passbook_core_jayant/Passbook/Model/ChittyLoanTransModel.dart';
 import 'package:passbook_core_jayant/Passbook/Model/PassbookListModel.dart';
 import 'package:passbook_core_jayant/Passbook/Model/TransactionModel.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
@@ -16,7 +16,7 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
     on<DepositShareTransactionEvent>(_onDepositShareTransactionEvent);
     on<CurrentPageChanged>(_onCurrentPageChanged);
     on<ChittyLoanEvent>(_onChittyLoanEvent);
-    on<LoanTransEvent>(_onLoanTransEvent);
+    on<ChittyLoanTransEvent>(_onLoanTransEvent);
   }
 
   Future<void> _onPassBookDPSHCardEvent(
@@ -129,7 +129,7 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
         "Cust_ID": event.custID,
         "Section": event.section,
       };
-      alertPrint("passbook chitty Loan card boay =$chittyLoanBody");
+      alertPrint("passbook chitty Loan card body =$chittyLoanBody");
 
       final response = await RestAPI().post(
         APis.fetchAccDetailsbySection,
@@ -176,10 +176,10 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
   }
 
   Future<void> _onLoanTransEvent(
-    LoanTransEvent event,
+    ChittyLoanTransEvent event,
     Emitter<PassBookState> emit,
   ) async {
-    emit(LoanTransactionLoading());
+    emit(ChittyLoanTransLoading());
 
     try {
       // final response = await RestAPI().get(
@@ -214,7 +214,7 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
       final LoanTransList =
           (response["Data"] as List<dynamic>)
               .map(
-                (e) => LoanTransData(
+                (e) => ChittyLoanTransData(
                   trDate: e["Tr_Date"],
                   creditAmt: e["Credit_Amt"],
                   debitAmt: e["Debit_Amt"],
@@ -231,12 +231,12 @@ class PassBookBloc extends Bloc<PassBookEvent, PassBookState> {
                 ),
               )
               .toList();
-      emit(LoanTransactionResponse(LoanTransList));
+      emit(ChittyLoanTransResponse(LoanTransList));
 
       successPrint("Loan Trans Response =$response");
       successPrint("Loan Trans Length =${LoanTransList.length}");
     } on RestException catch (e) {
-      emit(LoanTransactionErrorException(e));
+      emit(ChittyLoanTransErrorException(e));
       errorPrint("Loan TransResponse Error=$e");
     }
   }
