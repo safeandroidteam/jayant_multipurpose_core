@@ -25,32 +25,34 @@ class AccStatementSearchModel {
   Map<String, dynamic> toJson() => {
     "ProceedStatus": proceedStatus,
     "ProceedMessage": proceedMessage,
-    "Data": data!.map((x) => x?.toJson()).toList(),
+    "Data": data!.map((x) => x.toJson()).toList(),
   };
 }
 
 class AccStatementSearchData {
   AccStatementSearchData({
-    this.tranId,
-    this.trDate,
-    this.valueDate,
-    this.caption,
-    this.amount,
-    this.tranType,
-    this.balAmt,
-    this.balType,
-    this.remarks,
+    required this.tranId,
+    required this.trDate,
+    required this.valueDate,
+    required this.caption,
+    required this.amount,
+    required this.tranType,
+    required this.balAmt,
+    required this.balType,
+    required this.remarks,
+    required this.accNo,
   });
 
-  int? tranId;
-  String? trDate;
-  String? valueDate;
-  String? caption;
-  String? amount;
-  String? tranType;
-  String? balAmt;
-  String? balType;
-  String? remarks;
+  dynamic tranId;
+  String trDate;
+  String valueDate;
+  String caption;
+  dynamic amount;
+  dynamic tranType;
+  dynamic balAmt;
+  String balType;
+  String remarks;
+  String accNo;
 
   factory AccStatementSearchData.fromJson(Map<String, dynamic> json) {
     return AccStatementSearchData(
@@ -63,6 +65,7 @@ class AccStatementSearchData {
       balAmt: json["Bal_Amt"],
       balType: json["Bal_Type"],
       remarks: json["Remarks"],
+      accNo: json["Acc_No"],
     );
   }
 
@@ -76,5 +79,6 @@ class AccStatementSearchData {
     "Bal_Amt": balAmt,
     "Bal_Type": balType,
     "Remarks": remarks,
+    "Acc_No": accNo,
   };
 }

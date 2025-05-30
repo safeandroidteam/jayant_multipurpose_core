@@ -8,15 +8,25 @@ abstract class SearchEvent extends Equatable {
 }
 
 class AccNoDepositEvent extends SearchEvent {
-  // final String cust_id;
-  // final String acc_Type;
-  final String cmp_Code;
-  final String cust_Id;
+  final String cmpCode;
+  final String custId;
 
-  // const AccNoDepositEvent(this.cust_id, this.acc_Type);
-  const AccNoDepositEvent(this.cmp_Code, this.cust_Id);
+  const AccNoDepositEvent(this.cmpCode, this.custId);
 
   @override
-  // List<Object> get props => [cust_id, acc_Type];
-  List<Object> get props => [cmp_Code, cust_Id];
+  List<Object> get props => [cmpCode, custId];
+}
+
+class PdfDownloadEvent extends SearchEvent {
+  final List<AccStatementSearchData> transList;
+  final String fromDate;
+  final String toDate;
+  final BuildContext context;
+
+  const PdfDownloadEvent(
+    this.transList,
+    this.fromDate,
+    this.toDate,
+    this.context,
+  );
 }

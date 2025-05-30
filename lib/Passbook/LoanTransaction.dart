@@ -51,7 +51,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
       final passBookBloc = PassBookBloc.get(context);
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
       passBookBloc.add(LoanTransEvent(cmpCode, widget.accID ?? 0));
-      // passBookBloc.add(LoanTransEvent(cmpCode, 186196));
+      //passBookBloc.add(LoanTransEvent(cmpCode, 186196));
     });
   }
 

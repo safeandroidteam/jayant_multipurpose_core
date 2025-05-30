@@ -1,19 +1,13 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
+import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Search/bloc/search_bloc.dart';
-import 'package:passbook_core_jayant/Util/StaticValue.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
+import 'package:passbook_core_jayant/Search/modal/AccStatementSearchModel.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
+import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart' as sf;
-
-import 'DepositSearchModel.dart';
 
 class AccountSearch extends StatefulWidget {
   final String accType;
@@ -35,11 +29,10 @@ class _AccountSearchState extends State<AccountSearch> {
   DateTime selectedToDate = DateTime.now();
   TextEditingController fromDateController = TextEditingController();
   TextEditingController toDateController = TextEditingController();
-  TextEditingController fromDateFormattedCtrl = TextEditingController();
-  TextEditingController toDateFormattedCtrl = TextEditingController();
+
   TextEditingController fromDateDDMMYYYYCtrl = TextEditingController();
   TextEditingController toDateDDMMYYYYCtrl = TextEditingController();
-  List<DepositTable>? depositTable = [];
+  List<AccStatementSearchData> depositTable = [];
   SharedPreferences? preferences;
   String? userId, schemeCode1, branchCode1, custName, cmpCode;
 
@@ -63,12 +56,9 @@ class _AccountSearchState extends State<AccountSearch> {
     preferences = StaticValues.sharedPreferences;
     cmpCode = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
     userId = preferences?.getString(StaticValues.custID) ?? "";
-    schemeCode1 = preferences?.getString(StaticValues.schemeCode) ?? "";
-    branchCode1 = preferences?.getString(StaticValues.branchCode) ?? "";
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final searchBloc = SearchBloc.get(context);
-
-      // searchBloc.add(AccNoDepositEvent(userId ?? "", str_accType ?? ""));
       searchBloc.add(AccNoDepositEvent(cmpCode ?? "", userId ?? ""));
     });
   }
@@ -85,15 +75,13 @@ class _AccountSearchState extends State<AccountSearch> {
         selectedFromDate = picked;
 
         fromDateController.text = DateFormat(
-          "yyyy-MM-dd",
+          "dd-MM-yyyy",
         ).format(selectedFromDate);
-        fromDateFormattedCtrl.text = DateFormat(
-          'dd MMM yyyy',
-        ).format(selectedFromDate);
+
         fromDateDDMMYYYYCtrl.text = DateFormat(
           'MM-dd-yyyy',
         ).format(selectedFromDate);
-        depositTable?.clear();
+        depositTable.clear();
       });
   }
 
@@ -108,264 +96,18 @@ class _AccountSearchState extends State<AccountSearch> {
       setState(() {
         selectedToDate = picked;
 
-        toDateController.text = DateFormat("yyyy-MM-dd").format(selectedToDate);
-        toDateFormattedCtrl.text = DateFormat(
-          'dd MMM yyyy',
-        ).format(selectedToDate);
+        toDateController.text = DateFormat("dd-MM-yyyy").format(selectedToDate);
+
         toDateDDMMYYYYCtrl.text = DateFormat(
           'MM-dd-yyyy',
         ).format(selectedToDate);
-        depositTable?.clear();
+        depositTable.clear();
       });
-  }
-
-  Future<void> generatePdf(List<DepositTable> transactionDetails) async {
-    final pdf = pw.Document();
-    debugPrint("From(${fromDateController.text})_To(${toDateController.text})");
-    String searchedDate =
-        "From(${fromDateController.text})-To(${toDateController.text})";
-
-    String searchedReportDate =
-        (fromDateFormattedCtrl.text == toDateFormattedCtrl.text)
-            ? "of ${fromDateFormattedCtrl.text}"
-            : "from  ${fromDateFormattedCtrl.text} to ${toDateFormattedCtrl.text}";
-
-    final depAccNo =
-        transactionDetails.isNotEmpty && transactionDetails.first.accNo != null
-            ? transactionDetails.first.accNo.toString()
-            : 'N/A';
-
-    String? last4Digits =
-        transactionDetails.first.accNo!.length >= 4
-            ? transactionDetails.first.accNo!.substring(
-              transactionDetails.first.accNo!.length - 4,
-            )
-            : transactionDetails
-                .first
-                .accNo; // fallback if accNo has fewer than 4 digits
-
-    /// Can't add image directly in pdf, need to convert it to bytes
-    final imageBytes = await rootBundle.load('assets/mini-logo.png');
-    final logoImage = pw.MemoryImage(imageBytes.buffer.asUint8List());
-
-    if (transactionDetails.isEmpty) {
-      debugPrint("No transactions available to generate PDF.");
-      return;
-    } else if (transactionDetails.length > 0) {
-      debugPrint("Transactions available to generate PDF.");
-      debugPrint("Transaction count: ${transactionDetails.length}");
-      transactionDetails.forEach((e) => print(e.toJson()));
-    }
-
-    try {
-      pdf.addPage(
-        pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          // Show footer only if more than one page
-          footer: (context) {
-            if (context.pagesCount > 1) {
-              return pw.Align(
-                alignment: pw.Alignment.centerRight,
-                child: pw.Text(
-                  'Page ${context.pageNumber} of ${context.pagesCount}',
-                  style: pw.TextStyle(fontSize: 10, color: PdfColors.grey),
-                ),
-              );
-            }
-            return pw.SizedBox.shrink();
-          },
-          build:
-              (context) => [
-                pw.Row(
-                  children: [
-                    pw.Image(
-                      logoImage,
-                      height: 50,
-                      width: 50,
-                      fit: pw.BoxFit.contain,
-                    ),
-                    pw.Text(
-                      // 'Jayant India Nidhi Limited',
-                      'JINL',
-                      style: pw.TextStyle(
-                        fontSize: 48,
-                        fontWeight: pw.FontWeight.bold,
-                      ),
-                    ),
-                    pw.SizedBox(width: 20),
-                    pw.Spacer(),
-                    pw.Text(
-                      'Date: ${DateFormat('dd MMM yyyy').format(DateTime.now())}',
-                      style: pw.TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-                pw.SizedBox(height: 10),
-                pw.Row(
-                  children: [
-                    pw.Text(
-                      'Account Name : ',
-                      style: pw.TextStyle(fontSize: 14),
-                    ),
-                    pw.Text(
-                      '${custName?.toUpperCase()}',
-                      style: pw.TextStyle(
-                        fontSize: 14,
-                        fontWeight: pw.FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                pw.SizedBox(height: 10),
-                pw.Row(
-                  children: [
-                    pw.Text(
-                      'Account Number : ',
-                      style: pw.TextStyle(fontSize: 14),
-                    ),
-                    pw.Text(
-                      depAccNo,
-                      style: pw.TextStyle(
-                        fontSize: 14,
-                        fontWeight: pw.FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                pw.SizedBox(height: 10),
-                pw.Text(
-                  'Account Transaction Report $searchedReportDate',
-                  style: pw.TextStyle(fontSize: 14),
-                ),
-                pw.SizedBox(height: 10),
-
-                pw.SizedBox(height: 20),
-                pw.Table.fromTextArray(
-                  context: context,
-                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  headerDecoration: pw.BoxDecoration(color: PdfColors.grey300),
-                  cellAlignment: pw.Alignment.centerLeft,
-                  columnWidths: {
-                    0: const pw.FlexColumnWidth(2), // Date
-                    1: const pw.FlexColumnWidth(1), // Type
-                    2: const pw.FlexColumnWidth(2), // Amount
-                    3: const pw.FlexColumnWidth(2), // Balance
-                    4: const pw.FlexColumnWidth(5), // Narration (longer text)
-                  },
-                  data: <List<String>>[
-                    <String>[
-                      // 'Account No',
-                      'Date',
-                      'Type',
-                      'Amount',
-                      'Balance',
-                      'Narration',
-                    ],
-                    ...transactionDetails
-                        .map(
-                          (transactionDetail) => [
-                            // transactionDetail.accNo?.toString() ?? '',
-                            // DateFormat('yyyy-MM-dd').format(
-                            DateFormat('dd-MM-yyyy').format(
-                              transactionDetail.trDate ?? DateTime.now(),
-                            ),
-                            transactionDetail.tranType
-                                        .toString()
-                                        .toLowerCase() ==
-                                    "trantype.c"
-                                ? "Credit"
-                                : "Debit" ?? '',
-                            transactionDetail.amount?.toStringAsFixed(2) ??
-                                '0.00',
-                            transactionDetail.tranBalance?.toStringAsFixed(2) ??
-                                '0.00',
-                            transactionDetail.narration ?? '',
-                          ],
-                        )
-                        .toList(),
-                  ],
-                ),
-              ],
-        ),
-      );
-    } catch (e) {
-      debugPrint("Error while creating table in PDF: $e");
-    }
-
-    debugPrint(
-      "Transactions: ${transactionDetails.map((t) => t.toString()).toList()}",
-    );
-
-    final pdfBytes = await pdf.save();
-
-    // Add password protection using Syncfusion
-    final doc = sf.PdfDocument(inputBytes: pdfBytes);
-
-    //Add security to the document.
-    final sf.PdfSecurity security = doc.security;
-
-    //Set password.
-    // security.userPassword = 'a@123';
-    security.userPassword = last4Digits!;
-    security.ownerPassword = 'owner@$last4Digits';
-
-    //Set the encryption algorithm.
-    security.algorithm = sf.PdfEncryptionAlgorithm.aesx256Bit;
-
-    // final dir =
-    //     Platform.isAndroid
-    //         ? Directory('/storage/emulated/0/Download')
-    //         : await getApplicationDocumentsDirectory();
-
-    // Get the Downloads directory
-    Directory? downloadsDirectory;
-    if (Platform.isAndroid) {
-      downloadsDirectory = Directory('/storage/emulated/0/Download');
-    } else if (Platform.isIOS) {
-      // iOS doesn't have a direct Downloads folder
-      downloadsDirectory = await getApplicationDocumentsDirectory();
-    } else {
-      // For other platforms
-      downloadsDirectory = await getDownloadsDirectory();
-    }
-
-    //Save the document.
-    final protectedBytes = await doc.save();
-    final file = File(
-      "${downloadsDirectory!.path}/transactions_$searchedDate.pdf",
-    );
-    await file.writeAsBytes(protectedBytes);
-
-    debugPrint("Password-protected PDF saved at ${file.path}");
-
-    //Dispose the document.
-    doc.dispose();
-
-    ///Without password protected file using pdf package
-    // Get the Downloads directory
-    // Directory? downloadsDirectory;
-    // if (Platform.isAndroid) {
-    //   downloadsDirectory = Directory('/storage/emulated/0/Download');
-    // } else if (Platform.isIOS) {
-    //   // iOS doesn't have a direct Downloads folder
-    //   downloadsDirectory = await getApplicationDocumentsDirectory();
-    // } else {
-    //   // For other platforms
-    //   downloadsDirectory = await getDownloadsDirectory();
-    // }
-    //
-    // ///Store in cache directory of app
-    // // final output = await getTemporaryDirectory();
-    // // final file = File("${output.path}/transactions_$searchedDate.pdf");
-    // final file = File(
-    //   path.join(downloadsDirectory!.path, "transactions_$searchedDate.pdf"),
-    // );
-    // await file.writeAsBytes(await pdf.save());
-    // debugPrint("PDF saved at ${file.path}");
   }
 
   @override
   Widget build(BuildContext context) {
+    final searchBloc = SearchBloc.get(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -378,19 +120,39 @@ class _AccountSearchState extends State<AccountSearch> {
         ),
       ),
       floatingActionButton:
-          depositTable!.length == 0
+          depositTable.isEmpty
               ? SizedBox.shrink()
-              : FloatingActionButton(
-                backgroundColor: Theme.of(context).primaryColor,
-                shape: CircleBorder(),
-                tooltip: 'Download PDF',
-                child: Icon(Icons.download, color: Colors.white),
-                onPressed: () async {
-                  await generatePdf(depositTable!);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('PDF generated successfully!')),
+              : BlocBuilder<SearchBloc, SearchState>(
+                builder: (context, state) {
+                  final isLoading = state is PdfDownloadLoading;
+
+                  warningPrint("isloading in fab =$isLoading");
+                  return FloatingActionButton(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: CircleBorder(),
+                    tooltip: 'Download PDF',
+                    onPressed:
+                        isLoading
+                            ? null
+                            : () {
+                              searchBloc.add(
+                                PdfDownloadEvent(
+                                  depositTable,
+                                  fromDateController.text,
+                                  toDateController.text,
+                                  context,
+                                ),
+                              );
+                            },
+                    child:
+                        isLoading
+                            ? Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                            : Icon(Icons.download, color: Colors.white),
                   );
-                  // Navigator.push(context, MaterialPageRoute(builder: (context) => StatementDownload()));
                 },
               ),
       body: Form(
@@ -409,6 +171,12 @@ class _AccountSearchState extends State<AccountSearch> {
                 ),
                 child: DropdownButtonHideUnderline(
                   child: BlocBuilder<SearchBloc, SearchState>(
+                    buildWhen:
+                        (previous, current) =>
+                            current is SearchInitial ||
+                            current is AccDepositLoading ||
+                            current is AccDepositResponse ||
+                            current is AccDepositErrorException,
                     builder: (context, state) {
                       if (state is SearchInitial) {
                         return Center(child: CircularProgressIndicator());
@@ -429,7 +197,7 @@ class _AccountSearchState extends State<AccountSearch> {
                                 }).toList(),
                             onChanged: (dynamic newVal) {
                               setState(() {
-                                _mySelection = newVal;
+                                _mySelection = newVal.toString();
                               });
                             },
                           );
@@ -445,7 +213,7 @@ class _AccountSearchState extends State<AccountSearch> {
                   ),
                 ),
               ),
-              SizedBox(height: 12.0),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.025),
               Row(
                 children: [
                   Expanded(
@@ -458,6 +226,7 @@ class _AccountSearchState extends State<AccountSearch> {
                         child: TextFormField(
                           enabled: false,
                           controller: fromDateController,
+                          style: TextStyle(color: Colors.black),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Select Date";
@@ -467,6 +236,10 @@ class _AccountSearchState extends State<AccountSearch> {
                           },
                           decoration: InputDecoration(
                             labelText: "From Date",
+
+                            hintStyle: TextStyle(color: Colors.black),
+                            labelStyle: TextStyle(color: Colors.black),
+
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -486,6 +259,7 @@ class _AccountSearchState extends State<AccountSearch> {
                         child: TextFormField(
                           enabled: false,
                           controller: toDateController,
+                          style: TextStyle(color: Colors.black),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Select Date";
@@ -494,6 +268,8 @@ class _AccountSearchState extends State<AccountSearch> {
                             }
                           },
                           decoration: InputDecoration(
+                            hintStyle: TextStyle(color: Colors.black),
+                            labelStyle: TextStyle(color: Colors.black),
                             labelText: "To Date",
                             border: OutlineInputBorder(),
                           ),
@@ -503,7 +279,7 @@ class _AccountSearchState extends State<AccountSearch> {
                   ),
                 ],
               ),
-              SizedBox(height: 12.0),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.025),
               SizedBox(
                 height: 40.0,
                 child: ElevatedButton(
@@ -522,51 +298,46 @@ class _AccountSearchState extends State<AccountSearch> {
                         _isDepositTableEmpty = false;
                       });
 
-                      // var response = await RestAPI().get(url);
-                      // var response = await RestAPI().get(
-                      //   APis.getDepositTransactionList({
-                      //     "Cust_id": userId,
-                      //     "Acc_no": _mySelection,
-                      //     "Sch_code": schemeCode1,
-                      //     "Br_code": branchCode1,
-                      //     "Frm_Date": fromDateController.text,
-                      //     "Todate": toDateController.text,
-                      //   }),
-                      // );
+                      try {
+                        Map<String, dynamic> fetchAccStatementBody = {
+                          "Cmp_Code": cmpCode,
+                          "Acc_ID": _mySelection,
+                          "StartDate": fromDateDDMMYYYYCtrl.text,
+                          "EndDate": toDateDDMMYYYYCtrl.text,
+                        };
 
-                      Map<String, dynamic> fetchAccStatementBody = {
-                        "Cmp_Code": cmpCode,
-                        "Acc_ID": _mySelection,
-                        "StartDate": fromDateDDMMYYYYCtrl.text,
-                        "EndDate": toDateDDMMYYYYCtrl.text,
-                      };
-                      var response = await RestAPI().post(
-                        APis.fetchAccountStatement,
-                        params: fetchAccStatementBody,
-                      );
+                        var response = await RestAPI().post(
+                          APis.fetchAccountStatement,
+                          params: fetchAccStatementBody,
+                        );
 
-                      setState(() {
-                        DepositSearchModel depositList =
-                            DepositSearchModel.fromJson(response);
+                        setState(() {
+                          AccStatementSearchModel accStatementSearchModel =
+                              AccStatementSearchModel.fromJson(response);
 
-                        debugPrint("deposit List : $depositTable");
+                          depositTable = accStatementSearchModel.data ?? [];
+                          warningPrint(
+                            "deposit List length: ${depositTable.length}",
+                          );
 
-                        depositTable = depositList.depositTable;
-                        if (depositTable!.isEmpty) {
+                          _isDepositTableEmpty = depositTable.isEmpty;
+                          _isAccSearch = false;
+                        });
+                      } on RestException catch (e, stackTrace) {
+                        setState(() {
+                          _isAccSearch = false;
                           _isDepositTableEmpty = true;
-                        } else {
-                          _isDepositTableEmpty = false;
-                        }
-                        _isAccSearch = false;
-                      });
-                      return;
+                        });
+                        GlobalWidgets().showSnackBar(
+                          context,
+                          "${e.message["ProceedMessage"]}",
+                        );
+                        errorPrint("Error fetching account statement: $e");
+                        debugPrintStack(stackTrace: stackTrace);
+                      }
                     }
-
-                    // getSerchList();
                   },
-                  /* onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => StatementDownload()));
-                  },*/
+
                   child:
                       _isAccSearch
                           ? CircularProgressIndicator(
@@ -585,20 +356,21 @@ class _AccountSearchState extends State<AccountSearch> {
               _isAccSearch
                   ? SizedBox.shrink()
                   : (_isDepositTableEmpty)
-                  ? Center(child: Text("No Data Found"))
+                  ? Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      Center(child: Text("No Data Found")),
+                    ],
+                  )
                   : Expanded(
                     child: ListView.builder(
-                      itemCount: depositTable!.length,
+                      itemCount: depositTable.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        String s = depositTable![index].trDate
-                            .toString()
-                            .substring(
-                              0,
-                              depositTable![index].trDate.toString().indexOf(
-                                ' ',
-                              ),
-                            );
+                        String s = depositTable[index].trDate.toString();
+
                         return Card(
                           child: ListTile(
                             title: Row(
@@ -607,22 +379,25 @@ class _AccountSearchState extends State<AccountSearch> {
                                 //   Text(depositTable[index].trDate.toString()),
                                 Text(s),
                                 Text(
-                                  depositTable![index].amount.toString(),
+                                  depositTable[index].amount.toStringAsFixed(2),
                                   style: TextStyle(
                                     color:
-                                        depositTable![index].tranType
+                                        depositTable[index].tranType
                                                     .toString() ==
-                                                "C"
-                                            ? Colors.red
-                                            : Colors.green,
+                                                "1"
+                                            ? Colors.green
+                                            : Colors.red,
                                   ),
                                 ),
                                 Text(
-                                  depositTable![index].tranBalance.toString(),
+                                  depositTable[index].balAmt.toStringAsFixed(
+                                        2,
+                                      ) ??
+                                      "",
                                 ),
                               ],
                             ),
-                            subtitle: Text(depositTable![index].narration!),
+                            subtitle: Text(depositTable[index].remarks ?? ""),
                           ),
                         );
                       },
