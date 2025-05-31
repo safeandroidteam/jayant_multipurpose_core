@@ -140,7 +140,7 @@ class _SettingsState extends State<Settings> {
                   fontWeight: FontWeight.bold,
                   size: 16.0,
                 ),
-                subtitle: TextView(text: "Set and Update Mpin", size: 12.0),
+                subtitle: TextView(text: "Update Mpin", size: 12.0),
               ),
             ),
             // Divider(

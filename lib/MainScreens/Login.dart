@@ -562,6 +562,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       signInModel.data[0].custId.toString(),
     );
     await preferences.setString(
+      StaticValues.userID,
+      signInModel.data[0].userId.toString(),
+    );
+    await preferences.setString(
       StaticValues.branchCode,
       signInModel.data[0].brCode.toString(),
     );
