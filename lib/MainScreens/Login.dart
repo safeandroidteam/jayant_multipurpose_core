@@ -937,6 +937,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       "Cmp_Code": cmpCode ?? "",
                       "User_Name": usernameCtrl.text,
                       "Password": passCtrl.text,
+                      "Mobile_No": "9400904859",
                     },
                   );
 
@@ -1067,6 +1068,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         "Cmp_Code": cmpCode ?? "",
                         "User_Name": pref.getString(StaticValues.userName),
                         "MPIN": allMpinCtrl.text,
+                        "Mobile_No": "9400904859",
                       },
                     );
 
