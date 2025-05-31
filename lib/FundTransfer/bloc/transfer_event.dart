@@ -38,3 +38,12 @@ class FetchBenificiaryevent extends TransferEvent {
   List<Object> get props => [custID];
   
 }
+class FetchUserLimitevent extends TransferEvent {
+  final String cmpCode;
+  final String custType;
+
+  FetchUserLimitevent(this.cmpCode, this.custType);
+  @override
+  List<Object> get props => [custType];
+
+}

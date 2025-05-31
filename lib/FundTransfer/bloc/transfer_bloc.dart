@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart';
+import 'package:passbook_core_jayant/FundTransfer/Model/fetchUserLimitRightModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/fundTransferTypeModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/userAccResModal.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
@@ -17,6 +18,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     on<FetchCustomerFromAccNo>(_handleFromAcc);
     on<FetchFundTransferType>(_fetchFundTransferType);
     on<FetchBenificiaryevent>(_fetchBeneficiaryType);
+    on<FetchUserLimitevent>(_fetchUserLimit);
   }
 
   Future<void> _onSendDetails(
@@ -109,7 +111,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       successPrint("fetchTrasnferList=${transferList.first.toJson()}");
     } on RestException catch (e) {
       warningPrint("State: FetchFundTransferTypeError - $e");
-      emit(FetchFundTransferTypeError(e.toString()));
+      emit(FetchFundTransferTypeError(e.message["ProceedMessage"]));
     }
   }
 
@@ -147,9 +149,50 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       emit(FetchBenificiaryResponse(beneficiaryList));
       warningPrint("State: FetchBenificiaryResponse");
       successPrint("fetchBeneficiaryList=${beneficiaryList.first.toJson()}");
-    } on RestException catch (e) {
-      warningPrint("State: FetchFundTransferTypeError - $e");
-      emit(FetchBenificiaryError(e.toString()));
+    } on RestException catch(e){
+
+      warningPrint("State:  Account Not Found  - $e");
+      emit(FetchBenificiaryError(e.message["ProceedMessage"]));
+    }
+
+
+  }
+
+  Future<void>_fetchUserLimit(
+      FetchUserLimitevent event,
+      Emitter<TransferState> emit,
+      )async{
+    emit(FetchUserLimitLoading());
+    warningPrint("State: FetchUserLimitLoading");
+    try{
+      Map<String, dynamic> fetchUserLimitListBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_Type": event.custType,
+      };
+      final response = await RestAPI().post(
+        APis.fetchUserLimit,
+        params: fetchUserLimitListBody,
+      );
+      final userLimitList =
+      (response["Data"] as List<dynamic>)
+          .map(
+            (e) => UserLimitData(
+              cmpCode: e['Cmp_Code'] ?? 0,
+              custType: e['Cust_Type'] ?? 0,
+              minRcghBal: e['Min_rcghbal'] ?? '',
+              minFundTranBal: e['Min_fundtranbal'] ?? '',
+              maxRcghBal: e['Max_rcghbal'] ?? '',
+              maxFundTranBal: e['Max_fundtranbal'] ?? '',
+              maxInterFundTranBal: e['Max_interfundtranbal'] ?? '',)
+      )
+          .toList();
+      emit(FetchUserLimitResponse(userLimitList));
+      warningPrint("State: FetchUserLimitResponse");
+      successPrint("fetchUserLimitList=${userLimitList.first.toJson()}");
+    }
+    on RestException catch(e){
+      warningPrint("State:  FetchUserLimitError  - $e");
+      emit(FetchUserLimitError(e.message["ProceedMessage"]));
     }
   }
 

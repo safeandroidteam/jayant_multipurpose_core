@@ -594,6 +594,11 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       signInModel.data[0].customerType.toString(),
     );
     await preferences.setString(
+      StaticValues.custTypeCode,
+      signInModel.data[0].custTypeCode.toString(),
+    );
+
+    await preferences.setString(
       StaticValues.accountNo,
       signInModel.data[0].accNo.toString(),
     );
@@ -937,6 +942,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       "Cmp_Code": cmpCode ?? "",
                       "User_Name": usernameCtrl.text,
                       "Password": passCtrl.text,
+                      "Mobile_No":"9400904859",
                     },
                   );
 
@@ -1005,6 +1011,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                 customerType:
                                     response!["Data"][0]["Customer_Type"],
                                 transDate: response!["Data"][0]["Trans_Date"],
+                                custTypeCode:  response!["Data"][0]["Customer_TypeCode"],
                               ),
                             ],
                           ),
@@ -1150,6 +1157,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                   customerType:
                                       response!["Data"][0]["Customer_Type"],
                                   transDate: response!["Data"][0]["Trans_Date"],
+                                  custTypeCode:  response!["Data"][0]["Customer_TypeCode"],
                                 ),
                               ],
                             ),
@@ -1378,6 +1386,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                         response!["Data"][0]["Customer_Type"],
                                     transDate:
                                         response!["Data"][0]["Trans_Date"],
+                                    custTypeCode:  response!["Data"][0]["Customer_TypeCode"],
                                   ),
                                 ],
                               ),

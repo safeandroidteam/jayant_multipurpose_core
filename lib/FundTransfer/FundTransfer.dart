@@ -29,7 +29,7 @@ class FundTransfer extends StatefulWidget {
 class _FundTransferState extends State<FundTransfer>
     with SingleTickerProviderStateMixin {
   String acc = "", name = "";
-  String cmpCode = "";
+  String cmpCode = "", custTypeCode="";
   GlobalKey<ScaffoldState>? scaffoldKey;
   final _peopleKey = GlobalKey();
 
@@ -59,15 +59,21 @@ class _FundTransferState extends State<FundTransfer>
       userName = preferences.getString(StaticValues.accName) ?? "";
       userId = preferences.getString(StaticValues.custID) ?? "";
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
+      custTypeCode= preferences.getString(StaticValues.custTypeCode)??"";
     });
 
-    Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
-    print("transDailyLimit::: $transDailyLimit");
-    setState(() {
-      _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
-      _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
-      //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-    });
+    // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
+    // print("transDailyLimit::: $transDailyLimit");
+    // setState(() {
+    //   _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
+    //   _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
+    //   //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+    // });
+
+    //fetchuserlimit
+    final transferBloc = TransferBloc.get(context);
+    transferBloc.add(FetchUserLimitevent(cmpCode,custTypeCode));
+
     fetchBeneficiary();
   }
 
@@ -280,13 +286,17 @@ class _FundTransferState extends State<FundTransfer>
                                 (previous, current) =>
                                     current is FetchBenificiaryLoading ||
                                     current is FetchBenificiaryResponse ||
-                                    CurveTween is FetchBenificiaryError,
+                                    current is FetchBenificiaryError,
                             builder: (context, state) {
+                              customPrint("state =$state");
                               if (state is FetchBenificiaryLoading) {
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
-                              } else if (state is FetchBenificiaryResponse) {
+
+                              }
+
+                              else if (state is FetchBenificiaryResponse) {
                                 if (state.beneficiaryList.isNotEmpty) {
                                   return GridView.builder(
                                     gridDelegate:
@@ -421,7 +431,10 @@ class _FundTransferState extends State<FundTransfer>
                                       );
                                     },
                                   );
-                                } else {
+                                } else
+                                  // if(state.beneficiaryList
+                                  //   .length<1)
+                                  {
                                   return Center(
                                     child: Text(
                                       "No Data Found",
@@ -430,11 +443,16 @@ class _FundTransferState extends State<FundTransfer>
                                   );
                                 }
                               } else if (state is FetchBenificiaryError) {
-                                return Center(
-                                  child: Text(
-                                    "Error: ${state.error}",
-                                    style: const TextStyle(color: Colors.red),
-                                  ),
+                                return Column(
+                                  children: [
+                                    SizedBox(height: 30,),
+                                    Center(
+                                      child: Text(
+                                        "Error: ${state.error}",
+                                        style: const TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
                                 );
                               } else {
                                 return Center(
@@ -444,6 +462,7 @@ class _FundTransferState extends State<FundTransfer>
                                   ),
                                 );
                               }
+
                             },
                           ),
                         ],

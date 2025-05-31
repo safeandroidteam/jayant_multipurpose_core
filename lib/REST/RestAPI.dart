@@ -156,6 +156,7 @@ dynamic _returnResponse<T>(T response) {
         debugPrint("responseJson : $responseJson");
         return responseJson;
       case 404:
+      throw NotFoundException(response["response"]);
       case 400:
         throw BadRequestException(response["response"]);
       case 401:
