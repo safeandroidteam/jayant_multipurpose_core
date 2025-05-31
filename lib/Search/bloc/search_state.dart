@@ -29,3 +29,10 @@ class AccDepositErrorException extends SearchState {
   @override
   List<Object> get props => [error];
 }
+
+class PdfDownloadStateInitial extends SearchState {}
+
+class PdfDownloadSucess extends SearchState {}
+
+class PdfDownloadLoading extends SearchState {}
+class PdfDownloadError extends SearchState {}
