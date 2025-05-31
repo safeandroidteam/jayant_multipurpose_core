@@ -16,9 +16,12 @@ class FetchCustomerAccNo extends TransferEvent {
 }
 
 class FetchCustomerFromAccNo extends TransferEvent {
-  final String userId;
+  final String cmpCode;
+  final String custID;
 
-  FetchCustomerFromAccNo(this.userId);
+  FetchCustomerFromAccNo(this.cmpCode, this.custID);
+
+  
 }
 
 class FetchFundTransferType extends TransferEvent {
@@ -26,7 +29,12 @@ class FetchFundTransferType extends TransferEvent {
 }
 
 class FetchBenificiaryevent extends TransferEvent {
-  final String id;
+  // final String id;
+  final String cmpCode;
+  final String custID;
 
-  FetchBenificiaryevent(this.id);
+  FetchBenificiaryevent(this.cmpCode, this.custID);
+   @override
+  List<Object> get props => [custID];
+  
 }

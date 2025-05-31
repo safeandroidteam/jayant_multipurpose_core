@@ -14,6 +14,8 @@ import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../REST/app_exceptions.dart';
+
 class FundTransfer extends StatefulWidget {
   const FundTransfer({super.key});
 
@@ -27,6 +29,7 @@ class FundTransfer extends StatefulWidget {
 class _FundTransferState extends State<FundTransfer>
     with SingleTickerProviderStateMixin {
   String acc = "", name = "";
+  String cmpCode = "";
   GlobalKey<ScaffoldState>? scaffoldKey;
   final _peopleKey = GlobalKey();
 
@@ -55,15 +58,9 @@ class _FundTransferState extends State<FundTransfer>
       name = preferences.getString(StaticValues.accName) ?? "";
       userName = preferences.getString(StaticValues.accName) ?? "";
       userId = preferences.getString(StaticValues.custID) ?? "";
+      cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
     });
-    Map balanceResponse = await RestAPI().get(
-      APis.fetchFundTransferBal(userId),
-    );
-    //await preferences.setString(StaticValues.userBalance,balanceResponse["Table"][0]["BalAmt"].toString());
-    setState(() {
-      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-      userAcc = balanceResponse["Table"][0]["AccNo"].toString();
-    });
+
     Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
     print("transDailyLimit::: $transDailyLimit");
     setState(() {
@@ -78,7 +75,7 @@ class _FundTransferState extends State<FundTransfer>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final transferBloc = TransferBloc.get(context);
       var id = preferences.getString(StaticValues.custID) ?? "";
-      transferBloc.add(FetchBenificiaryevent(id));
+      transferBloc.add(FetchBenificiaryevent(cmpCode,userId));
     });
   }
 
@@ -337,7 +334,7 @@ class _FundTransferState extends State<FundTransfer>
                                                         state
                                                             .beneficiaryList[index]
                                                             .recieverId
-                                                            .round()
+                                                            // .round()
                                                             .toString(),
                                                       );
                                                       fetchBeneficiary();

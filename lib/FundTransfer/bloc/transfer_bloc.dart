@@ -52,22 +52,26 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   ) async {
     emit(FromAccResponseLoading());
     try {
-      final fromAcReponse = await RestAPI().get(
-        APis.fetchFundTransferBal(event.userId),
+        Map<String, dynamic> fetchCustomerSBBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+      };
+      final fromAcReponse = await RestAPI().post(
+        APis.fetchCustomerSB,
+        params: fetchCustomerSBBody
       );
       successPrint("Frm Acc =$fromAcReponse");
 
       // Validate the structure of the response
-      if (fromAcReponse["Table"] is List) {
+      if (fromAcReponse["Data"] is List) {
         // Map the response to a List<UserAccTable>
         final userAccList =
-            (fromAcReponse["Table"] as List<dynamic>)
+            (fromAcReponse["Data"] as List<dynamic>)
                 .map(
                   (account) => UserAccTable(
-                    accNo: account["AccNo"] ?? "",
-                    balAmt: account["BalAmt"] ?? "",
-                    accType: account["Types"] ?? "",
-                  ),
+                  accNo: account["Acc_No"] ??"", 
+                  balance: account["Balance"] ??"",
+                  )             
                 )
                 .toList();
         // userAccList.add(UserAccTable(
@@ -116,10 +120,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(FetchBenificiaryLoading());
     warningPrint("State: FetchBenificiaryLoading");
     try {
-      final response = await RestAPI().get(APis.fetchBeneficiary(event.id));
+      // final response = await RestAPI().get(APis.fetchBeneficiary(event.id));
+
+      Map<String, dynamic> fetchBeneficiaryListBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+      };
+      final response = await RestAPI().post(
+        APis.fetchBeneficiaryList,
+        params: fetchBeneficiaryListBody,
+      );
 
       final beneficiaryList =
-          (response["Table"] as List<dynamic>)
+          (response["Data"] as List<dynamic>)
               .map(
                 (e) => BeneficiaryDatum(
                   recieverAccno: e["Reciever_Accno"] ?? "",
@@ -127,6 +140,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
                   recieverIfsc: e["Reciever_Ifsc"] ?? "",
                   recieverMob: e["Reciever_Mob"] ?? "",
                   recieverName: e["Reciever_Name"] ?? "",
+
                 ),
               )
               .toList();
