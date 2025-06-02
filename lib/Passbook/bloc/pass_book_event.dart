@@ -38,22 +38,22 @@ class CurrentPageChanged extends PassBookEvent {
 }
 
 class ChittyLoanEvent extends PassBookEvent {
-  final String custID;
   final String cmpCode;
+  final String custID;
   final String section;
-  const ChittyLoanEvent(this.custID, this.cmpCode, this.section);
+  const ChittyLoanEvent(this.cmpCode, this.custID, this.section);
 
   @override
-  List<Object> get props => [custID, cmpCode, section];
+  List<Object> get props => [cmpCode, custID, section];
 }
 
-class LoanTransEvent extends PassBookEvent {
+class ChittyLoanTransEvent extends PassBookEvent {
   // final String accNo;
   final String cmpCode;
   final int accID;
 
   // const LoanTransEvent(this.accNo);
-  const LoanTransEvent(this.cmpCode, this.accID);
+  const ChittyLoanTransEvent(this.cmpCode, this.accID);
 
   @override
   // List<Object> get props => [accNo];

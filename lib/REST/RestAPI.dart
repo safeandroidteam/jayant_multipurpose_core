@@ -196,6 +196,8 @@ class APis {
       'https://sec2pay.jayantindia.com:6390';
 
   /// New
+  //app version & Company Code
+  static String mobileGetVersion = "$_superLink/FetchMobAppVersion";
 
   //register
   static String registerAcc = "$_superLink/Save_UserMaster";
@@ -204,11 +206,12 @@ class APis {
 
   //Login
   static String loginUrl = "$_superLink/ValidateUserLogin";
-  // static String loginMPin = "$_superLink/get_MpinLogin?";
-  static String loginMPin = "$_superLink/ValidateUserLoginMPIN";
   static String loginOtpVerify =
       "$_superLink/Validate_UserLoginOTPVerification";
-  static String mobileGetVersion = "$_superLink/FetchMobAppVersion";
+  static String loginMPin = "$_superLink/ValidateUserLoginMPIN";
+  static String updateUserMPin = "$_superLink/InsertUpdateUserMPIN";
+  static String changeUserPassword = "$_superLink/Validate_ChangePassword";
+
   //Account section
   static String fetchAccDetailsbySection =
       "$_superLink/Fetch_AccountDetailsBySection";
@@ -226,6 +229,8 @@ class APis {
 
   //  http://103.230.37.187:6556/change_pin?Mob_no=chitra&old_pin=98478&new_pin=123456
   static String changePassword = "$_superLink/change_pin?Mob_no=";
+
+  // static String loginMPin = "$_superLink/get_MpinLogin?";
 
   ///Register
   //http://103.230.37.187:6556/Mobile_Get_OTP?MobileNo=9847828438
