@@ -174,6 +174,18 @@ class _BeneficiaryState extends State<Beneficiary> {
                 ),
                 SizedBox(height: 12.0),
                 EditTextBordered(
+                  controller: rName,
+                  hint: "Enter Receiver Nickname",
+                  errorText: rNameVal ? "Name is invalid" : null,
+                  textCapitalization: TextCapitalization.words,
+                  onChange: (value) {
+                    setState(() {
+                      rNameVal = value.trim().length < 3;
+                    });
+                  },
+                ),
+                SizedBox(height: 12.0),
+                EditTextBordered(
                   controller: rMob,
                   hint: "Enter Receiver Mobile no.",
                   keyboardType: TextInputType.number,

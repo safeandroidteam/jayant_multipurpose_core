@@ -3,6 +3,8 @@ import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart
 import 'package:passbook_core_jayant/FundTransfer/Model/fundTransferTypeModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/userAccResModal.dart';
 
+import '../Model/fetchUserLimitRightModal.dart';
+
 
 @immutable
 abstract class TransferState {}
@@ -80,4 +82,20 @@ class FetchBenificiaryError extends TransferState {
   final String error;
 
   FetchBenificiaryError(this.error);
+}
+
+//fetchuserlimit
+
+class FetchUserLimitLoading extends TransferState {}
+
+class FetchUserLimitResponse extends TransferState {
+  final List<UserLimitData> userLimitList;
+
+  FetchUserLimitResponse(this.userLimitList);
+}
+
+class FetchUserLimitError extends TransferState {
+  final String error;
+
+  FetchUserLimitError(this.error);
 }
