@@ -99,6 +99,7 @@ class RestAPI {
     var uri = Uri.parse(url);
     debugPrint('Api Post, url $uri  and $params');
     T? responseJson;
+
     try {
       final response = await http.post(
         uri,
@@ -252,7 +253,7 @@ class APis {
   // &password=1234567&MobileNo=9847828438&Accno=0020070001785
 
   ///Forgot password
-  static String getPassChangeOTP = "$_superLink/GetPasswordChangeOTP?";
+  static String forgotPasswordOtp = "$_superLink/Validate_ForgetPassword?";
 
   ///Get Card Balnce
   static String getCardBalance = "$_superLinkJayant1/GetAccountBalance";
@@ -270,7 +271,8 @@ class APis {
   static String cardTopUp = "$_superLinkJayant1/TopUpCard";
 
   //http://103.230.37.187:6556/ChangePassword?userid=chitra&Newpassword=1234567
-  static String changeForgotPass = "$_superLink/ChangePassword?";
+  static String changeForgotPass =
+      "$_superLink/Validate_ForgetPasswordOTPVerification?";
 
   ///Account Open Page
   static String DebitAccOpen = "$_superLinkJayant/DebitAccOpen_T_Select";
