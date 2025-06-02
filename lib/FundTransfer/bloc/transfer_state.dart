@@ -5,7 +5,6 @@ import 'package:passbook_core_jayant/FundTransfer/Model/userAccResModal.dart';
 
 import '../Model/fetchUserLimitRightModal.dart';
 
-
 @immutable
 abstract class TransferState {}
 
@@ -21,16 +20,16 @@ class DetailsResponse extends TransferState {
   DetailsResponse(this.response);
 }
 
-class CustAccNoResponse extends TransferState {
+class FetchCustAccNoResponse extends TransferState {
   final Map response;
 
-  CustAccNoResponse(this.response);
+  FetchCustAccNoResponse(this.response);
 }
 
-class CustAccNoError extends TransferState {
+class FetchCustAccNoError extends TransferState {
   final String error;
 
-  CustAccNoError(this.error);
+  FetchCustAccNoError(this.error);
 }
 
 class DetailsError extends TransferState {
@@ -39,21 +38,21 @@ class DetailsError extends TransferState {
   DetailsError(this.error);
 }
 
-class FromAccResponse extends TransferState {
+class FetchCustFromAccResponse extends TransferState {
   final List<UserAccTable> accounts;
 
-  FromAccResponse(this.accounts);
+  FetchCustFromAccResponse(this.accounts);
 
   @override
   List<Object?> get props => [accounts];
 }
 
-class FromAccResponseLoading extends TransferState {}
+class FetchCustFromAccResponseLoading extends TransferState {}
 
-class FromAccResponseError extends TransferState {
+class FetchCustFromAccResponseError extends TransferState {
   final String error;
 
-  FromAccResponseError(this.error);
+  FetchCustFromAccResponseError(this.error);
 }
 
 class FetchFundTransferTypeLoading extends TransferState {}
