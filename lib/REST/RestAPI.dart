@@ -156,6 +156,7 @@ dynamic _returnResponse<T>(T response) {
         debugPrint("responseJson : $responseJson");
         return responseJson;
       case 404:
+      throw NotFoundException(response["response"]);
       case 400:
         throw BadRequestException(response["response"]);
       case 401:
@@ -221,6 +222,12 @@ class APis {
   //Search
   static String fillAccountList = "$_superLink/Fill_AccountList";
   static String fetchAccountStatement = "$_superLink/Fetch_AccountStatement";
+
+  //beneficiary
+  static String fetchBeneficiaryList = "$_superLink/FetchBeneficiaryList";
+  static String fetchCustomerSB = "$_superLink/Fetch_CustomerSB";
+  static String fetchUserLimit= "$_superLink/Fetch_UserLimitRights";
+  static String saveBeneficiary= "$_superLink/SaveBeneficiary";
 
   ///OLD
   static String generateRefID(String key) =>

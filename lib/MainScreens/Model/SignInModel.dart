@@ -48,6 +48,7 @@ class SignInData {
     required this.ifscCode,
     required this.customerType,
     required this.transDate,
+    required this.custTypeCode,
   });
 
   final String? proceed_Status;
@@ -67,6 +68,7 @@ class SignInData {
   final String? ifscCode;
   final String? customerType;
   final String? transDate;
+  final String? custTypeCode;
 
   factory SignInData.fromJson(Map<String, dynamic> json) {
     return SignInData(
@@ -87,6 +89,8 @@ class SignInData {
       ifscCode: json["IFSC_Code"],
       customerType: json["Customer_Type"],
       transDate: json["Trans_Date"],
+      custTypeCode: json["Customer_TypeCode"],
+
     );
   }
 
@@ -108,5 +112,6 @@ class SignInData {
     "IFSC_Code": ifscCode,
     "Customer_Type": customerType,
     "Trans_Date": transDate,
+    "Customer_TypeCode": custTypeCode,
   };
 }
