@@ -469,7 +469,8 @@ class GlobalWidgets {
     final transferbloc = TransferBloc.get(context);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String userId = preferences.getString(StaticValues.custID) ?? "";
-    transferbloc.add(FetchCustomerFromAccNo(userId));
+    String cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
+    transferbloc.add(FetchCustomerFromAccNo(cmpCode,userId));
     TextEditingController amtCtrl = TextEditingController();
     await showModalBottomSheet(
       context: context,
@@ -574,13 +575,13 @@ class GlobalWidgets {
                                             "",
                                         size: 24,
                                       ),
-                                      subtitle: TextView(
-                                        text:
-                                            state.accounts[index].accType
-                                                .toString() ??
-                                            "",
-                                        size: 12.0,
-                                      ),
+                                      // subtitle: TextView(
+                                      //   text:
+                                      //       state.accounts[index].accType
+                                      //           .toString() ??
+                                      //       "",
+                                      //   size: 12.0,
+                                      // ),
                                     );
                                   },
                                 );
