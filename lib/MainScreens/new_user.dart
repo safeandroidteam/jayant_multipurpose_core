@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:passbook_core_jayant/FundTransfer/Model/user_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 import 'package:passbook_core_jayant/Util/custom_textfield.dart';
 import 'package:passbook_core_jayant/Util/image_picker_widget.dart';
 
 import '../Util/custom_drop_down.dart';
+import 'Model/fill_pickUP_request_modal.dart';
 
-class NewUser extends StatelessWidget {
+class NewUser extends StatefulWidget {
   const NewUser({super.key});
+
+  @override
+  State<NewUser> createState() => _NewUserState();
+}
+
+class _NewUserState extends State<NewUser> {
+  @override
+  void initState() {
+    context.read<UserBloc>().add(FillPickUpTypesEvent());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
-    final userCreationList = <UserCreationModal>[
-      UserCreationModal("Indvidual", 0),
-      UserCreationModal("Institute", 1),
-    ];
+
     final userBloc = UserBloc.get(context);
     return SafeArea(
       child: Scaffold(
@@ -49,30 +57,42 @@ class NewUser extends StatelessWidget {
             ),
 
             BlocBuilder<UserBloc, UserState>(
-              buildWhen:
-                  (previous, current) =>
-                      current is UserTypeSelectionState ||
-                      current is UserTypeSelectionStateLoading,
               builder: (context, state) {
-                return Column(
-                  children: [
-                    LabelWithDropDownField<UserCreationModal>(
-                      textDropDownLabel: "Customer Type",
-                      items: userCreationList,
-                      itemAsString: (p0) => p0.name,
-                      onChanged: (value) {
-                        userBloc.add(UserCreationType(value.id));
-                      },
-                    ),
+                if (state is UserTypeLoaded) {
+                  final selected = state.selectedType;
+                  return Column(
+                    children: [
+                      LabelWithDropDownField<PickUpTypeData>(
+                        textDropDownLabel: "Customer Type",
+                        items: state.pickUpList,
+                        itemAsString: (p0) => p0.pkcDescription,
+                        onChanged: (value) {
+                          if (value != null) {
+                            context.read<UserBloc>().add(
+                              SelectFillPickUpTypeEvent(value),
+                            );
+                          }
+                        },
+                      ),
 
-                    if (state is UserTypeSelectionStateLoading)
-                      Center(child: CircularProgressIndicator()),
-                    if (state is UserTypeSelectionState)
-                      state.id == 1
-                          ? UserInstitutionCreation()
-                          : UserIndvidualCreation(),
-                  ],
-                );
+                      if (selected != null) ...[
+                        SizedBox(height: 10),
+                        if (selected.pkcDescription.toLowerCase() ==
+                            "individual")
+                          UserIndividualCreation()
+                        else if (selected.pkcDescription.toLowerCase() ==
+                            "institution")
+                          UserInstitutionCreation(),
+                      ],
+                    ],
+                  );
+                } else if (state is UserLoading) {
+                  return CircularProgressIndicator();
+                } else if (state is UserTypeError) {
+                  return Text(state.message);
+                } else {
+                  return SizedBox.shrink();
+                }
               },
             ),
 
@@ -84,8 +104,8 @@ class NewUser extends StatelessWidget {
   }
 }
 
-class UserIndvidualCreation extends StatelessWidget {
-  const UserIndvidualCreation({super.key});
+class UserIndividualCreation extends StatelessWidget {
+  const UserIndividualCreation({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -310,25 +330,28 @@ class UserInstitutionCreation extends StatelessWidget {
           hintText: "Firm Reg No",
           textFieldLabel: "Firm Reg No",
         ),
-       LabelCustomTextField(
-        hintText: "Firm Registered Address",
-        textFieldLabel: "Firm Registered Address",
-        lines: 3,),
+        LabelCustomTextField(
+          hintText: "Firm Registered Address",
+          textFieldLabel: "Firm Registered Address",
+          lines: 3,
+        ),
         Text("Document Attached"),
-        SizedBox(height: h*0.01),
+        SizedBox(height: h * 0.01),
         Container(
           height: h * 0.07,
           width: w,
-          decoration: BoxDecoration(border: Border.all(
-            color: Colors.grey,width: 0.3
-          ), color: Colors.white,
-          borderRadius: BorderRadius.circular(10)
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey, width: 0.3),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              IconButton(onPressed: (){},
-               icon: Icon(Icons.add,color: Colors.blueAccent,))
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.add, color: Colors.blueAccent),
+              ),
             ],
           ),
         ),
