@@ -1067,7 +1067,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                         "Cmp_Code": cmpCode ?? "",
                         "User_Name": pref.getString(StaticValues.userName),
                         "MPIN": allMpinCtrl.text,
-                        "Mobile_No":"9400904859",
+                        "Mobile_No": "9400904859",
                       },
                     );
 
@@ -1568,46 +1568,77 @@ class _ForgotUIState extends State<ForgotUI> {
                   });
                 },
               ),
-              SizedBox(height: 10.0),
-              EditTextBordered(
-                controller: otpCtrl,
-                hint: "Enter OTP",
-                errorText: otpValid ? "OTP length should be 4" : null,
-                onChange: (value) {
-                  setState(() {
-                    otpValid = value.trim().length < 4;
-                  });
-                },
-              ),
-              SizedBox(height: 10.0),
-              EditTextBordered(
-                controller: passCtrl,
-                hint: "New password",
-                obscureText: true,
-                showObscureIcon: true,
-                //  errorText: passValid ? "Password length should be 4" : null,
-                errorText:
-                    passValid ? "Please include special charcters" : null,
-                onChange: (value) {
-                  setState(() {
-                    //  passValid = value.trim().length < 4;
-                    passValid = RegExp(r"^[a-zA-Z0-9]+$").hasMatch(value);
-                  });
-                },
-              ),
-              SizedBox(height: 10.0),
-              EditTextBordered(
-                controller: rePassCtrl,
-                hint: "Confirm new password",
-                obscureText: true,
-                showObscureIcon: true,
-                errorText: rePassValid ? "Password not matching" : null,
-                onChange: (value) {
-                  setState(() {
-                    rePassValid = rePassCtrl.text != passCtrl.text;
-                  });
-                },
-              ),
+              SizedBox(height: 30.0),
+
+              // Show these only if OTP is received
+              if (isGetOTP) ...[
+                EditTextBordered(
+                  controller: otpCtrl,
+                  keyboardType: TextInputType.number,
+                  hint: "Enter OTP",
+                  errorText: otpValid ? "OTP length should be 4" : null,
+                  onChange: (value) {
+                    setState(() {
+                      otpValid = value.trim().length < 4;
+                    });
+                  },
+                ),
+                SizedBox(height: 10.0),
+                EditTextBordered(
+                  controller: passCtrl,
+                  hint: "New password",
+                  obscureText: true,
+                  showObscureIcon: true,
+                  errorText:
+                      passValid ? "Please include special characters" : null,
+                  onChange: (value) {
+                    setState(() {
+                      passValid = RegExp(r"^[a-zA-Z0-9]+$").hasMatch(value);
+                    });
+                  },
+                ),
+                SizedBox(height: 10.0),
+                EditTextBordered(
+                  controller: rePassCtrl,
+                  hint: "Confirm new password",
+                  obscureText: true,
+                  showObscureIcon: true,
+                  errorText: rePassValid ? "Password not matching" : null,
+                  onChange: (value) {
+                    setState(() {
+                      rePassValid = rePassCtrl.text != passCtrl.text;
+                    });
+                  },
+                ),
+              ],
+              // EditTextBordered(
+              //   controller: passCtrl,
+              //   hint: "New password",
+              //   obscureText: true,
+              //   showObscureIcon: true,
+              //   //  errorText: passValid ? "Password length should be 4" : null,
+              //   errorText:
+              //       passValid ? "Please include special charcters" : null,
+              //   onChange: (value) {
+              //     setState(() {
+              //       //  passValid = value.trim().length < 4;
+              //       passValid = RegExp(r"^[a-zA-Z0-9]+$").hasMatch(value);
+              //     });
+              //   },
+              // ),
+              // SizedBox(height: 10.0),
+              // EditTextBordered(
+              //   controller: rePassCtrl,
+              //   hint: "Confirm new password",
+              //   obscureText: true,
+              //   showObscureIcon: true,
+              //   errorText: rePassValid ? "Password not matching" : null,
+              //   onChange: (value) {
+              //     setState(() {
+              //       rePassValid = rePassCtrl.text != passCtrl.text;
+              //     });
+              //   },
+              // ),
             ],
           ),
         ),
@@ -1626,35 +1657,55 @@ class _ForgotUIState extends State<ForgotUI> {
             ),
             onPressed: () async {
               if (!isGetOTP) {
+                // Step 1: Request OTP
                 if (userIdCtrl.text.isNotEmpty) {
                   _isLoading = true;
-                  Map response = await (RestAPI().get(
-                    "${APis.getPassChangeOTP}UserId=${userIdCtrl.text}",
-                  ));
-                  _isLoading = false;
-                  if (response["Table"][0]["statuscode"] == 1) {
-                    strOtp = response["Table"][0]["OTP"];
-                    GlobalWidgets().showSnackBar(context, "OTP sent");
-                    setState(() {
-                      isGetOTP = true;
-                    });
-                  } else {
-                    GlobalWidgets().showSnackBar(context, "Invalid User ID");
+                  try {
+                    Map<String, dynamic> requestBody = {
+                      "Cmp_Code": 1, // Assuming company code is always 1
+                      "UserName": userIdCtrl.text,
+                    };
+
+                    Map response = await RestAPI().post(
+                      APis.forgotPasswordOtp,
+                      params: requestBody,
+                    );
+
+                    _isLoading = false;
+
+                    if (response["ProceedStatus"] == "Y" &&
+                        response["Data"][0]["Proceed_Status"] == "Y") {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "OTP sent to your mobile number",
+                      );
+                      setState(() {
+                        isGetOTP = true;
+                      });
+                    } else {
+                      String errorMessage =
+                          response["Data"][0]["Procees_Message"] ??
+                          "Invalid User ID";
+                      GlobalWidgets().showSnackBar(context, errorMessage);
+                    }
+                  } catch (e) {
+                    _isLoading = false;
+                    GlobalWidgets().showSnackBar(context, "Failed to send OTP");
                   }
                 } else {
-                  GlobalWidgets().showSnackBar(context, "Invalid User ID");
+                  GlobalWidgets().showSnackBar(context, "Please enter User ID");
                 }
               } else {
+                // Step 2: Verify OTP and change password
                 bool passValue = passCtrl.text.contains(
                   RegExp(r"^[a-zA-Z0-9]+$"),
                 );
+
                 if (passValue) {
                   GlobalWidgets().showSnackBar(
                     context,
                     "Please include special characters in password",
                   );
-                } else if (strOtp != otpCtrl.text) {
-                  GlobalWidgets().showSnackBar(context, "OTP miss match");
                 } else if (passCtrl.text != rePassCtrl.text) {
                   GlobalWidgets().showSnackBar(context, "Password miss match");
                 } else if (passCtrl.text.contains(" ")) {
@@ -1662,44 +1713,67 @@ class _ForgotUIState extends State<ForgotUI> {
                     context,
                     "Please remove space from password",
                   );
+                } else if (userIdCtrl.text.isEmpty ||
+                    otpCtrl.text.isEmpty ||
+                    passCtrl.text.isEmpty) {
+                  GlobalWidgets().showSnackBar(
+                    context,
+                    "Please fill all fields",
+                  );
                 } else {
-                  if (userIdCtrl.text.isEmpty &&
-                      otpCtrl.text.length < 4 &&
-                      passCtrl.text.length < 4) {
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  try {
+                    Map<String, dynamic> requestBody = {
+                      "Cmp_Code": 1,
+                      "User_Name": userIdCtrl.text,
+                      "Password": passCtrl.text,
+                      "OTP": otpCtrl.text,
+                    };
+
+                    print(
+                      "Cmp_Code: 1,User_Name: ${userIdCtrl.text},Password: ${passCtrl.text},OTP: ${otpCtrl.text}",
+                    );
+
+                    Map response = await RestAPI().post(
+                      APis.changeForgotPass,
+                      params: requestBody,
+                    );
+
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                    if (response["ProceedStatus"] == "Y" &&
+                        response["Data"][0]["Proceed_Status"] == "Y") {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "Password changed successfully",
+                      );
+                      widget.onTap!();
+                    } else {
+                      String errorMessage =
+                          response["Data"][0]["Proceed_Message"] ??
+                          "Something went wrong";
+                      GlobalWidgets().showSnackBar(context, errorMessage);
+                    }
+                  } on RestException catch (e) {
+                    setState(() {
+                      _isLoading = false;
+                    });
                     GlobalWidgets().showSnackBar(
                       context,
-                      "Please fill the missing fields",
+                      e.message["ProceedMessage"],
                     );
-                  } else {
-                    _isLoading = true;
-                    try {
-                      Map response = await (RestAPI().post(
-                        "${APis.changeForgotPass}userid=${userIdCtrl.text}&Newpassword=${passCtrl.text}",
-                      ));
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      if (response["Table"][0]["Column1"] ==
-                          "Password Updated Successfully") {
-                        GlobalWidgets().showSnackBar(
-                          context,
-                          "Password changed successfully",
-                        );
-                        widget.onTap!();
-                      } else {
-                        GlobalWidgets().showSnackBar(
-                          context,
-                          "Something went wrong",
-                        );
-                      }
-                      print(response);
-                    } on RestException catch (e) {
-                      setState(() {
-                        _isLoading = false;
-                      });
-
-                      GlobalWidgets().showSnackBar(context, e.message);
-                    }
+                  } catch (e) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Failed to change password",
+                    );
                   }
                 }
               }
