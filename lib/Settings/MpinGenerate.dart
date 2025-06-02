@@ -6,7 +6,7 @@ import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'SaveMpinModel.dart';
+import 'model/UpdateUserMpinModel.dart';
 
 class MpinGenerate extends StatefulWidget {
   const MpinGenerate({super.key});
@@ -42,8 +42,8 @@ class _MpinGenerateState extends State<MpinGenerate> {
   bool mPin = false;
   bool reMpin = false;
   bool currentMpin = false;
-  List<SaveMpin> mPinResponse = [];
-  String? str_Ststus;
+  // List<SaveMpin> mPinResponse = [];
+  String? str_Ststus, proceedStatus, proceedMessage;
   int? strStatusCode;
   SharedPreferences? pref;
   String? MPin;
@@ -84,27 +84,32 @@ class _MpinGenerateState extends State<MpinGenerate> {
     super.initState();
   }
 
-  Future<List<SaveMpin>?> saveMpin() async {
+  Future<List<UpdateUserMpinModel>?> updateUserMpin() async {
     mergeMPinCtrlValues();
     pref = StaticValues.sharedPreferences;
     var response = await RestAPI().post(
-      APis.saveMpin,
+      APis.updateUserMPin,
       params: {
-        "CustID": pref!.getString(StaticValues.custID),
+        "Cmp_Code": pref!.getString(StaticValues.cmpCodeKey),
+        "User_ID": pref!.getString(StaticValues.userID),
         // "MPIN": mpinCtrl.text,
         "MPIN": allConfirmMpinCtrl.text,
       },
     );
     setState(() {
-      mPinResponse = saveMpinFromJson(json.encode(response));
-      str_Ststus = mPinResponse[0].status;
-      strStatusCode = mPinResponse[0].statuscode;
+      final UpdateUserMpinModel mPinResponse = updateUserMpinModelFromJson(
+        json.encode(response),
+      );
+      proceedStatus = mPinResponse.data.first.proceedStatus;
+      proceedMessage = mPinResponse.data.first.proceedMessage;
       print("LJT$str_Ststus");
+      debugPrint("ProceedStatus - $proceedStatus");
+      debugPrint("ProceedMessage - $proceedMessage");
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(str_Ststus!)));
+      ).showSnackBar(SnackBar(content: Text(proceedMessage!)));
 
-      if (strStatusCode == 1) {
+      if (proceedStatus == "Y") {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("MPin Changed. Please login again")),
         );
@@ -139,13 +144,13 @@ class _MpinGenerateState extends State<MpinGenerate> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Set MPin", style: TextStyle(color: Colors.white)),
-              InkWell(
-                onTap: () {
-                  showAlertDialog(context);
-                },
-                child: Icon(Icons.delete, color: Colors.white),
-              ),
+              Text("Update MPin", style: TextStyle(color: Colors.white)),
+              // InkWell(
+              //   onTap: () {
+              //     showAlertDialog(context);
+              //   },
+              //   child: Icon(Icons.delete, color: Colors.white),
+              // ),
             ],
           ),
           leading: IconButton(
@@ -159,7 +164,7 @@ class _MpinGenerateState extends State<MpinGenerate> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                "Set MPIN",
+                "New MPIN",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
@@ -285,7 +290,7 @@ class _MpinGenerateState extends State<MpinGenerate> {
                           allConfirmMpinCtrl.text,
                         );
                         // await pref.setString(StaticValues.Mpin, "1111");
-                        saveMpin();
+                        updateUserMpin();
                       }
                     }
 

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic_plus/flutter_neumorphic.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passbook_core_jayant/QRCodeGen/QRCodeHome.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/Settings/MpinGenerate.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'REST/app_exceptions.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -12,13 +15,18 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  TextEditingController userIdCtrl = TextEditingController(),
-      oldPasCtrl = TextEditingController(),
-      newPassCtrl = TextEditingController();
-  bool idValid = false, oldPassValid = false, newPassValid = false;
+  TextEditingController oldPassCtrl = TextEditingController(),
+      newPassCtrl = TextEditingController(),
+      confirmPassCtrl = TextEditingController();
+  bool oldPassValid = false, newPassValid = false, confirmPassValid = false;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   SharedPreferences? preferences;
-  var userId = "", acc = "", name = "", address = "";
+  var cmpCodeKey = "",
+      userId = "",
+      custId = "",
+      acc = "",
+      name = "",
+      address = "";
 
   @override
   void initState() {
@@ -140,7 +148,7 @@ class _SettingsState extends State<Settings> {
                   fontWeight: FontWeight.bold,
                   size: 16.0,
                 ),
-                subtitle: TextView(text: "Set and Update Mpin", size: 12.0),
+                subtitle: TextView(text: "Update Mpin", size: 12.0),
               ),
             ),
             // Divider(
@@ -177,12 +185,14 @@ class _SettingsState extends State<Settings> {
   void loadData() async {
     preferences = StaticValues.sharedPreferences;
     setState(() {
-      userId = preferences?.getString(StaticValues.custID) ?? "";
+      cmpCodeKey = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
+      userId = preferences?.getString(StaticValues.userID) ?? "";
+      custId = preferences?.getString(StaticValues.custID) ?? "";
       acc = preferences?.getString(StaticValues.accNumber) ?? "";
       name = preferences?.getString(StaticValues.accName) ?? "";
       address = preferences?.getString(StaticValues.address) ?? "";
       print("userName");
-      print(userId);
+      print(custId);
       print(acc);
       print(name);
     });
@@ -210,9 +220,9 @@ class _SettingsState extends State<Settings> {
                     children: <Widget>[
                       TextButton(
                         onPressed: () {
-                          userIdCtrl.text = "";
-                          oldPasCtrl.text = "";
+                          oldPassCtrl.text = "";
                           newPassCtrl.text = "";
+                          confirmPassCtrl.text = "";
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
@@ -234,39 +244,77 @@ class _SettingsState extends State<Settings> {
                           ),
                         ),
                         onPressed:
-                            idValid || oldPassValid || newPassValid
+                            oldPassValid || newPassValid || confirmPassValid
                                 ? null
                                 : () async {
-                                  if (userIdCtrl.text.length > 0 &&
-                                      oldPasCtrl.text.length >= 4 &&
-                                      newPassCtrl.text.length >= 4) {
-                                    Map? response = await RestAPI().get<Map>(
-                                      "${APis.changePassword}${userIdCtrl.text}&old_pin=${oldPasCtrl.text}"
-                                      "&new_pin=${newPassCtrl.text}",
-                                    );
-                                    setState(() {
-                                      bool error =
-                                          response!["Table"][0]["Status"]
-                                              .toString()
-                                              .toLowerCase() ==
-                                          "invalid user";
+                                  if (
+                                  // userIdCtrl.text.length > 0 &&
+                                  oldPassCtrl.text.length >= 4 &&
+                                      newPassCtrl.text.length >= 4 &&
+                                      confirmPassCtrl.text.length >= 4 &&
+                                      (newPassCtrl.text ==
+                                          confirmPassCtrl.text)) {
+                                    // Map? response = await RestAPI().get<Map>(
+                                    //   "${APis.changePassword}${userIdCtrl.text}&old_pin=${oldPasCtrl.text}"
+                                    //   "&new_pin=${newPassCtrl.text}",
+                                    // );
 
-                                      if (!error) {
-                                        userIdCtrl.text = "";
-                                        oldPasCtrl.text = "";
-                                        newPassCtrl.text = "";
-                                        GlobalWidgets().showSnackBar(
-                                          context,
-                                          response["Table"][0]["Status"]
-                                              .toString(),
-                                        );
-                                        Navigator.pop(context);
-                                      } else {
-                                        setState(() {
-                                          isInvalid = "Invalid Credentials";
-                                        });
-                                      }
-                                    });
+                                    try {
+                                      Map<String, dynamic>
+                                      changeUserPasswordBody = {
+                                        "Cmp_Code": cmpCodeKey,
+                                        "User_ID": userId,
+                                        "Curr_Password": "${oldPassCtrl.text}",
+                                        "New_Password":
+                                            "${confirmPassCtrl.text}",
+                                      };
+
+                                      Map response = await RestAPI().post(
+                                        APis.changeUserPassword,
+                                        params: changeUserPasswordBody,
+                                      );
+
+                                      setState(() {
+                                        bool error =
+                                            // response!["Table"][0]["Status"]
+                                            response["ProceedMessage"]
+                                                .toString()
+                                                .toLowerCase() ==
+                                            "FAILED";
+
+                                        if (!error) {
+                                          oldPassCtrl.text = "";
+                                          newPassCtrl.text = "";
+                                          confirmPassCtrl.text = "";
+                                          GlobalWidgets().showSnackBar(
+                                            context,
+                                            // response["Table"][0]["Status"]
+                                            response["ProceedMessage"]
+                                                .toString(),
+                                          );
+                                          Navigator.pop(context);
+                                        } else {
+                                          setState(() {
+                                            // isInvalid = "Invalid Credentials";
+                                            isInvalid = "FAILED";
+                                          });
+                                        }
+                                      });
+                                    } on RestException catch (e) {
+                                      // GlobalWidgets().showSnackBar(
+                                      //   context,
+                                      //   e.message["ProceedMessage"],
+                                      // );
+                                      Fluttertoast.showToast(
+                                        msg: e.message["ProceedMessage"],
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.black54,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0,
+                                      );
+                                      return;
+                                    }
                                   } else {
                                     setState(() {
                                       isInvalid = "Please fill up the fields";
@@ -296,24 +344,13 @@ class _SettingsState extends State<Settings> {
                 children: <Widget>[
                   SizedBox(height: 10.0),
                   EditTextBordered(
-                    controller: userIdCtrl,
-                    hint: "Enter username",
-                    errorText: idValid ? "User should not be empty" : null,
-                    onChange: (value) {
-                      setState(() {
-                        idValid = value.trim().length == 0;
-                        isInvalid = "";
-                      });
-                    },
-                  ),
-                  SizedBox(height: 10.0),
-                  EditTextBordered(
-                    controller: oldPasCtrl,
+                    controller: oldPassCtrl,
                     hint: "Enter current password",
                     errorText:
                         oldPassValid ? "Password length should be 4" : null,
                     obscureText: true,
                     showObscureIcon: true,
+                    textInputAction: TextInputAction.next,
                     onChange: (value) {
                       setState(() {
                         oldPassValid = value.trim().length < 4;
@@ -327,12 +364,36 @@ class _SettingsState extends State<Settings> {
                     hint: "Enter new password",
                     obscureText: true,
                     showObscureIcon: true,
+                    textInputAction: TextInputAction.next,
                     errorText:
-                        newPassValid ? "Password length should be 4" : null,
+                        newPassValid
+                            ? "Please include special characters."
+                            : null,
                     onChange: (value) {
                       setState(() {
-                        newPassValid = value.trim().length < 4;
+                        newPassValid =
+                            (RegExp(r"^[a-zA-Z0-9]+$").hasMatch(value) &&
+                                value.trim().length < 4);
                         print(newPassValid);
+                        isInvalid = "";
+                      });
+                    },
+                  ),
+                  SizedBox(height: 10.0),
+                  EditTextBordered(
+                    controller: confirmPassCtrl,
+                    hint: "Confirm new password",
+                    obscureText: true,
+                    showObscureIcon: true,
+                    textInputAction: TextInputAction.done,
+                    errorText:
+                        confirmPassValid ? "Password not matching" : null,
+
+                    onChange: (value) {
+                      setState(() {
+                        confirmPassValid =
+                            confirmPassCtrl.text != newPassCtrl.text;
+                        print(confirmPassValid);
                         isInvalid = "";
                       });
                     },
@@ -366,7 +427,7 @@ class _SettingsState extends State<Settings> {
   }
 
   var about =
-      "Perumanna SCB FRIENDLY offers you information of your account, in just a touch away from anywhere,"
+      "Jayant India Nidhi Limited offers you information of your account, in just a touch away from anywhere,"
       " anytime. The application allows instant access to your transactions info.\n"
       "You can instantly know your account balance, makes fund transfers and mobile recharges on the move,"
       " real-time and lots more !\n    We provide Features to harness in the palm of your hands.";
