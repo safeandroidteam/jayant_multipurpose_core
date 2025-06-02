@@ -232,6 +232,10 @@ class APis {
   static String fetchUserLimit = "$_superLink/Fetch_UserLimitRights";
   static String saveBeneficiary = "$_superLink/SaveBeneficiary";
 
+  //Other Bank Transfer
+  static String fillTransferTypeDetails =
+      "$_superLink/Fill_TransferTypeDetails";
+
   ///OLD
   static String generateRefID(String key) =>
       "$_superLink/GetReferanceNo?UserId=$key";
@@ -362,6 +366,7 @@ class APis {
       "$_superLink/get_CustomerSB?Cust_Id=$custID";
 
   static String fetchFundTransferType = "$_superLink/TransferTypeDetails";
+
   static String checkFundTransAmountLimit =
       "$_superLink/Mobile_Checkfund_limits";
 

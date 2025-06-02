@@ -15,7 +15,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
   TransferBloc() : super(InitialTransferState()) {
     on<SendDetails>(_onSendDetails);
     on<FetchCustomerAccNo>(_onFetchCustomerAccNo);
-    on<FetchCustomerFromAccNo>(_fetchCustFromAcc);
+    on<FetchCustomerFromAccNo>(_fetchCustFromAccNo);
     on<FetchFundTransferType>(_fetchFundTransferType);
     on<FetchBenificiaryevent>(_fetchBeneficiaryType);
     on<FetchUserLimitevent>(_fetchUserLimit);
@@ -48,7 +48,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     }
   }
 
-  Future<void> _fetchCustFromAcc(
+  Future<void> _fetchCustFromAccNo(
     FetchCustomerFromAccNo event,
     Emitter<TransferState> emit,
   ) async {
@@ -56,8 +56,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     try {
       Map<String, dynamic> fetchCustomerSBBody = {
         "Cmp_Code": event.cmpCode,
-        // "Cust_ID": event.custID,
-        "Cust_ID": "3629",
+        "Cust_ID": event.custID,
+        // "Cust_ID": "3629",
       };
       final fromAcReponse = await RestAPI().post(
         APis.fetchCustomerSB,
@@ -99,16 +99,19 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(FetchFundTransferTypeLoading());
     warningPrint("State: FetchFundTransferTypeLoading");
     try {
-      final response = await RestAPI().get(APis.fetchFundTransferType);
+      // final response = await RestAPI().get(APis.fetchFundTransferType);
+      final response = await RestAPI().get(APis.fillTransferTypeDetails);
 
       final transferList =
-          (response["Table"] as List<dynamic>)
+          (response["Data"] as List<dynamic>)
               .map(
-                (e) =>
-                    FetchFundTransferTypeDatum(typeName: e["TYPE_NAME"] ?? ""),
+                (e) => FetchFundTransferTypeData(
+                  slNo: e["SlNo"] ?? 0,
+                  typeName: e["TYPE_NAME"] ?? "",
+                ),
               )
               .toList();
-      emit(FetchFundTransferTypeResponse(transferList));
+      emit(FetchFundTransferTypeRes(transferList));
       warningPrint("State: FetchFundTransferTypeResponse");
       successPrint("fetchTrasnferList=${transferList.first.toJson()}");
     } on RestException catch (e) {
@@ -129,6 +132,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       Map<String, dynamic> fetchBeneficiaryListBody = {
         "Cmp_Code": event.cmpCode,
         "Cust_ID": event.custID,
+        // "Cust_ID": "1139",
       };
       final response = await RestAPI().post(
         APis.fetchBeneficiaryList,

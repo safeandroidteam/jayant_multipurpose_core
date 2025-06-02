@@ -51,7 +51,7 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
   final TransferBloc _transferBloc = TransferBloc();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  double _minTransferAmt = 0.0, _maxTransferAmt = 0.0;
+  String _minTransferAmt = "0.0", _maxTransferAmt = "0.0";
 
   Map<String, dynamic> _referanceNo = {};
 
@@ -104,9 +104,16 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                   expandedHeight: MediaQuery.of(context).size.width / .8,
                   pinned: true,
                   stretch: true,
-                  title: Text("Own Bank Transfer"),
+                  title: Text(
+                    "Own Bank Transfer",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back, size: 30.0),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 30.0,
+                      color: Colors.white,
+                    ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   flexibleSpace: FlexibleSpaceBar(
@@ -158,12 +165,34 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                             },
                           ),
                         ),
-                        TextView(
-                          text:
-                              "Minimum amount ${StaticValues.rupeeSymbol} $_minTransferAmt",
-                          size: 10,
-                          color: Colors.white,
+
+                        // TextView(
+                        //   text:
+                        //       "Minimum amount ${StaticValues.rupeeSymbol} $_minTransferAmt",
+                        //   size: 10,
+                        //   color: Colors.white,
+                        // ),
+                        BlocBuilder<TransferBloc, TransferState>(
+                          builder: (context, state) {
+                            if (state is FetchUserLimitLoading) {
+                              return const CircularProgressIndicator();
+                            } else if (state is FetchUserLimitResponse) {
+                              final _minTransferAmt =
+                                  state.userLimitList.first.minFundTranBal;
+                              return Text(
+                                "Minimum amount ${StaticValues.rupeeSymbol}$_minTransferAmt",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              );
+                            } else if (state is FetchUserLimitError) {
+                              return Text("Error: ${state.error}");
+                            }
+                            return const SizedBox();
+                          },
                         ),
+
                         SizedBox(height: 20.0),
                         TextView(
                           text: userBal,
@@ -342,19 +371,20 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                                 onChanged: (value) {
                                   setState(() {
                                     fromGroupValue = value!;
-                                    userAcc = fromAc[index]["AccNo"].toString();
+                                    userAcc =
+                                        fromAc[index]["Acc_No"].toString();
                                     warningPrint("UserAcc=$userAcc");
                                     userBal =
-                                        fromAc[index]["BalAmt"].toString();
+                                        fromAc[index]["Balance"].toString();
                                     warningPrint("UserBal=$userBal");
                                   });
                                 },
                                 title: TextView(
-                                  text: fromAc[index]["AccNo"] ?? "",
+                                  text: fromAc[index]["Acc_No"] ?? "",
                                   size: 24,
                                 ),
                                 subtitle: TextView(
-                                  text: fromAc[index]["Types"] ?? "",
+                                  text: fromAc[index]["Sch_Name"] ?? "",
                                   size: 12.0,
                                 ),
                               );
@@ -602,8 +632,9 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                       onPressed: () async {
                         print("accNos.length :: ${accNos.length}");
                         if (amt.text.isNotEmpty &&
-                            int.parse(amt.text) >= _minTransferAmt &&
-                            double.parse(amt.text) <= _maxTransferAmt &&
+                            int.parse(amt.text) >= int.parse(_minTransferAmt) &&
+                            double.parse(amt.text) <=
+                                int.parse(_maxTransferAmt) &&
                             double.parse(amt.text) <=
                                 double.parse(userBal ?? "")) {
                           if (mob.text.isEmpty || !mobVal && accNos.isEmpty) {
@@ -668,61 +699,96 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
     );
   }
 
-  void loadData() async {
+  loadData() async {
     preferences = await SharedPreferences.getInstance();
     setState(() {
       fromAcLoading = true;
       userName = preferences.getString(StaticValues.accName) ?? "";
       custId = preferences.getString(StaticValues.custID) ?? "";
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
+      custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
     });
 
     // Map balanceResponse = await RestAPI().get(
-    //   APis.fetchFundTransferBal(custId),
+    //   APis.fetchFundTransferBal(userId),
     // );
 
-    // successPrint("balance Response=$balanceResponse");
-    // setState(() {
-    //   userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-    //   userAcc = balanceResponse["Table"][0]["AccNo"].toString();
-    //   acType = balanceResponse["Table"][0]["Types"].toString();
-    //   fromAc = balanceResponse["Table"];
-    //   fromAcLoading = false;
-    //   // fromAc.add([
-    //   //   {
-    //   //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
-    //   //   }
-    //   // ]);
-    //   warningPrint("UserAcc=$userAcc");
-    // });
+    try {
+      Map<String, dynamic> fetchCustomerSBBody = {
+        "Cmp_Code": cmpCode,
+        "Cust_ID": custId,
+        // "Cust_ID": "3629",
+      };
+      Map balanceResponse = await RestAPI().post(
+        APis.fetchCustomerSB,
+        params: fetchCustomerSBBody,
+      );
 
-    fetchCustomerFromAccNo();
-    fetchUserLimit();
+      successPrint("balance Response=$balanceResponse");
+      final data = balanceResponse["Data"];
+
+      if (data != null && data is List && data.isNotEmpty) {
+        setState(() {
+          userBal = balanceResponse["Data"][0]["Balance"].toString();
+          userAcc = balanceResponse["Data"][0]["Acc_No"].toString();
+          acType = balanceResponse["Data"][0]["Sch_Name"].toString();
+          // fromAc = balanceResponse["Data"];
+          fromAc = data;
+          fromAcLoading = false;
+          // fromAc.add([
+          //   {
+          //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
+          //   }
+          // ]);
+          warningPrint("UserAcc=$userAcc");
+        });
+      } else {
+        setState(() {
+          fromAcLoading = false;
+        });
+        warningPrint("No data found");
+      }
+    } on RestException catch (e) {
+      e.message.toString();
+      errorPrint("Error : ${e.message.toString()}");
+    }
 
     // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
-    // alertPrint("transDailyLimit::: $transDailyLimit");
-    // setState(() {
-    //   _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
-    //   _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
-    //   //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-    // });
+    Map<String, dynamic> fetchUserLimitBody = {
+      "Cmp_Code": cmpCode,
+      "Cust_Type": custTypeCode,
+    };
+    Map transDailyLimit = await RestAPI().post(
+      APis.fetchUserLimit,
+      params: fetchUserLimitBody,
+    );
+    alertPrint("transDailyLimit::: $transDailyLimit");
+    setState(() {
+      _minTransferAmt = transDailyLimit["Data"][0]["Min_fundtranbal"];
+      _maxTransferAmt = transDailyLimit["Data"][0]["Max_interfundtranbal"];
+      //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+    });
+
+    // fetchCustomerFromAccNo();
+    // fetchUserLimit();
   }
 
-  fetchCustomerFromAccNo() async {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      custId = preferences.getString(StaticValues.custID) ?? "";
-      final transferBloc = TransferBloc.get(context);
-      transferBloc.add(FetchCustomerFromAccNo(cmpCode, custId));
-      fromAcLoading = false;
-    });
-  }
-
-  fetchUserLimit() async {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
-      final transferBloc = TransferBloc.get(context);
-      transferBloc.add(FetchUserLimitevent(cmpCode, custTypeCode));
-      fromAcLoading = false;
-    });
-  }
+  // fetchCustomerFromAccNo() async {
+  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //     custId = preferences.getString(StaticValues.custID) ?? "";
+  //     final transferBloc = TransferBloc.get(context);
+  //     transferBloc.add(FetchCustomerFromAccNo(cmpCode, custId));
+  //     setState(() {
+  //       fromAcLoading = false;
+  //     });
+  //   });
+  // }
+  //
+  // fetchUserLimit() async {
+  //   WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  //     custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
+  //     final transferBloc = TransferBloc.get(context);
+  //     transferBloc.add(FetchUserLimitevent(cmpCode, custTypeCode));
+  //   });
+  // }
 }

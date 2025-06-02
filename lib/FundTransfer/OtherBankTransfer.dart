@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart';
-import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:passbook_core_jayant/FundTransfer/FundTransfer.dart';
+import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
-
+import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
@@ -33,10 +31,15 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
   double amtBoxSize = 70.0;
   int payModeGroupValue = 0;
   String selectedPaymentMode = "";
-  String userName = "", userAcc = "", userId = "", userBal = "";
+  String userName = "",
+      userAcc = "",
+      custId = "",
+      userBal = "",
+      cmpCode = "",
+      custTypeCode = "";
   GlobalKey toKey = GlobalKey();
   final TransferBloc _transferBloc = TransferBloc();
-  double _minTransferAmt = 0.0, _maxTransferAmt = 0.0;
+  String _minTransferAmt = "0.0", _maxTransferAmt = "0.0";
   final FocusNode _mobFocusNode = FocusNode();
   late SharedPreferences preferences;
   final ScrollController _customScrollController = ScrollController();
@@ -53,6 +56,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
   List fromAc = [];
   String acType = "";
   int fromGroupValue = 0;
+
   @override
   void dispose() {
     _transferBloc.close();
@@ -104,9 +108,16 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                   expandedHeight: MediaQuery.of(context).size.width / .8,
                   pinned: true,
                   stretch: true,
-                  title: Text("Other Bank Transfer"),
+                  title: Text(
+                    "Other Bank Transfer",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back, size: 30.0),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 30.0,
+                      color: Colors.white,
+                    ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   flexibleSpace: FlexibleSpaceBar(
@@ -214,7 +225,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                             buildWhen:
                                 (previous, current) =>
                                     current is FetchFundTransferTypeLoading ||
-                                    current is FetchFundTransferTypeResponse ||
+                                    current is FetchFundTransferTypeRes ||
                                     current is FetchFundTransferTypeError,
                             builder: (context, state) {
                               customPrint("state is ==$state");
@@ -222,8 +233,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
-                              } else if (state
-                                  is FetchFundTransferTypeResponse) {
+                              } else if (state is FetchFundTransferTypeRes) {
                                 if (state.transferTypeList.isNotEmpty) {
                                   return ListView.builder(
                                     shrinkWrap: true,
@@ -233,7 +243,7 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                                       selectedPaymentMode =
                                           state
                                               .transferTypeList[payModeGroupValue]
-                                              .typeName;
+                                              .typeName!;
                                       return RadioListTile(
                                         value: index,
                                         groupValue: payModeGroupValue,
@@ -243,14 +253,14 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                                             selectedPaymentMode =
                                                 state
                                                     .transferTypeList[payModeGroupValue]
-                                                    .typeName;
+                                                    .typeName!;
                                           });
                                         },
                                         title: TextView(
                                           text:
                                               state
                                                   .transferTypeList[index]
-                                                  .typeName,
+                                                  .typeName!,
                                           size: 24,
                                         ),
                                       );
@@ -307,18 +317,19 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                                 onChanged: (value) {
                                   setState(() {
                                     fromGroupValue = value!;
-                                    userAcc = fromAc[index]["AccNo"].toString();
+                                    userAcc =
+                                        fromAc[index]["Acc_No"].toString();
                                     userBal =
-                                        fromAc[index]["BalAmt"].toString();
+                                        fromAc[index]["Balance"].toString();
                                     warningPrint("UserAcc=$userAcc");
                                   });
                                 },
                                 title: TextView(
-                                  text: fromAc[index]["AccNo"] ?? "",
+                                  text: fromAc[index]["Acc_No"] ?? "",
                                   size: 24,
                                 ),
                                 subtitle: TextView(
-                                  text: fromAc[index]["Types"] ?? "",
+                                  text: fromAc[index]["Sch_Name"] ?? "",
                                   size: 12.0,
                                 ),
                               );
@@ -584,8 +595,9 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                       onPressed: () async {
                         customPrint("proceed button clicked");
                         if (amt.text.isNotEmpty &&
-                            int.parse(amt.text) >= _minTransferAmt &&
-                            double.parse(amt.text) <= _maxTransferAmt &&
+                            int.parse(amt.text) >= int.parse(_minTransferAmt) &&
+                            double.parse(amt.text) <=
+                                int.parse(_maxTransferAmt) &&
                             double.parse(amt.text) <= double.parse(userBal)) {
                           customPrint("proceed button inside if");
 
@@ -644,24 +656,64 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
     preferences = await SharedPreferences.getInstance();
     setState(() {
       userName = preferences.getString(StaticValues.accName) ?? "";
-      userId = preferences.getString(StaticValues.custID) ?? "";
+      custId = preferences.getString(StaticValues.custID) ?? "";
+      cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
+      custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
     });
-    Map balanceResponse = await RestAPI().get(
-      APis.fetchFundTransferBal(userId),
-    );
-    setState(() {
-      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-      userAcc = balanceResponse["Table"][0]["AccNo"].toString();
-      acType = balanceResponse["Table"][0]["Types"].toString();
-      fromAc = balanceResponse["Table"];
 
-      warningPrint("UserAcc=$userAcc");
-    });
-    Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
+    // Map balanceResponse = await RestAPI().get(
+    //   APis.fetchFundTransferBal(userId),
+    // );
+
+    try {
+      Map<String, dynamic> fetchCustomerSBBody = {
+        "Cmp_Code": cmpCode,
+        "Cust_ID": custId,
+        // "Cust_ID": "3629",
+      };
+      Map balanceResponse = await RestAPI().post(
+        APis.fetchCustomerSB,
+        params: fetchCustomerSBBody,
+      );
+
+      successPrint("balance Response=$balanceResponse");
+      final data = balanceResponse["Data"];
+
+      if (data != null && data is List && data.isNotEmpty) {
+        setState(() {
+          userBal = balanceResponse["Data"][0]["Balance"].toString();
+          userAcc = balanceResponse["Data"][0]["Acc_No"].toString();
+          acType = balanceResponse["Data"][0]["Sch_Name"].toString();
+          // fromAc = balanceResponse["Data"];
+          fromAc = data;
+          // fromAc.add([
+          //   {
+          //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
+          //   }
+          // ]);
+          warningPrint("UserAcc=$userAcc");
+        });
+      } else {
+        warningPrint("No data found");
+      }
+    } on RestException catch (e) {
+      e.message.toString();
+      errorPrint("Error : ${e.message.toString()}");
+    }
+
+    // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
+    Map<String, dynamic> fetchUserLimitBody = {
+      "Cmp_Code": cmpCode,
+      "Cust_Type": custTypeCode,
+    };
+    Map transDailyLimit = await RestAPI().post(
+      APis.fetchUserLimit,
+      params: fetchUserLimitBody,
+    );
     print("transDailyLimit::: $transDailyLimit");
     setState(() {
-      _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
-      _maxTransferAmt = transDailyLimit["Table"][0]["Max_fundtranbal"];
+      _minTransferAmt = transDailyLimit["Data"][0]["Min_fundtranbal"];
+      _maxTransferAmt = transDailyLimit["Data"][0]["Max_fundtranbal"];
       //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
     });
   }
