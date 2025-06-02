@@ -224,6 +224,7 @@ class APis {
   static String fetchBeneficiaryList = "$_superLink/FetchBeneficiaryList";
   static String fetchCustomerSB = "$_superLink/Fetch_CustomerSB";
   static String fetchUserLimit= "$_superLink/Fetch_UserLimitRights";
+  static String saveBeneficiary= "$_superLink/SaveBeneficiary";
 
   ///OLD
   static String generateRefID(String key) =>
