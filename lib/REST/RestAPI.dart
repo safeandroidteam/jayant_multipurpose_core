@@ -222,6 +222,9 @@ class APis {
   static String fillAccountList = "$_superLink/Fill_AccountList";
   static String fetchAccountStatement = "$_superLink/Fetch_AccountStatement";
 
+  ///Pick Up Types
+  static String fillPickUp = "$_superLink/Fill_PickUP";
+
   ///OLD
   static String generateRefID(String key) =>
       "$_superLink/GetReferanceNo?UserId=$key";
