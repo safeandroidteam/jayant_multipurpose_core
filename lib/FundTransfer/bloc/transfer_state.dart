@@ -57,10 +57,10 @@ class FetchCustFromAccResponseError extends TransferState {
 
 class FetchFundTransferTypeLoading extends TransferState {}
 
-class FetchFundTransferTypeResponse extends TransferState {
-  final List<FetchFundTransferTypeDatum> transferTypeList;
+class FetchFundTransferTypeRes extends TransferState {
+  final List<FetchFundTransferTypeData> transferTypeList;
 
-  FetchFundTransferTypeResponse(this.transferTypeList);
+  FetchFundTransferTypeRes(this.transferTypeList);
 }
 
 class FetchFundTransferTypeError extends TransferState {

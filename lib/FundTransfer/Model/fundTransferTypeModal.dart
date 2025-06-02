@@ -4,43 +4,51 @@
 
 import 'dart:convert';
 
-FundTransferTypeResponseModal fundTransferTypeResponseModalFromJson(
-        String str) =>
-    FundTransferTypeResponseModal.fromJson(json.decode(str));
+FetchFundTransferTypeResModal fetchFundTransferTypeResModalFromJson(
+  String str,
+) => FetchFundTransferTypeResModal.fromJson(json.decode(str));
 
-String fundTransferTypeResponseModalToJson(
-        FundTransferTypeResponseModal data) =>
-    json.encode(data.toJson());
+String fetchFundTransferTypeResModalToJson(
+  FetchFundTransferTypeResModal data,
+) => json.encode(data.toJson());
 
-class FundTransferTypeResponseModal {
-  List<FetchFundTransferTypeDatum> table;
+class FetchFundTransferTypeResModal {
+  final String? proceedStatus;
+  final String? proceedMessage;
+  List<FetchFundTransferTypeData> data;
 
-  FundTransferTypeResponseModal({
-    required this.table,
+  FetchFundTransferTypeResModal({
+    required this.proceedStatus,
+    required this.proceedMessage,
+    required this.data,
   });
 
-  factory FundTransferTypeResponseModal.fromJson(Map<String, dynamic> json) =>
-      FundTransferTypeResponseModal(
-        table: List<FetchFundTransferTypeDatum>.from(json["Table"].map((x) => FetchFundTransferTypeDatum.fromJson(x))),
+  factory FetchFundTransferTypeResModal.fromJson(Map<String, dynamic> json) =>
+      FetchFundTransferTypeResModal(
+        proceedStatus: json["ProceedStatus"],
+        proceedMessage: json["ProceedMessage"],
+          data:
+          json["Data"] == null
+              ? []
+              : List<FetchFundTransferTypeData>.from(json["Data"]!.map((x) => FetchFundTransferTypeData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "Table": List<dynamic>.from(table.map((x) => x.toJson())),
-      };
+    "ProceedStatus": proceedStatus,
+    "ProceedMessage": proceedMessage,
+    // "Data": List<dynamic>.from(data.map((x) => x.toJson())),
+    "Data": data.map((x) => x.toJson()).toList(),
+  };
 }
 
-class FetchFundTransferTypeDatum {
-  String typeName;
+class FetchFundTransferTypeData {
+  final int? slNo;
+  final String? typeName;
 
-  FetchFundTransferTypeDatum({
-    required this.typeName,
-  });
+  FetchFundTransferTypeData({required this.slNo, required this.typeName});
 
-  factory FetchFundTransferTypeDatum.fromJson(Map<String, dynamic> json) => FetchFundTransferTypeDatum(
-        typeName: json["TYPE_NAME"],
-      );
+  factory FetchFundTransferTypeData.fromJson(Map<String, dynamic> json) =>
+      FetchFundTransferTypeData(slNo: json["SlNo"], typeName: json["TYPE_NAME"]);
 
-  Map<String, dynamic> toJson() => {
-        "TYPE_NAME": typeName,
-      };
+  Map<String, dynamic> toJson() => {"SlNo": slNo, "TYPE_NAME": typeName};
 }
