@@ -86,23 +86,23 @@ class ChittyLoanErrorException extends PassBookState {
   List<Object> get props => [error];
 }
 
-class LoanTransactionLoading extends PassBookState {
-  final bool isLoanTranLoading = false;
+class ChittyLoanTransLoading extends PassBookState {
+  final bool isChittyLoanTransLoading = false;
   @override
   List<Object> get props => [];
 }
 
-class LoanTransactionResponse extends PassBookState {
+class ChittyLoanTransResponse extends PassBookState {
   // final List<LoanTransTable> loanTransList;
-  final List<LoanTransData> loanTransList;
+  final List<ChittyLoanTransData> chittyLoanTransList;
 
-  const LoanTransactionResponse(this.loanTransList);
+  const ChittyLoanTransResponse(this.chittyLoanTransList);
 }
 
-class LoanTransactionErrorException extends PassBookState {
+class ChittyLoanTransErrorException extends PassBookState {
   final error;
 
-  const LoanTransactionErrorException(this.error);
+  const ChittyLoanTransErrorException(this.error);
 
   @override
   List<Object> get props => [error];
