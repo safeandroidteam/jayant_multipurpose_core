@@ -157,7 +157,7 @@ dynamic _returnResponse<T>(T response) {
         debugPrint("responseJson : $responseJson");
         return responseJson;
       case 404:
-      throw NotFoundException(response["response"]);
+        throw NotFoundException(response["response"]);
       case 400:
         throw BadRequestException(response["response"]);
       case 401:
@@ -224,11 +224,18 @@ class APis {
   static String fillAccountList = "$_superLink/Fill_AccountList";
   static String fetchAccountStatement = "$_superLink/Fetch_AccountStatement";
 
+  ///Pick Up Types
+  static String fillPickUp = "$_superLink/Fill_PickUP";
+
   //beneficiary
   static String fetchBeneficiaryList = "$_superLink/FetchBeneficiaryList";
   static String fetchCustomerSB = "$_superLink/Fetch_CustomerSB";
-  static String fetchUserLimit= "$_superLink/Fetch_UserLimitRights";
-  static String saveBeneficiary= "$_superLink/SaveBeneficiary";
+  static String fetchUserLimit = "$_superLink/Fetch_UserLimitRights";
+  static String saveBeneficiary = "$_superLink/SaveBeneficiary";
+
+  //Other Bank Transfer
+  static String fillTransferTypeDetails =
+      "$_superLink/Fill_TransferTypeDetails";
 
   ///OLD
   static String generateRefID(String key) =>
@@ -361,6 +368,7 @@ class APis {
       "$_superLink/get_CustomerSB?Cust_Id=$custID";
 
   static String fetchFundTransferType = "$_superLink/TransferTypeDetails";
+
   static String checkFundTransAmountLimit =
       "$_superLink/Mobile_Checkfund_limits";
 

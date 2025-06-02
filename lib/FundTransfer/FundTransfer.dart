@@ -14,8 +14,6 @@ import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../REST/app_exceptions.dart';
-
 class FundTransfer extends StatefulWidget {
   const FundTransfer({super.key});
 
@@ -29,7 +27,7 @@ class FundTransfer extends StatefulWidget {
 class _FundTransferState extends State<FundTransfer>
     with SingleTickerProviderStateMixin {
   String acc = "", name = "";
-  String cmpCode = "", custTypeCode="";
+  String cmpCode = "", custTypeCode = "";
   GlobalKey<ScaffoldState>? scaffoldKey;
   final _peopleKey = GlobalKey();
 
@@ -59,7 +57,7 @@ class _FundTransferState extends State<FundTransfer>
       userName = preferences.getString(StaticValues.accName) ?? "";
       userId = preferences.getString(StaticValues.custID) ?? "";
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
-      custTypeCode= preferences.getString(StaticValues.custTypeCode)??"";
+      custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
     });
 
     // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
@@ -72,7 +70,7 @@ class _FundTransferState extends State<FundTransfer>
 
     //fetchuserlimit
     final transferBloc = TransferBloc.get(context);
-    transferBloc.add(FetchUserLimitevent(cmpCode,custTypeCode));
+    transferBloc.add(FetchUserLimitevent(cmpCode, custTypeCode));
 
     fetchBeneficiary();
   }
@@ -81,7 +79,7 @@ class _FundTransferState extends State<FundTransfer>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final transferBloc = TransferBloc.get(context);
       var id = preferences.getString(StaticValues.custID) ?? "";
-      transferBloc.add(FetchBenificiaryevent(cmpCode,userId));
+      transferBloc.add(FetchBenificiaryevent(cmpCode, userId));
     });
   }
 
@@ -179,9 +177,16 @@ class _FundTransferState extends State<FundTransfer>
                   expandedHeight: MediaQuery.of(context).size.width * 1.30,
                   pinned: true,
                   centerTitle: true,
-                  title: Text("Fund Transfer"),
+                  title: Text(
+                    "Fund Transfer",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back, size: 30.0),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 30.0,
+                      color: Colors.white,
+                    ),
                     onPressed:
                         () => Navigator.of(
                           context,
@@ -293,10 +298,7 @@ class _FundTransferState extends State<FundTransfer>
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
-
-                              }
-
-                              else if (state is FetchBenificiaryResponse) {
+                              } else if (state is FetchBenificiaryResponse) {
                                 if (state.beneficiaryList.isNotEmpty) {
                                   return GridView.builder(
                                     gridDelegate:
@@ -432,9 +434,9 @@ class _FundTransferState extends State<FundTransfer>
                                     },
                                   );
                                 } else
-                                  // if(state.beneficiaryList
-                                  //   .length<1)
-                                  {
+                                // if(state.beneficiaryList
+                                //   .length<1)
+                                {
                                   return Center(
                                     child: Text(
                                       "No Data Found",
@@ -445,11 +447,13 @@ class _FundTransferState extends State<FundTransfer>
                               } else if (state is FetchBenificiaryError) {
                                 return Column(
                                   children: [
-                                    SizedBox(height: 30,),
+                                    SizedBox(height: 30),
                                     Center(
                                       child: Text(
                                         "Error: ${state.error}",
-                                        style: const TextStyle(color: Colors.red),
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -462,7 +466,6 @@ class _FundTransferState extends State<FundTransfer>
                                   ),
                                 );
                               }
-
                             },
                           ),
                         ],
