@@ -33,17 +33,23 @@ class UserAccResModel {
 class UserAccTable {
   final String accNo;
   final String balance;
+  final String schName;
 
-  UserAccTable({required this.accNo, required this.balance});
+  UserAccTable({
+    required this.accNo,
+    required this.balance,
+    required this.schName,
+  });
 
   factory UserAccTable.fromJson(Map<String, dynamic> json) {
     return UserAccTable(
       accNo: json['Acc_No'] ?? '',
       balance: json['Balance'] ?? '',
+      schName: json['Sch_Name'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'Acc_No': accNo, 'Balance': balance};
+    return {'Acc_No': accNo, 'Balance': balance, 'Sch_Name': schName};
   }
 }

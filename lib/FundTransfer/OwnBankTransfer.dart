@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:passbook_core_jayant/FundTransfer/FundTransfer.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_bloc.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/transfer_event.dart';
@@ -12,7 +11,6 @@ import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 import 'package:passbook_core_jayant/Util/StaticValue.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OwnBankTransfer extends StatefulWidget {
@@ -27,7 +25,12 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
       accNo = TextEditingController(),
       name = TextEditingController(),
       amt = TextEditingController();
-  String userName = "", userAcc = "", userId = "", userBal = "";
+  String userName = "",
+      userAcc = "",
+      custId = "",
+      userBal = "",
+      cmpCode = "",
+      custTypeCode = "";
   bool mobVal = false, accNoVal = false, nameVal = false, amtVal = false;
   List fromAc = [];
   bool fromAcLoading = false;
@@ -263,10 +266,10 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                             listenWhen:
                                 (previous, current) =>
                                     current is LoadingTransferState ||
-                                    current is CustAccNoResponse ||
-                                    current is CustAccNoError,
+                                    current is FetchCustAccNoResponse ||
+                                    current is FetchCustAccNoError,
                             listener: (context, snapshot) {
-                              if (snapshot is CustAccNoResponse) {
+                              if (snapshot is FetchCustAccNoResponse) {
                                 setState(() {
                                   if (snapshot.response["Table"][0]["ACCNO"] ==
                                       "N") {
@@ -670,31 +673,56 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
     setState(() {
       fromAcLoading = true;
       userName = preferences.getString(StaticValues.accName) ?? "";
-      userId = preferences.getString(StaticValues.custID) ?? "";
+      custId = preferences.getString(StaticValues.custID) ?? "";
+      cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
     });
-    Map balanceResponse = await RestAPI().get(
-      APis.fetchFundTransferBal(userId),
-    );
-    successPrint("balance Response=$balanceResponse");
-    setState(() {
-      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-      userAcc = balanceResponse["Table"][0]["AccNo"].toString();
-      acType = balanceResponse["Table"][0]["Types"].toString();
-      fromAc = balanceResponse["Table"];
+
+    // Map balanceResponse = await RestAPI().get(
+    //   APis.fetchFundTransferBal(custId),
+    // );
+
+    // successPrint("balance Response=$balanceResponse");
+    // setState(() {
+    //   userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+    //   userAcc = balanceResponse["Table"][0]["AccNo"].toString();
+    //   acType = balanceResponse["Table"][0]["Types"].toString();
+    //   fromAc = balanceResponse["Table"];
+    //   fromAcLoading = false;
+    //   // fromAc.add([
+    //   //   {
+    //   //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
+    //   //   }
+    //   // ]);
+    //   warningPrint("UserAcc=$userAcc");
+    // });
+
+    fetchCustomerFromAccNo();
+    fetchUserLimit();
+
+    // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
+    // alertPrint("transDailyLimit::: $transDailyLimit");
+    // setState(() {
+    //   _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
+    //   _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
+    //   //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+    // });
+  }
+
+  fetchCustomerFromAccNo() async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      custId = preferences.getString(StaticValues.custID) ?? "";
+      final transferBloc = TransferBloc.get(context);
+      transferBloc.add(FetchCustomerFromAccNo(cmpCode, custId));
       fromAcLoading = false;
-      // fromAc.add([
-      //   {
-      //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
-      //   }
-      // ]);
-      warningPrint("UserAcc=$userAcc");
     });
-    Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
-    alertPrint("transDailyLimit::: $transDailyLimit");
-    setState(() {
-      _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
-      _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
-      //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+  }
+
+  fetchUserLimit() async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
+      final transferBloc = TransferBloc.get(context);
+      transferBloc.add(FetchUserLimitevent(cmpCode, custTypeCode));
+      fromAcLoading = false;
     });
   }
 }
