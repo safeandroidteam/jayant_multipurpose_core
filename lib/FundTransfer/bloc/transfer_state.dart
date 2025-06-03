@@ -3,7 +3,9 @@ import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart
 import 'package:passbook_core_jayant/FundTransfer/Model/fundTransferTypeModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/userAccResModal.dart';
 
+import '../Model/fetchBeniBankDetailModal.dart';
 import '../Model/fetchUserLimitRightModal.dart';
+import '../Model/saveBenificiaryModal.dart';
 
 @immutable
 abstract class TransferState {}
@@ -83,6 +85,37 @@ class FetchBenificiaryError extends TransferState {
   FetchBenificiaryError(this.error);
 }
 
+//saveBeneficiary
+
+class SaveBeneficiaryLoading extends TransferState {}
+
+class SaveBeneficiaryResponse extends TransferState {
+  final List<SaveBeneficiaryData> saveBeneficiaryList;
+
+  SaveBeneficiaryResponse(this.saveBeneficiaryList);
+}
+
+class SaveBeneficiaryError extends TransferState {
+  final String error;
+
+  SaveBeneficiaryError(this.error);
+}
+
+//check IFSC
+class FetchBeneficiaryBankDetailsLoading extends TransferState {}
+
+class FetchBeneficiaryBankDetailsResponse extends TransferState {
+  final List<FetchBankDetailData> fetchBeneficiaryBankDetailsList;
+
+  FetchBeneficiaryBankDetailsResponse(this.fetchBeneficiaryBankDetailsList);
+}
+
+class FetchBeneficiaryBankDetailsError extends TransferState {
+  final String error;
+
+  FetchBeneficiaryBankDetailsError(this.error);
+}
+
 //fetchuserlimit
 
 class FetchUserLimitLoading extends TransferState {}
@@ -98,3 +131,4 @@ class FetchUserLimitError extends TransferState {
 
   FetchUserLimitError(this.error);
 }
+
