@@ -236,8 +236,7 @@ class APis {
   //Other Bank Transfer
   static String fillTransferTypeDetails =
       "$_superLink/Fill_TransferTypeDetails";
-
-
+  static String deleteBeneficiaryData= "$_superLink/DeleteBeneficiary";
   //IFSC to get Bank Details
   static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
 
