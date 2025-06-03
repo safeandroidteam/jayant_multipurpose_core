@@ -4,8 +4,10 @@ import 'package:passbook_core_jayant/configuration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StaticValues {
+  static String userID = "userID";
   static String custID = "cust_id";
   static String custType = "custType";
+  static String custTypeCode = "custTypeCode";
   static String accNumber = "acc_number";
   static String accName = "acc_name";
   static String userName = "userName";

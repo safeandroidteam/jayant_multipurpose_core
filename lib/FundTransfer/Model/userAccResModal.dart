@@ -1,53 +1,55 @@
-// To parse this JSON data, do
-//
-//     final userAccResModal = userAccResModalFromJson(jsonString);
+class UserAccResModel {
+  final String proceedStatus;
+  final String proceedMessage;
+  final List<UserAccTable> data;
 
-import 'dart:convert';
-
-UserAccResModal userAccResModalFromJson(String str) =>
-    UserAccResModal.fromJson(json.decode(str));
-
-String userAccResModalToJson(UserAccResModal data) =>
-    json.encode(data.toJson());
-
-class UserAccResModal {
-  List<UserAccTable> table;
-
-  UserAccResModal({
-    required this.table,
+  UserAccResModel({
+    required this.proceedStatus,
+    required this.proceedMessage,
+    required this.data,
   });
 
-  factory UserAccResModal.fromJson(Map<String, dynamic> json) =>
-      UserAccResModal(
-        table: List<UserAccTable>.from(
-            json["Table"].map((x) => UserAccTable.fromJson(x))),
-      );
+  factory UserAccResModel.fromJson(Map<String, dynamic> json) {
+    return UserAccResModel(
+      proceedStatus: json['ProceedStatus'] ?? '',
+      proceedMessage: json['ProceedMessage'] ?? '',
+      data:
+          (json['Data'] as List<dynamic>?)
+              ?.map((item) => UserAccTable.fromJson(item))
+              .toList() ??
+          [],
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-        "Table": List<dynamic>.from(table.map((x) => x.toJson())),
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      'ProceedStatus': proceedStatus,
+      'ProceedMessage': proceedMessage,
+      'Data': data.map((item) => item.toJson()).toList(),
+    };
+  }
 }
 
 class UserAccTable {
-  String accNo;
-  double balAmt;
-  String accType;
+  final String accNo;
+  final String balance;
+  final String schName;
 
   UserAccTable({
     required this.accNo,
-    required this.balAmt,
-    required this.accType,
+    required this.balance,
+    required this.schName,
   });
 
-  factory UserAccTable.fromJson(Map<String, dynamic> json) => UserAccTable(
-        accNo: json["AccNo"],
-        balAmt: json["BalAmt"],
-        accType: json["Types"],
-      );
+  factory UserAccTable.fromJson(Map<String, dynamic> json) {
+    return UserAccTable(
+      accNo: json['Acc_No'] ?? '',
+      balance: json['Balance'] ?? '',
+      schName: json['Sch_Name'] ?? '',
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-        "AccNo": accNo,
-        "BalAmt": balAmt,
-        "Types":accType
-      };
+  Map<String, dynamic> toJson() {
+    return {'Acc_No': accNo, 'Balance': balance, 'Sch_Name': schName};
+  }
 }

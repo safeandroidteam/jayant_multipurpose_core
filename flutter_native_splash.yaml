@@ -12,9 +12,12 @@ flutter_native_splash:
   #  branding_dark: assets/safesoftware_logo.png
 
   android_12:
-    image: assets/splash_screen.png
+    image: assets/mini-logo-title-1152.png
     icon_background_color: "#ffffff"
-    image_dark: assets/splash_screen.png
+#    branding: assets/safesoftware_logo.png
+    image_dark: assets/mini-logo-title-1152.png
     icon_background_color_dark: "#121212"
+#    branding_dark: assets/safesoftware_logo.png
+  fullscreen: true
 #  fill: true
 #  android_disable_fullscreen: false

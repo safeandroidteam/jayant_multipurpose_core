@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:passbook_core_jayant/Passbook/Model/LoanTransModel.dart';
+import 'package:passbook_core_jayant/Passbook/Model/ChittyLoanTransModel.dart';
 import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,7 +50,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final passBookBloc = PassBookBloc.get(context);
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
-      passBookBloc.add(LoanTransEvent(cmpCode, widget.accID ?? 0));
+      passBookBloc.add(ChittyLoanTransEvent(cmpCode, widget.accID ?? 0));
       //passBookBloc.add(LoanTransEvent(cmpCode, 186196));
     });
   }
@@ -132,10 +132,10 @@ class _LoanTransactionState extends State<LoanTransaction> {
   }
 
   // List<TableRow> rows(List<LoanTransTable> loanTransTable) {
-  List<TableRow> rows(List<LoanTransData> loanTransData) {
+  List<TableRow> rows(List<ChittyLoanTransData> chittyLoanTransData) {
     List<TableRow> tableRows = [];
     // loanTransTable.asMap().forEach((index, item) {
-    loanTransData.asMap().forEach((index, item) {
+    chittyLoanTransData.asMap().forEach((index, item) {
       DateTime date = DateTime.parse(item.trDate!);
       String formattedtrDate = DateFormat("dd MMM yyyy").format(date);
       tableRows.add(
@@ -291,16 +291,16 @@ class _LoanTransactionState extends State<LoanTransaction> {
         child: BlocBuilder<PassBookBloc, PassBookState>(
           buildWhen:
               (previous, current) =>
-                  current is LoanTransactionLoading ||
-                  current is LoanTransactionResponse ||
-                  current is LoanTransactionErrorException,
+                  current is ChittyLoanTransLoading ||
+                  current is ChittyLoanTransResponse ||
+                  current is ChittyLoanTransErrorException,
           builder: (context, state) {
             if (state is PassBookBlocInitial) {
               return Center(child: CircularProgressIndicator());
-            } else if (state is LoanTransactionLoading) {
+            } else if (state is ChittyLoanTransLoading) {
               return Center(child: CircularProgressIndicator());
-            } else if (state is LoanTransactionResponse) {
-              if (state.loanTransList.isNotEmpty) {
+            } else if (state is ChittyLoanTransResponse) {
+              if (state.chittyLoanTransList.isNotEmpty) {
                 return CustomScrollView(
                   slivers: <Widget>[
                     SliverAppBar(
@@ -334,7 +334,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
                         Table(
                           defaultVerticalAlignment:
                               TableCellVerticalAlignment.middle,
-                          children: rows(state.loanTransList),
+                          children: rows(state.chittyLoanTransList),
                         ),
                       ]),
                     ),
@@ -382,7 +382,7 @@ class _LoanTransactionState extends State<LoanTransaction> {
                   ],
                 );
               }
-            } else if (state is LoanTransactionErrorException) {
+            } else if (state is ChittyLoanTransErrorException) {
               return Center(child: Text("Error : ${state.error}"));
             } else {
               return Center(child: Text("Something went Wrong"));

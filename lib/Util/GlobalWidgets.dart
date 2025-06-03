@@ -469,7 +469,8 @@ class GlobalWidgets {
     final transferbloc = TransferBloc.get(context);
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String userId = preferences.getString(StaticValues.custID) ?? "";
-    transferbloc.add(FetchCustomerFromAccNo(userId));
+    String cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
+    transferbloc.add(FetchCustomerFromAccNo(cmpCode, userId));
     TextEditingController amtCtrl = TextEditingController();
     await showModalBottomSheet(
       context: context,
@@ -526,16 +527,17 @@ class GlobalWidgets {
                         BlocBuilder<TransferBloc, TransferState>(
                           buildWhen:
                               (previous, current) =>
-                                  current is FromAccResponseLoading ||
-                                  current is FromAccResponse,
+                                  current is FetchCustFromAccResponseLoading ||
+                                  current is FetchCustFromAccResponse,
                           builder: (context, state) {
-                            if (state is FromAccResponseError) {
+                            if (state is FetchCustFromAccResponseError) {
                               return Center(
                                 child: Text("Something Went Wrong"),
                               );
-                            } else if (state is FromAccResponseLoading) {
+                            } else if (state
+                                is FetchCustFromAccResponseLoading) {
                               return Center(child: CircularProgressIndicator());
-                            } else if (state is FromAccResponse) {
+                            } else if (state is FetchCustFromAccResponse) {
                               if (state.accounts.isEmpty) {
                                 return Center(child: Text("NO Account Found"));
                               } else {
@@ -574,13 +576,13 @@ class GlobalWidgets {
                                             "",
                                         size: 24,
                                       ),
-                                      subtitle: TextView(
-                                        text:
-                                            state.accounts[index].accType
-                                                .toString() ??
-                                            "",
-                                        size: 12.0,
-                                      ),
+                                      // subtitle: TextView(
+                                      //   text:
+                                      //       state.accounts[index].accType
+                                      //           .toString() ??
+                                      //       "",
+                                      //   size: 12.0,
+                                      // ),
                                     );
                                   },
                                 );

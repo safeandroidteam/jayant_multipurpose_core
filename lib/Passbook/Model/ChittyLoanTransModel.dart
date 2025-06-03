@@ -58,8 +58,8 @@
 //       };
 // }
 
-class LoanTransModel {
-  LoanTransModel({
+class ChittyLoanTransModel {
+  ChittyLoanTransModel({
     required this.proceedStatus,
     required this.proceedMessage,
     required this.data,
@@ -67,15 +67,15 @@ class LoanTransModel {
 
   final String? proceedStatus;
   final String? proceedMessage;
-  final List<LoanTransData>? data;
+  final List<ChittyLoanTransData>? data;
 
-  factory LoanTransModel.fromJson(Map<String, dynamic> json) {
-    return LoanTransModel(
+  factory ChittyLoanTransModel.fromJson(Map<String, dynamic> json) {
+    return ChittyLoanTransModel(
       proceedStatus: json["ProceedStatus"],
       proceedMessage: json["ProceedMessage"],
       // data: json["Data"] == null ? [] : List<LoanTransData>.from(json["Data"]!.map((x) => LoanTransData.fromJson(x))),
-      data: List<LoanTransData>.from(
-        json["Table"].map((x) => LoanTransData.fromJson(x)),
+      data: List<ChittyLoanTransData>.from(
+        json["Table"].map((x) => ChittyLoanTransData.fromJson(x)),
       ),
     );
   }
@@ -88,8 +88,8 @@ class LoanTransModel {
   };
 }
 
-class LoanTransData {
-  LoanTransData({
+class ChittyLoanTransData {
+  ChittyLoanTransData({
     this.trDate,
     this.creditAmt,
     this.debitAmt,
@@ -119,8 +119,8 @@ class LoanTransData {
   String? balType;
   String? remarks;
 
-  factory LoanTransData.fromJson(Map<String, dynamic> json) {
-    return LoanTransData(
+  factory ChittyLoanTransData.fromJson(Map<String, dynamic> json) {
+    return ChittyLoanTransData(
       trDate: json["Tr_Date"],
       creditAmt: json["Credit_Amt"],
       debitAmt: json["Debit_Amt"],

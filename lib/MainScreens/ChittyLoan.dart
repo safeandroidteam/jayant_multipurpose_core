@@ -52,7 +52,8 @@ class _ChittyLoanState extends State<ChittyLoan> {
       }
 
       warningPrint("section =$section");
-      passBookBloc.add(ChittyLoanEvent(id, cmpCode, section ?? ""));
+      passBookBloc.add(ChittyLoanEvent(cmpCode, id, section ?? ""));
+      // passBookBloc.add(ChittyLoanEvent(cmpCode, "2", section ?? ""));
     });
   }
 
@@ -184,7 +185,7 @@ class _ChittyLoanState extends State<ChittyLoan> {
                                       accID: passbookTable.accId,
                                     )
                                     : ChittyTransaction(
-                                      accNo: passbookTable.accNo,
+                                      accID: passbookTable.accId,
                                     ),
                       ),
                     ),
