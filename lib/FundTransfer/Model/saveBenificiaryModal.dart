@@ -13,9 +13,10 @@ class SaveBeneficiaryModal {
     return SaveBeneficiaryModal(
       proceedStatus: json['ProceedStatus'] ?? '',
       proceedMessage: json['ProceedMessage'] ?? '',
-      data: (json['Data'] as List<dynamic>)
-          .map((item) => SaveBeneficiaryData.fromJson(item))
-          .toList(),
+      data: (json['Data'] as List<dynamic>?)
+          ?.map((item) => SaveBeneficiaryData.fromJson(item))
+          .toList() ??
+          [],
     );
   }
 
@@ -29,24 +30,24 @@ class SaveBeneficiaryModal {
 }
 
 class SaveBeneficiaryData {
-  final String proceedStatus;
+  final int beneficiaryId;
   final String proceedMessage;
 
   SaveBeneficiaryData({
-    required this.proceedStatus,
+    required this.beneficiaryId,
     required this.proceedMessage,
   });
 
   factory SaveBeneficiaryData.fromJson(Map<String, dynamic> json) {
     return SaveBeneficiaryData(
-      proceedStatus: json['Proceed_Status'] ?? '',
+      beneficiaryId: json['Beneficiary_ID'] ?? 0,
       proceedMessage: json['Proceed_Message'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'Proceed_Status': proceedStatus,
+      'Beneficiary_ID': beneficiaryId,
       'Proceed_Message': proceedMessage,
     };
   }
