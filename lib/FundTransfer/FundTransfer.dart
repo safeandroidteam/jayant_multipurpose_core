@@ -59,7 +59,7 @@ class _FundTransferState extends State<FundTransfer>
       userName = preferences.getString(StaticValues.accName) ?? "";
       userId = preferences.getString(StaticValues.custID) ?? "";
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
-      custTypeCode= preferences.getString(StaticValues.custTypeCode)??"";
+      custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
     });
 
     // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
@@ -72,7 +72,7 @@ class _FundTransferState extends State<FundTransfer>
 
     //fetchuserlimit
     final transferBloc = TransferBloc.get(context);
-    transferBloc.add(FetchUserLimitevent(cmpCode,custTypeCode));
+    transferBloc.add(FetchUserLimitevent(cmpCode, custTypeCode));
 
     fetchBeneficiary();
   }
@@ -81,7 +81,7 @@ class _FundTransferState extends State<FundTransfer>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final transferBloc = TransferBloc.get(context);
       var id = preferences.getString(StaticValues.custID) ?? "";
-      transferBloc.add(FetchBenificiaryevent(cmpCode,userId));
+      transferBloc.add(FetchBenificiaryevent(cmpCode, userId));
     });
   }
 
@@ -179,9 +179,16 @@ class _FundTransferState extends State<FundTransfer>
                   expandedHeight: MediaQuery.of(context).size.width * 1.30,
                   pinned: true,
                   centerTitle: true,
-                  title: Text("Fund Transfer",style: TextStyle(color: Colors.white),),
+                  title: Text(
+                    "Fund Transfer",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back, size: 30.0,color: Colors.white,),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 30.0,
+                      color: Colors.white,
+                    ),
                     onPressed:
                         () => Navigator.of(
                           context,
@@ -293,10 +300,7 @@ class _FundTransferState extends State<FundTransfer>
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
-
-                              }
-
-                              else if (state is FetchBenificiaryResponse) {
+                              } else if (state is FetchBenificiaryResponse) {
                                 if (state.beneficiaryList.isNotEmpty) {
                                   return GridView.builder(
                                     gridDelegate:
@@ -393,7 +397,6 @@ class _FundTransferState extends State<FundTransfer>
                                                   ),
                                                 ],
                                               );
-
                                             },
                                           );
                                         },
@@ -470,7 +473,9 @@ class _FundTransferState extends State<FundTransfer>
                                     Center(
                                       child: Text(
                                         "Error: ${state.error}",
-                                        style: const TextStyle(color: Colors.red),
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -483,7 +488,6 @@ class _FundTransferState extends State<FundTransfer>
                                   ),
                                 );
                               }
-
                             },
                           ),
                         ],

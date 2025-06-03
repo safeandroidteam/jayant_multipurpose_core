@@ -12,7 +12,10 @@ import 'package:passbook_core_jayant/MainScreens/new_user.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
+import 'package:passbook_core_jayant/Util/sim_sender.dart';
+import 'package:passbook_core_jayant/Util/sim_ui.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,7 +62,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     String buildNumber = packageInfo.buildNumber;
 
     customPrint(
-      "appName $appName,"
+      "cmpcode : ${versionMap["Data"][0]["Cmp_Code"].toString()}"
+      "\nappName $appName,"
       "\nPackageName $packageName"
       "\nVERSION FE $version"
       // "\nVERSION BE ${(versionMap["Table"][0]["Ver_Name"] as double).toString()}"
@@ -71,7 +75,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
     String verNameFromApi = versionMap["Data"][0]["Ver_Name"].toString();
     String verCodeFromApi = versionMap["Data"][0]["Ver_Code"].toString();
-
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setString(
+      StaticValues.cmpCodeKey,
+      versionMap["Data"][0]["Cmp_Code"].toString(),
+    );
     String verCodeFromApiDouble =
         double.tryParse(verCodeFromApi)?.round().toString() ?? "";
     alertPrint("Ver_Name Frm Api==$verNameFromApi");
@@ -506,54 +514,6 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   bool isLoading = false;
   int count = 0;
 
-  // void saveData(LoginModel loginModel) async {
-  //   SharedPreferences preferences = StaticValues.sharedPreferences!;
-  //   print("CUST ID :: ${loginModel.table![0].toString()}");
-  //   await preferences.setString(
-  //     StaticValues.custID,
-  //     loginModel.table![0].custId.toString(),
-  //   );
-  //   await preferences.setString(
-  //     StaticValues.branchCode,
-  //     loginModel.table![0].brCode.toString(),
-  //   );
-  //   await preferences.setString(
-  //     StaticValues.schemeCode,
-  //     loginModel.table![0].schCode.toString(),
-  //   );
-  //   await preferences.setString(
-  //     StaticValues.accNumber,
-  //     loginModel.table![0].accNo.toString(),
-  //   );
-  //   await preferences.setString(
-  //     StaticValues.ifsc,
-  //     loginModel.table![0].ifsc.toString(),
-  //   );
-  //   await preferences.setString(
-  //     StaticValues.accName,
-  //     loginModel.table![0].custName.toString(),
-  //   );
-  //   await preferences.setString(
-  //     StaticValues.mobileNo,
-  //     loginModel.table![0].mobile.toString(),
-  //   );
-  //   await preferences.setString(
-  //     StaticValues.accountNo,
-  //     loginModel.table![0].accountNo.toString(),
-  //   );
-  //   //  await preferences.setString(StaticValues.userPass, passCtrl.text);
-  //   await preferences.setString(
-  //     StaticValues.address,
-  //     loginModel.table![0].adds!
-  //         .split(",")
-  //         .toList()
-  //         .where((element) => element.isNotEmpty)
-  //         .join(",")
-  //         .toString(),
-  //   );
-  //   Navigator.of(context).pushReplacementNamed("/HomePage");
-  // }
-
   void saveData(SignInModel signInModel) async {
     SharedPreferences preferences = StaticValues.sharedPreferences!;
     successPrint("Signin Modal ==${signInModel.data.first.toJson()}");
@@ -573,14 +533,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       StaticValues.brName,
       signInModel.data[0].brName.toString(),
     );
-    // await preferences.setString(
-    //   StaticValues.schemeCode,
-    //   signInModel.data![0].schCode.toString(),
-    // );
-    // await preferences.setString(
-    //   StaticValues.accNumber,
-    //   signInModel.data![0].accNo.toString(),
-    // );
+
     await preferences.setString(
       StaticValues.ifsc,
       signInModel.data[0].ifscCode.toString(),
@@ -629,6 +582,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    loadSims();
     setState(() {
       SharedPreferences pref = StaticValues.sharedPreferences!;
       MPin = pref.getString(StaticValues.Mpin);
@@ -645,6 +599,69 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       //      passCtrl.text = "123456";
     });
     _tabController = TabController(length: 2, vsync: this);
+  }
+
+  final mobCtrl = TextEditingController();
+  void loadSims() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String mobNo = preferences.getString(StaticValues.mobileNo) ?? "";
+    if (mobNo.isEmpty && mobNo.length != 10) {
+      customPrint("mob no is empty");
+      // Request permission
+      final status = await Permission.phone.request();
+      if (!status.isGranted) {
+        debugPrint("Phone permission not granted");
+        return;
+      }
+
+      try {
+        // Fetch SIM list
+        final simList = await SimSender.getSimList();
+        successPrint("SIM list length: ${simList.length}");
+
+        if (simList.isEmpty) {
+          errorPrint("No SIM cards found");
+          return;
+        }
+
+        setState(() {
+          // Optionally update UI with sim list (if needed elsewhere)
+        });
+
+        // Show bottom sheet and handle selection
+        showSimGridBottomSheet(context, simList, (selectedNumber) {
+          successPrint("Selected phone number: $selectedNumber");
+          if (selectedNumber.startsWith('+91')) {
+            customPrint("mob no contain +91");
+            selectedNumber = selectedNumber.substring(3);
+          } else if (selectedNumber.length == 12 &&
+              selectedNumber.startsWith('91')) {
+            customPrint("mob no contain 91");
+            selectedNumber = selectedNumber.substring(2);
+          }
+
+          final trimmed = selectedNumber.trim();
+          customPrint("trimmed length=${trimmed.length}");
+
+          if (trimmed.length != 10) {
+            GlobalWidgets().showSnackBar(context, "Mobile Number Not Found");
+          }
+          if (trimmed.length == 10) {
+            setState(() {
+              mobCtrl.text = trimmed;
+            });
+            preferences.setString(StaticValues.mobileNo, mobCtrl.text);
+            successPrint("Mobile no ==${mobCtrl.text}");
+          }
+        });
+      } catch (e) {
+        debugPrint("Error loading SIMs: $e");
+      }
+    } else if (mobNo.isNotEmpty && mobNo.length == 10) {
+      mobCtrl.text = mobNo;
+      successPrint("Mobile no ==${mobCtrl.text}");
+    }
+    alertPrint("mob No =${mobCtrl.text}");
   }
 
   @override
@@ -705,24 +722,6 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                           ),
                           SizedBox(height: 20),
 
-                          // EditTextBordered(
-                          //   controller: mpinCtrl,
-                          //   hint: "MPin",
-                          //   errorText:
-                          //       mpinVal ? "MPin length should be 4" : null,
-                          //   keyboardType: TextInputType.number,
-                          //   inputFormatters: [
-                          //     LengthLimitingTextInputFormatter(4),
-                          //     FilteringTextInputFormatter.digitsOnly,
-                          //   ],
-                          //   // obscureText: true,
-                          //   // showObscureIcon: true,
-                          //   onChange: (value) {
-                          //     setState(() {
-                          //       mpinVal = value.trim().length < 4;
-                          //     });
-                          //   },
-                          // ),
                           SizedBox(
                             width: width * 0.6,
                             child: Row(
@@ -856,21 +855,6 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   ],
                 ),
 
-              ///Toogle To Login with MPIN or Username
-              // if (MPin != null)
-              //   TextButton(
-              //     onPressed: () {
-              //       setState(() {
-              //         mpinCtrl.clear();
-              //         isLoginWithUsername = !isLoginWithUsername;
-              //       });
-              //     },
-              //     child: Text(
-              //       isLoginWithUsername
-              //           ? "Login with MPIN"
-              //           : "Login with Username",
-              //     ),
-              //   ),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Column(
@@ -919,183 +903,44 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
             ),
           ),
           onPressed: () async {
-            debugPrint(
-              "Login Button : UN from usernameCtrl - ${usernameCtrl.text}",
-            );
-            mergeMPinCtrlValues();
-            setState(() {
-              passVal = passCtrl.text.trim().length < 4;
-              mobVal = usernameCtrl.text.trim().isEmpty;
-              mpinVal = mpinCtrl.text.trim().length < 4;
-              if (allMpinCtrl.text.trim().length < 4) {
-                isMPinEmpty = true;
-              }
-            });
+            warningPrint("mob no ==${mobCtrl.text}");
 
-            ///Login with UN & PW
-            if (isLoginWithUsername ||
-                MPin == null ||
-                _tabController.index == 1) {
-              if (!passVal && !mobVal) {
-                debugPrint("Login UN & PW > ALL true");
-                _isLoading = true;
-                try {
-                  response = await RestAPI().post(
-                    APis.loginUrl,
-                    params: {
-                      "Cmp_Code": cmpCode ?? "",
-                      "User_Name": usernameCtrl.text,
-                      "Password": passCtrl.text,
-                      "Mobile_No":"9400904859",
-                    },
-                  );
-
-                  setState(() {
-                    _isLoading = false;
-                    if (response!.toString().isEmpty ||
-                        response == null ||
-                        response!.isEmpty) {
-                      GlobalWidgets().showSnackBar(
-                        context,
-                        "Something went wrong",
-                      );
-                      return;
-                    }
-                    if (response!["ProceedStatus"] == "N") {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      print("LIJITH");
-                      debugPrint(
-                        "ProceedMessage ::: ${response!["ProceedMessage"]}",
-                      );
-                      GlobalWidgets().showSnackBar(
-                        context,
-                        response!["ProceedMessage"],
-                      );
-                    } else {
-                      if (response!["Data"][0]["OTP_Required"] == "Y") {
-                        // if (response!["Data"][0]["Proceed_Status"] == "Y") {
-                        // usernameCtrl.clear();
-                        // passCtrl.clear();
-
-                        debugPrint(
-                          "OTP_Required = ${response!["Data"][0]["OTP_Required"]}\nProceed_Status = ${response!["Data"][0]["Proceed_Status"]}",
-                        );
-
-                        ///TODO  for otp while login
-                        _loginConfirmation("1");
-                      } else {
-                        saveData(
-                          SignInModel(
-                            proceedStatus: response!["ProceedStatus"],
-                            proceedMessage: response!["ProceedMessage"],
-                            data: [
-                              SignInData(
-                                proceed_Status:
-                                    response!["Data"][0]["Proceed_Status"],
-                                proceed_Message:
-                                    response!["Data"][0]["Proceed_Message"],
-                                otpRequired:
-                                    response!["Data"][0]["OTP_Required"],
-                                cmpCode: response!["Data"][0]["Cmp_Code"],
-                                userId: response!["Data"][0]["User_ID"],
-                                userName: response!["Data"][0]["User_Name"],
-                                custId: response!["Data"][0]["CustID"],
-                                accId: response!["Data"][0]["Acc_ID"],
-                                accNo: response!["Data"][0]["Acc_No"],
-                                custMobile: response!["Data"][0]["Cust_Mobile"],
-                                profileName:
-                                    response!["Data"][0]["ProfileName"],
-                                fullAddress:
-                                    response!["Data"][0]["Full_Address"],
-                                brCode: response!["Data"][0]["Br_Code"],
-                                brName: response!["Data"][0]["Br_Name"],
-                                ifscCode: response!["Data"][0]["IFSC_Code"],
-                                customerType:
-                                    response!["Data"][0]["Customer_Type"],
-                                transDate: response!["Data"][0]["Trans_Date"],
-                                custTypeCode:  response!["Data"][0]["Customer_TypeCode"],
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                    }
-                  });
-                } on RestException catch (e) {
-                  setState(() {
-                    _isLoading = false;
-                  });
-
-                  GlobalWidgets().showSnackBar(
-                    context,
-                    e.message["ProceedMessage"].toString(),
-                  );
-                }
-              }
-
-              ///Login with MPIN
-            } else if (!isLoginWithUsername &&
-                MPin != null &&
-                _tabController.index == 0 &&
-                allMpinCtrl.text.isNotEmpty &&
-                allMpinCtrl.text.trim().length == 4) {
-              debugPrint("Login MPIN > ALL true");
+            ///Note when taking release change if condition to isNotEmpty
+            if (mobCtrl.text.isEmpty) {
+              debugPrint(
+                "Login Button : UN from usernameCtrl - ${usernameCtrl.text}",
+              );
+              mergeMPinCtrlValues();
               setState(() {
-                isMPinEmpty = false;
+                passVal = passCtrl.text.trim().length < 4;
+                mobVal = usernameCtrl.text.trim().isEmpty;
+                mpinVal = mpinCtrl.text.trim().length < 4;
+                if (allMpinCtrl.text.trim().length < 4) {
+                  isMPinEmpty = true;
+                }
               });
-              _isLoading = true;
-              try {
-                SharedPreferences pref = StaticValues.sharedPreferences!;
 
-                String? storedMpin = pref.getString(StaticValues.fullMpin);
-
-                customPrint("stored mpin=$storedMpin");
-
-                if (storedMpin != null && storedMpin.isNotEmpty) {
-                  if (storedMpin != allMpinCtrl.text) {
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "Mpin Mismatched. Please use Login with Username & Password Method",
-                    );
-                    _isLoading = false;
-                  } else {
-                    // getMPinCtrlValues();
-
-                    // response = await RestAPI().get(
-                    //   // "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${mpinCtrl.text}",
-                    //   "${APis.loginMPin}CustId=${pref.getString(StaticValues.custID)}&MPin=${allMpinCtrl.text}",
-                    // );
-                    /*   response = await RestAPI().post(APis.loginMpin,params: {
-                      "CustID": "1010001",
-                      "MPIN": mpinCtrl.text
-                    }); */
-
+              ///Login with UN & PW
+              if (isLoginWithUsername ||
+                  MPin == null ||
+                  _tabController.index == 1) {
+                if (!passVal && !mobVal) {
+                  debugPrint("Login UN & PW > ALL true");
+                  _isLoading = true;
+                  try {
                     response = await RestAPI().post(
-                      APis.loginMPin,
+                      APis.loginUrl,
                       params: {
                         "Cmp_Code": cmpCode ?? "",
-                        "User_Name": pref.getString(StaticValues.userName),
-                        "MPIN": allMpinCtrl.text,
-                        "Mobile_No":"9400904859",
+                        "User_Name": usernameCtrl.text,
+                        "Password": passCtrl.text,
+                        "Mobile_No": "9400904859",
+                        // "Mobile_No": mobCtrl.text,
                       },
                     );
 
                     setState(() {
                       _isLoading = false;
-                      /*     if ((response["Table"][0] as Map).containsKey("Invalid")) {
-                    //  if (response["Table"][0]["Cust_id"] == "Invalid"){
-                        print("Invalis");
-                        GlobalWidgets()
-                            .showSnackBar(widget.scaffold, "Invalid Credentials");
-                      }
-                 if ((response["Table"][0] as Map).containsKey("Blocked")) {
-                        //  if (response["Table"][0]["Cust_id"] == "Invalid"){
-                        print("Blocked");
-                        GlobalWidgets()
-                            .showSnackBar(widget.scaffold, "Your Account is Blocked");
-                      }*/
                       if (response!.toString().isEmpty ||
                           response == null ||
                           response!.isEmpty) {
@@ -1118,8 +963,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                           response!["ProceedMessage"],
                         );
                       } else {
-                        if (response!["Data"][0]["Proceed_Status"] == "Y" &&
-                            response!["Data"][0]["OTP_Required"] == "N") {
+                        if (response!["Data"][0]["OTP_Required"] == "Y") {
                           // if (response!["Data"][0]["Proceed_Status"] == "Y") {
                           // usernameCtrl.clear();
                           // passCtrl.clear();
@@ -1129,8 +973,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                           );
 
                           ///TODO  for otp while login
-                          // _loginConfirmation("0");
-
+                          _loginConfirmation("1");
+                        } else {
                           saveData(
                             SignInModel(
                               proceedStatus: response!["ProceedStatus"],
@@ -1161,69 +1005,199 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                   customerType:
                                       response!["Data"][0]["Customer_Type"],
                                   transDate: response!["Data"][0]["Trans_Date"],
-                                  custTypeCode:  response!["Data"][0]["Customer_TypeCode"],
+                                  custTypeCode:
+                                      response!["Data"][0]["Customer_TypeCode"],
                                 ),
                               ],
                             ),
                           );
-
-                          GlobalWidgets().showSnackBar(
-                            context,
-                            response!["Data"][0]["Proceed_Message"],
-                          );
                         }
-                        // else {
-                        //   saveData(
-                        //     SignInModel(
-                        //       proceedStatus: response!["ProceedStatus"],
-                        //       proceedMessage: response!["ProceedMessage"],
-                        //       data: [
-                        //         SignInData(
-                        //           proceedStatus:
-                        //               response!["Data"][0]["Proceed_Status"],
-                        //           proceedMessage:
-                        //               response!["Data"][0]["Proceed_Message"],
-                        //           otpRequired:
-                        //               response!["Data"][0]["OTP_Required"],
-                        //           cmpCode: response!["Data"][0]["Cmp_Code"],
-                        //           userId: response!["Data"][0]["User_ID"],
-                        //           userName: response!["Data"][0]["User_Name"],
-                        //           custId: response!["Data"][0]["CustID"],
-                        //           accId: response!["Data"][0]["Acc_ID"],
-                        //           accNo: response!["Data"][0]["Acc_No"],
-                        //           custMobile:
-                        //               response!["Data"][0]["Cust_Mobile"],
-                        //           profileName:
-                        //               response!["Data"][0]["ProfileName"],
-                        //           fullAddress:
-                        //               response!["Data"][0]["Full_Address"],
-                        //           brCode: response!["Data"][0]["Br_Code"],
-                        //           brName: response!["Data"][0]["Br_Name"],
-                        //           ifscCode: response!["Data"][0]["IFSC_Code"],
-                        //           customerType:
-                        //               response!["Data"][0]["Customer_Type"],
-                        //           transDate: response!["Data"][0]["Trans_Date"],
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   );
-                        // }
                       }
                     });
+                  } on RestException catch (e) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      e.message["ProceedMessage"].toString(),
+                    );
                   }
                 }
-              } on RestException catch (e) {
-                setState(() {
-                  _isLoading = false;
-                });
 
-                GlobalWidgets().showSnackBar(
-                  context,
-                  e.message["ProceedMessage"].toString(),
-                );
+                ///Login with MPIN
+              } else if (!isLoginWithUsername &&
+                  MPin != null &&
+                  _tabController.index == 0 &&
+                  allMpinCtrl.text.isNotEmpty &&
+                  allMpinCtrl.text.trim().length == 4) {
+                debugPrint("Login MPIN > ALL true");
+                setState(() {
+                  isMPinEmpty = false;
+                });
+                _isLoading = true;
+                try {
+                  SharedPreferences pref = StaticValues.sharedPreferences!;
+
+                  String? storedMpin = pref.getString(StaticValues.fullMpin);
+
+                  customPrint("stored mpin=$storedMpin");
+
+                  if (storedMpin != null && storedMpin.isNotEmpty) {
+                    if (storedMpin != allMpinCtrl.text) {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "Mpin Mismatched. Please use Login with Username & Password Method",
+                      );
+                      _isLoading = false;
+                    } else {
+                      response = await RestAPI().post(
+                        APis.loginMPin,
+                        params: {
+                          "Cmp_Code": cmpCode ?? "",
+                          "User_Name": pref.getString(StaticValues.userName),
+                          "MPIN": allMpinCtrl.text,
+                          "Mobile_No": "9400904859",
+                          // "Mobile_No": mobCtrl.text,
+                        },
+                      );
+
+                      setState(() {
+                        _isLoading = false;
+
+                        if (response!.toString().isEmpty ||
+                            response == null ||
+                            response!.isEmpty) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Something went wrong",
+                          );
+                          return;
+                        }
+                        if (response!["ProceedStatus"] == "N") {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          print("LIJITH");
+                          debugPrint(
+                            "ProceedMessage ::: ${response!["ProceedMessage"]}",
+                          );
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            response!["ProceedMessage"],
+                          );
+                        } else {
+                          if (response!["Data"][0]["Proceed_Status"] == "Y" &&
+                              response!["Data"][0]["OTP_Required"] == "N") {
+                            // if (response!["Data"][0]["Proceed_Status"] == "Y") {
+                            // usernameCtrl.clear();
+                            // passCtrl.clear();
+
+                            debugPrint(
+                              "OTP_Required = ${response!["Data"][0]["OTP_Required"]}\nProceed_Status = ${response!["Data"][0]["Proceed_Status"]}",
+                            );
+
+                            ///TODO  for otp while login
+                            // _loginConfirmation("0");
+
+                            saveData(
+                              SignInModel(
+                                proceedStatus: response!["ProceedStatus"],
+                                proceedMessage: response!["ProceedMessage"],
+                                data: [
+                                  SignInData(
+                                    proceed_Status:
+                                        response!["Data"][0]["Proceed_Status"],
+                                    proceed_Message:
+                                        response!["Data"][0]["Proceed_Message"],
+                                    otpRequired:
+                                        response!["Data"][0]["OTP_Required"],
+                                    cmpCode: response!["Data"][0]["Cmp_Code"],
+                                    userId: response!["Data"][0]["User_ID"],
+                                    userName: response!["Data"][0]["User_Name"],
+                                    custId: response!["Data"][0]["CustID"],
+                                    accId: response!["Data"][0]["Acc_ID"],
+                                    accNo: response!["Data"][0]["Acc_No"],
+                                    custMobile:
+                                        response!["Data"][0]["Cust_Mobile"],
+                                    profileName:
+                                        response!["Data"][0]["ProfileName"],
+                                    fullAddress:
+                                        response!["Data"][0]["Full_Address"],
+                                    brCode: response!["Data"][0]["Br_Code"],
+                                    brName: response!["Data"][0]["Br_Name"],
+                                    ifscCode: response!["Data"][0]["IFSC_Code"],
+                                    customerType:
+                                        response!["Data"][0]["Customer_Type"],
+                                    transDate:
+                                        response!["Data"][0]["Trans_Date"],
+                                    custTypeCode:
+                                        response!["Data"][0]["Customer_TypeCode"],
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            GlobalWidgets().showSnackBar(
+                              context,
+                              response!["Data"][0]["Proceed_Message"],
+                            );
+                          }
+                          // else {
+                          //   saveData(
+                          //     SignInModel(
+                          //       proceedStatus: response!["ProceedStatus"],
+                          //       proceedMessage: response!["ProceedMessage"],
+                          //       data: [
+                          //         SignInData(
+                          //           proceedStatus:
+                          //               response!["Data"][0]["Proceed_Status"],
+                          //           proceedMessage:
+                          //               response!["Data"][0]["Proceed_Message"],
+                          //           otpRequired:
+                          //               response!["Data"][0]["OTP_Required"],
+                          //           cmpCode: response!["Data"][0]["Cmp_Code"],
+                          //           userId: response!["Data"][0]["User_ID"],
+                          //           userName: response!["Data"][0]["User_Name"],
+                          //           custId: response!["Data"][0]["CustID"],
+                          //           accId: response!["Data"][0]["Acc_ID"],
+                          //           accNo: response!["Data"][0]["Acc_No"],
+                          //           custMobile:
+                          //               response!["Data"][0]["Cust_Mobile"],
+                          //           profileName:
+                          //               response!["Data"][0]["ProfileName"],
+                          //           fullAddress:
+                          //               response!["Data"][0]["Full_Address"],
+                          //           brCode: response!["Data"][0]["Br_Code"],
+                          //           brName: response!["Data"][0]["Br_Name"],
+                          //           ifscCode: response!["Data"][0]["IFSC_Code"],
+                          //           customerType:
+                          //               response!["Data"][0]["Customer_Type"],
+                          //           transDate: response!["Data"][0]["Trans_Date"],
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   );
+                          // }
+                        }
+                      });
+                    }
+                  }
+                } on RestException catch (e) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+
+                  GlobalWidgets().showSnackBar(
+                    context,
+                    e.message["ProceedMessage"].toString(),
+                  );
+                }
               }
+            } else {
+              loadSims();
             }
-            // }
           },
           buttonText: "Login",
         ),
@@ -1390,7 +1364,8 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                                         response!["Data"][0]["Customer_Type"],
                                     transDate:
                                         response!["Data"][0]["Trans_Date"],
-                                    custTypeCode:  response!["Data"][0]["Customer_TypeCode"],
+                                    custTypeCode:
+                                        response!["Data"][0]["Customer_TypeCode"],
                                   ),
                                 ],
                               ),
@@ -1581,46 +1556,77 @@ class _ForgotUIState extends State<ForgotUI> {
                   });
                 },
               ),
-              SizedBox(height: 10.0),
-              EditTextBordered(
-                controller: otpCtrl,
-                hint: "Enter OTP",
-                errorText: otpValid ? "OTP length should be 4" : null,
-                onChange: (value) {
-                  setState(() {
-                    otpValid = value.trim().length < 4;
-                  });
-                },
-              ),
-              SizedBox(height: 10.0),
-              EditTextBordered(
-                controller: passCtrl,
-                hint: "New password",
-                obscureText: true,
-                showObscureIcon: true,
-                //  errorText: passValid ? "Password length should be 4" : null,
-                errorText:
-                    passValid ? "Please include special charcters" : null,
-                onChange: (value) {
-                  setState(() {
-                    //  passValid = value.trim().length < 4;
-                    passValid = RegExp(r"^[a-zA-Z0-9]+$").hasMatch(value);
-                  });
-                },
-              ),
-              SizedBox(height: 10.0),
-              EditTextBordered(
-                controller: rePassCtrl,
-                hint: "Confirm new password",
-                obscureText: true,
-                showObscureIcon: true,
-                errorText: rePassValid ? "Password not matching" : null,
-                onChange: (value) {
-                  setState(() {
-                    rePassValid = rePassCtrl.text != passCtrl.text;
-                  });
-                },
-              ),
+              SizedBox(height: 30.0),
+
+              // Show these only if OTP is received
+              if (isGetOTP) ...[
+                EditTextBordered(
+                  controller: otpCtrl,
+                  keyboardType: TextInputType.number,
+                  hint: "Enter OTP",
+                  errorText: otpValid ? "OTP length should be 4" : null,
+                  onChange: (value) {
+                    setState(() {
+                      otpValid = value.trim().length < 4;
+                    });
+                  },
+                ),
+                SizedBox(height: 10.0),
+                EditTextBordered(
+                  controller: passCtrl,
+                  hint: "New password",
+                  obscureText: true,
+                  showObscureIcon: true,
+                  errorText:
+                      passValid ? "Please include special characters" : null,
+                  onChange: (value) {
+                    setState(() {
+                      passValid = RegExp(r"^[a-zA-Z0-9]+$").hasMatch(value);
+                    });
+                  },
+                ),
+                SizedBox(height: 10.0),
+                EditTextBordered(
+                  controller: rePassCtrl,
+                  hint: "Confirm new password",
+                  obscureText: true,
+                  showObscureIcon: true,
+                  errorText: rePassValid ? "Password not matching" : null,
+                  onChange: (value) {
+                    setState(() {
+                      rePassValid = rePassCtrl.text != passCtrl.text;
+                    });
+                  },
+                ),
+              ],
+              // EditTextBordered(
+              //   controller: passCtrl,
+              //   hint: "New password",
+              //   obscureText: true,
+              //   showObscureIcon: true,
+              //   //  errorText: passValid ? "Password length should be 4" : null,
+              //   errorText:
+              //       passValid ? "Please include special charcters" : null,
+              //   onChange: (value) {
+              //     setState(() {
+              //       //  passValid = value.trim().length < 4;
+              //       passValid = RegExp(r"^[a-zA-Z0-9]+$").hasMatch(value);
+              //     });
+              //   },
+              // ),
+              // SizedBox(height: 10.0),
+              // EditTextBordered(
+              //   controller: rePassCtrl,
+              //   hint: "Confirm new password",
+              //   obscureText: true,
+              //   showObscureIcon: true,
+              //   errorText: rePassValid ? "Password not matching" : null,
+              //   onChange: (value) {
+              //     setState(() {
+              //       rePassValid = rePassCtrl.text != passCtrl.text;
+              //     });
+              //   },
+              // ),
             ],
           ),
         ),
@@ -1639,35 +1645,55 @@ class _ForgotUIState extends State<ForgotUI> {
             ),
             onPressed: () async {
               if (!isGetOTP) {
+                // Step 1: Request OTP
                 if (userIdCtrl.text.isNotEmpty) {
                   _isLoading = true;
-                  Map response = await (RestAPI().get(
-                    "${APis.getPassChangeOTP}UserId=${userIdCtrl.text}",
-                  ));
-                  _isLoading = false;
-                  if (response["Table"][0]["statuscode"] == 1) {
-                    strOtp = response["Table"][0]["OTP"];
-                    GlobalWidgets().showSnackBar(context, "OTP sent");
-                    setState(() {
-                      isGetOTP = true;
-                    });
-                  } else {
-                    GlobalWidgets().showSnackBar(context, "Invalid User ID");
+                  try {
+                    Map<String, dynamic> requestBody = {
+                      "Cmp_Code": 1, // Assuming company code is always 1
+                      "UserName": userIdCtrl.text,
+                    };
+
+                    Map response = await RestAPI().post(
+                      APis.forgotPasswordOtp,
+                      params: requestBody,
+                    );
+
+                    _isLoading = false;
+
+                    if (response["ProceedStatus"] == "Y" &&
+                        response["Data"][0]["Proceed_Status"] == "Y") {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "OTP sent to your mobile number",
+                      );
+                      setState(() {
+                        isGetOTP = true;
+                      });
+                    } else {
+                      String errorMessage =
+                          response["Data"][0]["Procees_Message"] ??
+                          "Invalid User ID";
+                      GlobalWidgets().showSnackBar(context, errorMessage);
+                    }
+                  } catch (e) {
+                    _isLoading = false;
+                    GlobalWidgets().showSnackBar(context, "Failed to send OTP");
                   }
                 } else {
-                  GlobalWidgets().showSnackBar(context, "Invalid User ID");
+                  GlobalWidgets().showSnackBar(context, "Please enter User ID");
                 }
               } else {
+                // Step 2: Verify OTP and change password
                 bool passValue = passCtrl.text.contains(
                   RegExp(r"^[a-zA-Z0-9]+$"),
                 );
+
                 if (passValue) {
                   GlobalWidgets().showSnackBar(
                     context,
                     "Please include special characters in password",
                   );
-                } else if (strOtp != otpCtrl.text) {
-                  GlobalWidgets().showSnackBar(context, "OTP miss match");
                 } else if (passCtrl.text != rePassCtrl.text) {
                   GlobalWidgets().showSnackBar(context, "Password miss match");
                 } else if (passCtrl.text.contains(" ")) {
@@ -1675,44 +1701,67 @@ class _ForgotUIState extends State<ForgotUI> {
                     context,
                     "Please remove space from password",
                   );
+                } else if (userIdCtrl.text.isEmpty ||
+                    otpCtrl.text.isEmpty ||
+                    passCtrl.text.isEmpty) {
+                  GlobalWidgets().showSnackBar(
+                    context,
+                    "Please fill all fields",
+                  );
                 } else {
-                  if (userIdCtrl.text.isEmpty &&
-                      otpCtrl.text.length < 4 &&
-                      passCtrl.text.length < 4) {
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  try {
+                    Map<String, dynamic> requestBody = {
+                      "Cmp_Code": 1,
+                      "User_Name": userIdCtrl.text,
+                      "Password": passCtrl.text,
+                      "OTP": otpCtrl.text,
+                    };
+
+                    print(
+                      "Cmp_Code: 1,User_Name: ${userIdCtrl.text},Password: ${passCtrl.text},OTP: ${otpCtrl.text}",
+                    );
+
+                    Map response = await RestAPI().post(
+                      APis.changeForgotPass,
+                      params: requestBody,
+                    );
+
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                    if (response["ProceedStatus"] == "Y" &&
+                        response["Data"][0]["Proceed_Status"] == "Y") {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "Password changed successfully",
+                      );
+                      widget.onTap!();
+                    } else {
+                      String errorMessage =
+                          response["Data"][0]["Proceed_Message"] ??
+                          "Something went wrong";
+                      GlobalWidgets().showSnackBar(context, errorMessage);
+                    }
+                  } on RestException catch (e) {
+                    setState(() {
+                      _isLoading = false;
+                    });
                     GlobalWidgets().showSnackBar(
                       context,
-                      "Please fill the missing fields",
+                      e.message["ProceedMessage"],
                     );
-                  } else {
-                    _isLoading = true;
-                    try {
-                      Map response = await (RestAPI().post(
-                        "${APis.changeForgotPass}userid=${userIdCtrl.text}&Newpassword=${passCtrl.text}",
-                      ));
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      if (response["Table"][0]["Column1"] ==
-                          "Password Updated Successfully") {
-                        GlobalWidgets().showSnackBar(
-                          context,
-                          "Password changed successfully",
-                        );
-                        widget.onTap!();
-                      } else {
-                        GlobalWidgets().showSnackBar(
-                          context,
-                          "Something went wrong",
-                        );
-                      }
-                      print(response);
-                    } on RestException catch (e) {
-                      setState(() {
-                        _isLoading = false;
-                      });
-
-                      GlobalWidgets().showSnackBar(context, e.message);
-                    }
+                  } catch (e) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Failed to change password",
+                    );
                   }
                 }
               }
