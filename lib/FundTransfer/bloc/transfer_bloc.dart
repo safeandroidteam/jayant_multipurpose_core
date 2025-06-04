@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart';
+import 'package:passbook_core_jayant/FundTransfer/Model/deleteBeneficiaryModal.dart';
+import 'package:passbook_core_jayant/FundTransfer/Model/fetchBeneficiaryToUpdateModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/fetchUserLimitRightModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/fundTransferTypeModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/userAccResModal.dart';
@@ -19,6 +21,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     on<FetchFundTransferType>(_fetchFundTransferType);
     on<FetchBenificiaryevent>(_fetchBeneficiaryType);
     on<FetchUserLimitevent>(_fetchUserLimit);
+    on<DeleteBeneficiaryevent>(deleteBeneficiary);
+    on<FetchBeneficiaryToUpdateevent>(fetchBeneficiaryToUpdate);
   }
 
   Future<void> _onSendDetails(
@@ -129,8 +133,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     try {
       Map<String, dynamic> fetchBeneficiaryListBody = {
         "Cmp_Code": event.cmpCode,
-        //"Cust_ID": event.custID,
-        "Cust_ID": "1139",
+        "Cust_ID": event.custID,
+        // "Cust_ID": "1139",
       };
       final response = await RestAPI().post(
         APis.fetchBeneficiaryList,
@@ -196,6 +200,78 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     } on RestException catch (e) {
       warningPrint("State:  FetchUserLimitError  - $e");
       emit(FetchUserLimitError(e.message["ProceedMessage"]));
+    }
+  }
+
+  Future<void> deleteBeneficiary(
+      DeleteBeneficiaryevent event,
+      Emitter<TransferState> emit,
+      ) async {
+    emit(DeleteBeneficiaryLoading());
+    warningPrint("State: DeleteBeneficiaryLoading");
+    try {
+      Map<String, dynamic> deleteBeneficiaryListBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+        "BeneficiaryID":event.beneficiaryID,
+      };
+      final response = await RestAPI().post(
+        APis.deleteBeneficiaryNew,
+        params: deleteBeneficiaryListBody,
+      );
+      final deleteBeneficiaryList =
+      (response["Data"] as List<dynamic>)
+          .map(
+            (e) => DeleteBeneficiaryData(
+                proceedStatus: e['Proceed_Status'] ?? 0,
+                proceedMessage: e['Procees_Message'] ?? 0)
+      )
+          .toList();
+      emit(DeleteBeneficiaryResponse(deleteBeneficiaryList));
+      warningPrint("State: DeleteBeneficiaryResponse");
+      successPrint("DeleteBeneficiaryList=${deleteBeneficiaryList.first.toJson()}");
+    } on RestException catch (e) {
+      warningPrint("State:  DeleteBeneficiaryError  - $e");
+      emit(DeleteBeneficiaryError(e.message["ProceedMessage"]));
+    }
+  }
+
+  Future<void> fetchBeneficiaryToUpdate(
+      FetchBeneficiaryToUpdateevent event,
+      Emitter<TransferState> emit,
+      ) async {
+    emit(FetchBeneficiaryToUpdateLoading());
+    warningPrint("State: FetchBeneficiaryToUpdateLoading");
+    try {
+      Map<String, dynamic> fetchBeneficiaryToUpdateListBody = {
+        "Cmp_Code": event.cmpCode,
+        "Cust_ID": event.custID,
+        "BeneficiaryID":event.beneficiaryID,
+      };
+      final response = await RestAPI().post(
+        APis.fetchBeneficiaryToUpdate,
+        params: fetchBeneficiaryToUpdateListBody,
+      );
+      final fetchBeneficiaryToUpdateList =
+      (response["Data"] as List<dynamic>)
+          .map(
+              (e) => BeneficiaryDataToUpdate(
+                  beneficiaryId: e['Beneficiary_ID'] ?? 0,
+                  custId: e['Cust_ID'] ?? 0,
+                  nickName: e['Beneficiary_NickName'] ?? 0,
+                  accountNo: e['BeneficiaryAcc_No'] ?? 0,
+                  accountHolderName: e['Beneficiary_AccountHolderName'] ?? 0,
+                  mobileNo: e['Mobile_No'] ?? 0,
+                  ifscCode: e['IFSC_Code'] ?? 0,
+                  bankName: e['Bank_Name'] ?? 0,
+                  bankAddress: e['Bank_Address']?? 0))
+          .toList();
+      emit(FetchBeneficiaryToUpdateResponse(fetchBeneficiaryToUpdateList));
+      warningPrint("State: FetchBeneficiaryToUpdateResponse");
+      successPrint("FetchBeneficiaryToUpdateList=${fetchBeneficiaryToUpdateList.first}");
+    } on RestException catch (e) {
+      warningPrint("State:  FetchBeneficiaryToUpdateError  - $e");
+      emit(FetchBeneficiaryToUpdateError(e.message["ProceedMessage"]));
     }
   }
 

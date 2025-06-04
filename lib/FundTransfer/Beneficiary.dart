@@ -3,12 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passbook_core_jayant/FundTransfer/FundTransfer.dart';
+import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Beneficiary extends StatefulWidget {
+  final bool isEdit;
+  final String? beneficiaryId;
+
+  const Beneficiary({super.key, required this.isEdit, this.beneficiaryId});
   @override
   _BeneficiaryState createState() => _BeneficiaryState();
 }
@@ -52,7 +57,18 @@ class _BeneficiaryState extends State<Beneficiary> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
+      SharedPreferences? preference = StaticValues.sharedPreferences;
+     final transferBloc= TransferBloc.get(context);
+     if(widget.isEdit== true){
+       transferBloc.add(FetchBeneficiaryToUpdateevent(
+           preference!.getString(StaticValues.cmpCodeKey)??"",
+           preference!.getString(StaticValues.custID)??"",
+           widget.beneficiaryId??""));
+     }
+    },);
     // TODO: implement initState
+
     super.initState();
   }
 
@@ -160,7 +176,7 @@ class _BeneficiaryState extends State<Beneficiary> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Add Beneficiary", style: TextStyle(color: Colors.white)),
+        title: Text(widget.isEdit?"Update Beneficiary": "Add Beneficiary", style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
           onPressed: () => Navigator.of(context).pop(),
@@ -325,12 +341,13 @@ class _BeneficiaryState extends State<Beneficiary> {
             bottom: 0.0,
             right: 0.0,
             left: 0.0,
-            child: CustomRaisedButton(
+            child:CustomRaisedButton(
               loadingValue: _isLoading,
-              buttonText:
-                  _isLoading
-                      ? "Loading"
-                      : "Add Beneficiary",
+              buttonText: _isLoading
+                  ? "Loading"
+                  : widget.isEdit
+                  ? "Update Beneficiary"
+                  : "Add Beneficiary",
               onPressed: () async {
                 if (rName.text.isNotEmpty &&
                     rMob.text.isNotEmpty &&
@@ -341,32 +358,9 @@ class _BeneficiaryState extends State<Beneficiary> {
                   setState(() {
                     _isLoading = true;
                   });
-                  addBeneficiary();
-                  // var response = await RestAPI().post(
-                  //   APis.GenerateOTP,
-                  //   params: {
-                  //     "MobileNo": mobileNo,
-                  //     // "MobileNo": "7904308386",
-                  //     "Amt": "0",
-                  //     "SMS_Module": "GENERAL",
-                  //     "SMS_Type": "GENERAL_OTP",
-                  //     "OTP_Return": "Y",
-                  //   },
-                  // );
 
-                  // print("rechargeResponse::: $response");
-                  // str_Otp = response[0]["OTP"];
-                  //
-                  // setState(() {
-                  //   otpLoading = false;
-                  //   Timer(Duration(minutes: 5), () {
-                  //     setState(() {
-                  //       str_Otp = "";
-                  //     });
-                  //   });
-                  // });
+                  addBeneficiary(); // or update logic here if widget.isEdit is true
 
-                 // _beneficiaryConfirmation();
                 } else {
                   print("FALSE ::::");
                   GlobalWidgets().showSnackBar(
@@ -376,6 +370,7 @@ class _BeneficiaryState extends State<Beneficiary> {
                 }
               },
             ),
+
           ),
         ],
       ),

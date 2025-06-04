@@ -48,6 +48,30 @@ class SaveBeneficiaryevent extends TransferEvent {
   List<Object> get props => [custID];
 
 }
+class DeleteBeneficiaryevent extends TransferEvent {
+  final String cmpCode;
+  final String custID;
+  final String beneficiaryID;
+
+  DeleteBeneficiaryevent(this.cmpCode, this.custID, this.beneficiaryID);
+  @override
+  List<Object> get props => [custID];
+  List<Object> get propss => [beneficiaryID];
+
+}
+
+class FetchBeneficiaryToUpdateevent extends TransferEvent {
+  final String cmpCode;
+  final String custID;
+  final String beneficiaryID;
+
+  FetchBeneficiaryToUpdateevent(this.cmpCode, this.custID, this.beneficiaryID);
+  @override
+  List<Object> get props => [custID];
+  List<Object> get propss => [beneficiaryID];
+
+}
+
 class FetchBeneficiaryBankDetailsevent extends TransferEvent {
   final String ifscCode;
 

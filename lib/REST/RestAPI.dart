@@ -232,13 +232,14 @@ class APis {
   static String fetchCustomerSB = "$_superLink/Fetch_CustomerSB";
   static String fetchUserLimit = "$_superLink/Fetch_UserLimitRights";
   static String saveBeneficiary = "$_superLink/SaveBeneficiary";
-
+  static String deleteBeneficiaryNew= "$_superLink/DeleteBeneficiary";
+  static String fetchBeneficiaryToUpdate= "$_superLink/FetchBeneficiary";
+  //IFSC to get Bank Details
+  static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
   //Other Bank Transfer
   static String fillTransferTypeDetails =
       "$_superLink/Fill_TransferTypeDetails";
-  static String deleteBeneficiaryData= "$_superLink/DeleteBeneficiary";
-  //IFSC to get Bank Details
-  static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
+
 
   ///OLD
   static String generateRefID(String key) =>
