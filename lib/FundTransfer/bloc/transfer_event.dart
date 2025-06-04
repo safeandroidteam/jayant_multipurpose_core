@@ -9,10 +9,11 @@ class SendDetails extends TransferEvent {
   SendDetails(this.url);
 }
 
-class FetchCustomerAccNo extends TransferEvent {
+class FetchToAccNo extends TransferEvent {
   final String mobileNo;
+  final String cmpCode;
 
-  FetchCustomerAccNo(this.mobileNo);
+  FetchToAccNo(this.mobileNo,this.cmpCode);
 }
 
 class FetchCustomerFromAccNo extends TransferEvent {
@@ -20,8 +21,6 @@ class FetchCustomerFromAccNo extends TransferEvent {
   final String custID;
 
   FetchCustomerFromAccNo(this.cmpCode, this.custID);
-
-  
 }
 
 class FetchFundTransferType extends TransferEvent {
@@ -34,10 +33,28 @@ class FetchBenificiaryevent extends TransferEvent {
   final String custID;
 
   FetchBenificiaryevent(this.cmpCode, this.custID);
-   @override
+  @override
   List<Object> get props => [custID];
-  
 }
+class SaveBeneficiaryevent extends TransferEvent {
+  final String cmpCode;
+  final String custID;
+
+
+  SaveBeneficiaryevent(this.cmpCode, this.custID);
+  @override
+  List<Object> get props => [custID];
+
+}
+class FetchBeneficiaryBankDetailsevent extends TransferEvent {
+  final String ifscCode;
+
+  FetchBeneficiaryBankDetailsevent(this.ifscCode);
+  @override
+  List<Object> get props => [ifscCode];
+
+}
+
 class FetchUserLimitevent extends TransferEvent {
   final String cmpCode;
   final String custType;
@@ -45,5 +62,4 @@ class FetchUserLimitevent extends TransferEvent {
   FetchUserLimitevent(this.cmpCode, this.custType);
   @override
   List<Object> get props => [custType];
-
 }

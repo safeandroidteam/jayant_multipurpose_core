@@ -3,8 +3,9 @@ import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart
 import 'package:passbook_core_jayant/FundTransfer/Model/fundTransferTypeModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/userAccResModal.dart';
 
+import '../Model/fetchBeniBankDetailModal.dart';
 import '../Model/fetchUserLimitRightModal.dart';
-
+import '../Model/saveBenificiaryModal.dart';
 
 @immutable
 abstract class TransferState {}
@@ -21,16 +22,16 @@ class DetailsResponse extends TransferState {
   DetailsResponse(this.response);
 }
 
-class CustAccNoResponse extends TransferState {
-  final Map response;
+class FetchToAccNoResponse extends TransferState {
+  final Map ownBankToAccResponse;
 
-  CustAccNoResponse(this.response);
+  FetchToAccNoResponse(this.ownBankToAccResponse);
 }
 
-class CustAccNoError extends TransferState {
+class FetchToAccNoError extends TransferState {
   final String error;
 
-  CustAccNoError(this.error);
+  FetchToAccNoError(this.error);
 }
 
 class DetailsError extends TransferState {
@@ -39,29 +40,29 @@ class DetailsError extends TransferState {
   DetailsError(this.error);
 }
 
-class FromAccResponse extends TransferState {
+class FetchCustFromAccResponse extends TransferState {
   final List<UserAccTable> accounts;
 
-  FromAccResponse(this.accounts);
+  FetchCustFromAccResponse(this.accounts);
 
   @override
   List<Object?> get props => [accounts];
 }
 
-class FromAccResponseLoading extends TransferState {}
+class FetchCustFromAccResponseLoading extends TransferState {}
 
-class FromAccResponseError extends TransferState {
+class FetchCustFromAccResponseError extends TransferState {
   final String error;
 
-  FromAccResponseError(this.error);
+  FetchCustFromAccResponseError(this.error);
 }
 
 class FetchFundTransferTypeLoading extends TransferState {}
 
-class FetchFundTransferTypeResponse extends TransferState {
-  final List<FetchFundTransferTypeDatum> transferTypeList;
+class FetchFundTransferTypeRes extends TransferState {
+  final List<FetchFundTransferTypeData> transferTypeList;
 
-  FetchFundTransferTypeResponse(this.transferTypeList);
+  FetchFundTransferTypeRes(this.transferTypeList);
 }
 
 class FetchFundTransferTypeError extends TransferState {
@@ -84,6 +85,37 @@ class FetchBenificiaryError extends TransferState {
   FetchBenificiaryError(this.error);
 }
 
+//saveBeneficiary
+
+class SaveBeneficiaryLoading extends TransferState {}
+
+class SaveBeneficiaryResponse extends TransferState {
+  final List<SaveBeneficiaryData> saveBeneficiaryList;
+
+  SaveBeneficiaryResponse(this.saveBeneficiaryList);
+}
+
+class SaveBeneficiaryError extends TransferState {
+  final String error;
+
+  SaveBeneficiaryError(this.error);
+}
+
+//check IFSC
+class FetchBeneficiaryBankDetailsLoading extends TransferState {}
+
+class FetchBeneficiaryBankDetailsResponse extends TransferState {
+  final List<FetchBankDetailData> fetchBeneficiaryBankDetailsList;
+
+  FetchBeneficiaryBankDetailsResponse(this.fetchBeneficiaryBankDetailsList);
+}
+
+class FetchBeneficiaryBankDetailsError extends TransferState {
+  final String error;
+
+  FetchBeneficiaryBankDetailsError(this.error);
+}
+
 //fetchuserlimit
 
 class FetchUserLimitLoading extends TransferState {}
@@ -99,3 +131,4 @@ class FetchUserLimitError extends TransferState {
 
   FetchUserLimitError(this.error);
 }
+

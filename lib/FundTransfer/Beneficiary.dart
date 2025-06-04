@@ -15,12 +15,14 @@ class Beneficiary extends StatefulWidget {
 
 class _BeneficiaryState extends State<Beneficiary> {
   TextEditingController rName = TextEditingController(),
+  rNickName= TextEditingController(),
       rMob = TextEditingController(),
       ifsc = TextEditingController(),
       accNo = TextEditingController(),
       bankName = TextEditingController(),
       bankAddress = TextEditingController();
   bool rNameVal = false,
+  rNickNameVal= false,
       rMobVal = false,
       ifscVal = false,
       accNoVal = false,
@@ -104,6 +106,7 @@ class _BeneficiaryState extends State<Beneficiary> {
   Future<void> addBeneficiary() async {
     SharedPreferences? preference = StaticValues.sharedPreferences;
     if (rName.text.isNotEmpty &&
+        rNickName.text.isNotEmpty&&
         rMob.text.isNotEmpty &&
         ifsc.text.isNotEmpty &&
         accNo.text.isNotEmpty &&
@@ -111,28 +114,36 @@ class _BeneficiaryState extends State<Beneficiary> {
         bankAddress.text.isNotEmpty) {
       print("TRUE ::::");
       Map<String, String> params = {
-        "CustId": "${preference!.getString(StaticValues.custID)}",
-        "reciever_name": rName.text,
-        "reciever_mob": rMob.text,
-        "reciever_ifsc": ifsc.text,
-        "reciever_Accno": accNo.text,
-        "BankName": bankName.text,
-        "Receiver_Address": bankAddress.text,
+        "Cmp_Code": preference!.getString(StaticValues.cmpCodeKey)??"",
+        // "Cust_ID": "1139",
+        "Cust_ID": preference!.getString(StaticValues.custID)??"",
+        "Beni_Accno": accNo.text,
+        "Beni_NickName": rNickName.text,
+        "Beni_AccountHolderName": rName.text,
+        "Mobile_No": rMob.text,
+        "IFSC_Code": ifsc.text,
+        "Bank_Name": bankName.text,
+        "Bank_Address": bankAddress.text,
+        "User_ID": preference.getString(StaticValues.userID)??""
       };
       try {
+        // _isLoading = true;
+        final response = await (RestAPI().post(APis.saveBeneficiary,params: params));
         _isLoading = true;
-        Map response = await (RestAPI().get(APis.addBeneficiary(params)));
-        _isLoading = true;
-        String status = response["Table"][0]["status"];
-        GlobalWidgets().showSnackBar(context, status);
-        if (status == "Success") {
+        String proceedStatus = response["ProceedStatus"];
+        String proceedMessage = response["Data"][0]["Proceed_Message"];
+        GlobalWidgets().showSnackBar(context, proceedMessage);
+        if (proceedStatus == "Y") {
           Navigator.of(context).pop(true);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => FundTransfer()),
           );
+          _isLoading = false;
         }
+        _isLoading = false;
       } on RestException catch (e) {
+        _isLoading = false;
         print(e.toString());
         GlobalWidgets().showSnackBar(context, "Something went wrong");
       }
@@ -174,13 +185,13 @@ class _BeneficiaryState extends State<Beneficiary> {
                 ),
                 SizedBox(height: 12.0),
                 EditTextBordered(
-                  controller: rName,
+                  controller: rNickName,
                   hint: "Enter Receiver Nickname",
-                  errorText: rNameVal ? "Name is invalid" : null,
+                  errorText: rNickNameVal ? "Nick Name is invalid" : null,
                   textCapitalization: TextCapitalization.words,
                   onChange: (value) {
                     setState(() {
-                      rNameVal = value.trim().length < 3;
+                      rNickNameVal = value.trim().length < 3;
                     });
                   },
                 ),
@@ -206,6 +217,9 @@ class _BeneficiaryState extends State<Beneficiary> {
                   onChange: (value) {
                     setState(() {
                       ifscVal = value.trim().length != 11;
+                      bankName.clear();
+                      bankAddress.clear();
+                      strBankName = "";
                     });
                   },
                 ),
@@ -215,23 +229,48 @@ class _BeneficiaryState extends State<Beneficiary> {
                   children: [
                     Text(
                       strBankName!,
-                      style: TextStyle(color: Colors.red, fontSize: 16.0),
+                      style: TextStyle(color: Colors.green, fontSize: 16.0),
                     ),
                     InkWell(
                       onTap: () async {
-                        var response = await RestAPI().post(
-                          APis.getBeniBankDetails,
-                          params: {"IfscCode": ifsc.text},
-                        );
+                        if (ifsc.text.trim().isEmpty || ifsc.text.trim().length != 11) {
+                          Fluttertoast.showToast(msg: "Please enter valid IFSC");
+                          return;
+                        }
 
-                        setState(() {
-                          strBankName = response[0]["BeniBnkName"];
-                        });
+                        try {
+                          var response = await RestAPI().post(
+                            APis.fetchBeneficiaryBankDetails,
+                            params: {"IFSC_Code": ifsc.text.trim()},
+                          );
 
-                        print("BANKNAME : $strBankName");
+                          if (response["ProceedStatus"] == "Y") {
+                            var data = response["Data"][0];
+                            String bank = data["Bnk_Name"];
+                            String address = data["Br_District"];
 
-                        return;
+                            setState(() {
+                              strBankName = bank;
+                              bankName.text = bank;
+                              bankAddress.text = address;
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                              msg: response["ProceedMessage"] ?? "Bank not found",
+                              backgroundColor: Colors.black54,
+                              textColor: Colors.white,
+                            );
+                          }
+                        } catch (e) {
+                          debugPrint("Error: $e");
+                          Fluttertoast.showToast(
+                            msg: "Failed to fetch bank details",
+                            backgroundColor: Colors.black54,
+                            textColor: Colors.white,
+                          );
+                        }
                       },
+
                       child: Text(
                         "Check",
                         style: TextStyle(color: Colors.red, fontSize: 16.0),
@@ -289,42 +328,45 @@ class _BeneficiaryState extends State<Beneficiary> {
             child: CustomRaisedButton(
               loadingValue: _isLoading,
               buttonText:
-                  otpLoading
-                      ? CircularProgressIndicator() as String
+                  _isLoading
+                      ? "Loading"
                       : "Add Beneficiary",
               onPressed: () async {
-                otpLoading = true;
                 if (rName.text.isNotEmpty &&
                     rMob.text.isNotEmpty &&
                     ifsc.text.isNotEmpty &&
                     accNo.text.isNotEmpty &&
                     bankName.text.isNotEmpty &&
                     bankAddress.text.isNotEmpty) {
-                  var response = await RestAPI().post(
-                    APis.GenerateOTP,
-                    params: {
-                      "MobileNo": mobileNo,
-                      // "MobileNo": "7904308386",
-                      "Amt": "0",
-                      "SMS_Module": "GENERAL",
-                      "SMS_Type": "GENERAL_OTP",
-                      "OTP_Return": "Y",
-                    },
-                  );
-
-                  print("rechargeResponse::: $response");
-                  str_Otp = response[0]["OTP"];
-
                   setState(() {
-                    otpLoading = false;
-                    Timer(Duration(minutes: 5), () {
-                      setState(() {
-                        str_Otp = "";
-                      });
-                    });
+                    _isLoading = true;
                   });
+                  addBeneficiary();
+                  // var response = await RestAPI().post(
+                  //   APis.GenerateOTP,
+                  //   params: {
+                  //     "MobileNo": mobileNo,
+                  //     // "MobileNo": "7904308386",
+                  //     "Amt": "0",
+                  //     "SMS_Module": "GENERAL",
+                  //     "SMS_Type": "GENERAL_OTP",
+                  //     "OTP_Return": "Y",
+                  //   },
+                  // );
 
-                  _beneficiaryConfirmation();
+                  // print("rechargeResponse::: $response");
+                  // str_Otp = response[0]["OTP"];
+                  //
+                  // setState(() {
+                  //   otpLoading = false;
+                  //   Timer(Duration(minutes: 5), () {
+                  //     setState(() {
+                  //       str_Otp = "";
+                  //     });
+                  //   });
+                  // });
+
+                 // _beneficiaryConfirmation();
                 } else {
                   print("FALSE ::::");
                   GlobalWidgets().showSnackBar(
@@ -332,41 +374,6 @@ class _BeneficiaryState extends State<Beneficiary> {
                     "All fields are mandatory",
                   );
                 }
-
-                /*           SharedPreferences preference = StaticValues.sharedPreferences;
-                if (rName.text.isNotEmpty &&
-                    rMob.text.isNotEmpty &&
-                    ifsc.text.isNotEmpty &&
-                    accNo.text.isNotEmpty &&
-                    bankName.text.isNotEmpty &&
-                    bankAddress.text.isNotEmpty) {
-                  print("TRUE ::::");
-                  Map<String, String> params = {
-                    "CustId": preference.getString(StaticValues.custID),
-                    "reciever_name": rName.text,
-                    "reciever_mob": rMob.text,
-                    "reciever_ifsc": ifsc.text,
-                    "reciever_Accno": accNo.text,
-                    "BankName": bankName.text,
-                    "Receiver_Address": bankAddress.text
-                  };
-                  try {
-	                  _isLoading = true;
-                    Map response = await RestAPI().get(APis.addBeneficiary(params));
-	                  _isLoading = true;
-                    String status =  response["Table"][0]["status"];
-                    GlobalWidgets().showSnackBar(_scaffoldKey, status);
-                    if(status == "Success"){
-                      Navigator.of(context).pop(true);
-                    }
-                  } on RestException catch (e) {
-                    print(e.toString());
-                    GlobalWidgets().showSnackBar(_scaffoldKey, "Something went wrong");
-                  }
-                } else {
-                  print("FALSE ::::");
-                  GlobalWidgets().showSnackBar(_scaffoldKey, "All fields are mandatory");
-                }*/
               },
             ),
           ),

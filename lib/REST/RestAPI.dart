@@ -99,6 +99,7 @@ class RestAPI {
     var uri = Uri.parse(url);
     debugPrint('Api Post, url $uri  and $params');
     T? responseJson;
+
     try {
       final response = await http.post(
         uri,
@@ -232,6 +233,15 @@ class APis {
   static String fetchUserLimit = "$_superLink/Fetch_UserLimitRights";
   static String saveBeneficiary = "$_superLink/SaveBeneficiary";
 
+  //Other Bank Transfer
+  static String fillTransferTypeDetails =
+      "$_superLink/Fill_TransferTypeDetails";
+  //own Bank transfer
+  static String ownBankToAccNo = "$_superLink/Fetch_OwnAccountNumber";
+  static String deleteBeneficiaryData= "$_superLink/DeleteBeneficiary";
+  //IFSC to get Bank Details
+  static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
+
   ///OLD
   static String generateRefID(String key) =>
       "$_superLink/GetReferanceNo?UserId=$key";
@@ -248,7 +258,7 @@ class APis {
   // &password=1234567&MobileNo=9847828438&Accno=0020070001785
 
   ///Forgot password
-  static String getPassChangeOTP = "$_superLink/GetPasswordChangeOTP?";
+  static String forgotPasswordOtp = "$_superLink/Validate_ForgetPassword?";
 
   ///Get Card Balnce
   static String getCardBalance = "$_superLinkJayant1/GetAccountBalance";
@@ -266,7 +276,8 @@ class APis {
   static String cardTopUp = "$_superLinkJayant1/TopUpCard";
 
   //http://103.230.37.187:6556/ChangePassword?userid=chitra&Newpassword=1234567
-  static String changeForgotPass = "$_superLink/ChangePassword?";
+  static String changeForgotPass =
+      "$_superLink/Validate_ForgetPasswordOTPVerification?";
 
   ///Account Open Page
   static String DebitAccOpen = "$_superLinkJayant/DebitAccOpen_T_Select";
@@ -299,7 +310,7 @@ class APis {
   static String getFuntransferLimit =
       "$_superLinkJayant/FillAmountLimit_T_Select";
 
-  ///Get IFSC  Bank Details
+  ///Get IFSC  Bank DetailsD
   static String getBeniBankDetails = "$_superLinkJayant/Fill_BeniBankDetails";
 
   ///Account Section
@@ -362,6 +373,7 @@ class APis {
       "$_superLink/get_CustomerSB?Cust_Id=$custID";
 
   static String fetchFundTransferType = "$_superLink/TransferTypeDetails";
+
   static String checkFundTransAmountLimit =
       "$_superLink/Mobile_Checkfund_limits";
 

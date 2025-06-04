@@ -374,7 +374,7 @@ class _AccountMenusState extends State<AccountMenus>
     preferences = await SharedPreferences.getInstance();
     setState(() {
       userId = preferences.getString(StaticValues.custID) ?? "";
-      acc = preferences.getString(StaticValues.accNumber) ?? "";
+      acc = preferences.getString(StaticValues.accountNo) ?? "";
       name = preferences.getString(StaticValues.accName) ?? "";
       address = preferences.getString(StaticValues.address) ?? "";
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";

@@ -54,25 +54,20 @@ class _FundTransferState extends State<FundTransfer>
   void loadData() async {
     preferences = await SharedPreferences.getInstance();
     setState(() {
-      acc = preferences.getString(StaticValues.accNumber) ?? "";
+      acc = preferences.getString(StaticValues.accountNo) ?? "";
       name = preferences.getString(StaticValues.accName) ?? "";
       userName = preferences.getString(StaticValues.accName) ?? "";
       userId = preferences.getString(StaticValues.custID) ?? "";
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
-      custTypeCode= preferences.getString(StaticValues.custTypeCode)??"";
+      custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
     });
-
-    // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
-    // print("transDailyLimit::: $transDailyLimit");
-    // setState(() {
-    //   _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
-    //   _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
-    //   //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-    // });
+    warningPrint(
+      "acc no ==$acc,\n name =$name \n userid=$userId \n cmpCOde=$cmpCode \n custTypeCode=$custTypeCode",
+    );
 
     //fetchuserlimit
     final transferBloc = TransferBloc.get(context);
-    transferBloc.add(FetchUserLimitevent(cmpCode,custTypeCode));
+    transferBloc.add(FetchUserLimitevent(cmpCode, custTypeCode));
 
     fetchBeneficiary();
   }
@@ -81,7 +76,7 @@ class _FundTransferState extends State<FundTransfer>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final transferBloc = TransferBloc.get(context);
       var id = preferences.getString(StaticValues.custID) ?? "";
-      transferBloc.add(FetchBenificiaryevent(cmpCode,userId));
+      transferBloc.add(FetchBenificiaryevent(cmpCode, userId));
     });
   }
 
@@ -179,9 +174,16 @@ class _FundTransferState extends State<FundTransfer>
                   expandedHeight: MediaQuery.of(context).size.width * 1.30,
                   pinned: true,
                   centerTitle: true,
-                  title: Text("Fund Transfer"),
+                  title: Text(
+                    "Fund Transfer",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back, size: 30.0),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 30.0,
+                      color: Colors.white,
+                    ),
                     onPressed:
                         () => Navigator.of(
                           context,
@@ -293,10 +295,7 @@ class _FundTransferState extends State<FundTransfer>
                                 return Center(
                                   child: CircularProgressIndicator(),
                                 );
-
-                              }
-
-                              else if (state is FetchBenificiaryResponse) {
+                              } else if (state is FetchBenificiaryResponse) {
                                 if (state.beneficiaryList.isNotEmpty) {
                                   return GridView.builder(
                                     gridDelegate:
@@ -315,61 +314,81 @@ class _FundTransferState extends State<FundTransfer>
                                             context: context,
                                             builder: (context) {
                                               return AlertDialog(
-                                                title: Text("Are you sure?"),
+                                                title: const Text("Are you sure?"),
                                                 content: TextView(
                                                   text:
-                                                      "Do you want to delete ${state.beneficiaryList[index].recieverName} beneficiary",
+                                                  "Do you want to delete or edit ${state.beneficiaryList[index].recieverName} beneficiary",
                                                 ),
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        10.0,
-                                                      ),
+                                                  borderRadius: BorderRadius.circular(10.0),
                                                 ),
                                                 actions: <Widget>[
-                                                  ElevatedButton(
-                                                    onPressed:
-                                                        () =>
-                                                            Navigator.of(
-                                                              context,
-                                                            ).pop(),
-                                                    child: TextView(
-                                                      text: "No",
-                                                      size: 14.0,
-                                                    ),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () async {
-                                                      await deleteBeneficiary(
-                                                        state
-                                                            .beneficiaryList[index]
-                                                            .recieverId
-                                                            // .round()
-                                                            .toString(),
-                                                      );
-                                                      fetchBeneficiary();
-                                                      Navigator.pop(context);
-                                                    },
-                                                    style: ElevatedButton.styleFrom(
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              10.0,
-                                                            ),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      // Cancel button on the left
+                                                      ElevatedButton(
+                                                        onPressed: () => Navigator.of(context).pop(),
+                                                        style: ElevatedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          backgroundColor: Theme.of(context).cardColor,
+                                                          padding: const EdgeInsets.all(5.0),
+                                                        ),
+                                                        child: const TextView(
+                                                          text: "Cancel",
+                                                          size: 12.0,
+                                                          color: Colors.white,
+                                                        ),
                                                       ),
-                                                      backgroundColor:
-                                                          Theme.of(
-                                                            context,
-                                                          ).cardColor,
-                                                      padding: EdgeInsets.all(
-                                                        5.0,
+
+                                                      const Spacer(), // Push Edit & Delete to the right
+
+                                                      // Edit button
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          // Add your edit logic here
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          backgroundColor: Colors.green,
+                                                          padding: const EdgeInsets.all(5.0),
+                                                        ),
+                                                        child: const TextView(
+                                                          text: "Edit",
+                                                          size: 12.0,
+                                                          color: Colors.white,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    child: TextView(
-                                                      text: "Yes",
-                                                      size: 12.0,
-                                                      color: Colors.white,
-                                                    ),
+
+                                                      const SizedBox(width: 8), // spacing between Edit and Delete
+
+                                                      // Delete button
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          await deleteBeneficiary(
+                                                            state.beneficiaryList[index].recieverId.toString(),
+                                                          );
+                                                          fetchBeneficiary();
+                                                          Navigator.pop(context);
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          backgroundColor: Colors.red,
+                                                          padding: const EdgeInsets.all(5.0),
+                                                        ),
+                                                        child: const TextView(
+                                                          text: "Delete",
+                                                          size: 12.0,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               );
@@ -449,7 +468,9 @@ class _FundTransferState extends State<FundTransfer>
                                     Center(
                                       child: Text(
                                         "Error: ${state.error}",
-                                        style: const TextStyle(color: Colors.red),
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -462,7 +483,6 @@ class _FundTransferState extends State<FundTransfer>
                                   ),
                                 );
                               }
-
                             },
                           ),
                         ],
