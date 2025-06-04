@@ -236,6 +236,8 @@ class APis {
   //Other Bank Transfer
   static String fillTransferTypeDetails =
       "$_superLink/Fill_TransferTypeDetails";
+  //own Bank transfer
+  static String ownBankToAccNo = "$_superLink/Fetch_OwnAccountNumber";
 
   ///OLD
   static String generateRefID(String key) =>

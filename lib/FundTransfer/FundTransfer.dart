@@ -52,21 +52,16 @@ class _FundTransferState extends State<FundTransfer>
   void loadData() async {
     preferences = await SharedPreferences.getInstance();
     setState(() {
-      acc = preferences.getString(StaticValues.accNumber) ?? "";
+      acc = preferences.getString(StaticValues.accountNo) ?? "";
       name = preferences.getString(StaticValues.accName) ?? "";
       userName = preferences.getString(StaticValues.accName) ?? "";
       userId = preferences.getString(StaticValues.custID) ?? "";
       cmpCode = preferences.getString(StaticValues.cmpCodeKey) ?? "";
       custTypeCode = preferences.getString(StaticValues.custTypeCode) ?? "";
     });
-
-    // Map transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
-    // print("transDailyLimit::: $transDailyLimit");
-    // setState(() {
-    //   _minTransferAmt = transDailyLimit["Table"][0]["Min_fundtranbal"];
-    //   _maxTransferAmt = transDailyLimit["Table"][0]["Max_interfundtranbal"];
-    //   //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-    // });
+    warningPrint(
+      "acc no ==$acc,\n name =$name \n userid=$userId \n cmpCOde=$cmpCode \n custTypeCode=$custTypeCode",
+    );
 
     //fetchuserlimit
     final transferBloc = TransferBloc.get(context);

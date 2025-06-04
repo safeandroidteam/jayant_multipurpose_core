@@ -593,50 +593,58 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                       buttonText: "PROCEED",
                       loadingValue: snapshot is LoadingTransferState,
                       onPressed: () async {
-                        customPrint("proceed button clicked");
-                        if (amt.text.isNotEmpty &&
-                            int.parse(amt.text) >= int.parse(_minTransferAmt) &&
-                            double.parse(amt.text) <=
-                                int.parse(_maxTransferAmt) &&
-                            double.parse(amt.text) <= double.parse(userBal)) {
-                          customPrint("proceed button inside if");
-
-                          customPrint("payment type=$selectedPaymentMode");
-                          String transferType = selectedPaymentMode;
-                          warningPrint("ttransfer :: $transferType");
-                          if (transferType == "NEFT") {
-                            Map<String, String> params = {
-                              "Customer_AccNo": userAcc,
-                              "BankId": "",
-                              "Customer_Mobileno": "",
-                              "ShopAccno": "1",
-                              "PayAmount": amt.text,
-                            };
-
-                            _referenceNo = await RestAPI().get(
-                              APis.generateRefID("OtherBankTransfer"),
-                            );
-                            successPrint("REFRESPONSE$_referenceNo");
-                            // print(
-                            //     "object////// $params\n${APis.checkFundTransferDailyLimit2(params)}");
-                            _transferBloc.add(
-                              SendDetails(
-                                APis.checkFundTransferDailyLimit2(params),
-                              ),
-                            );
-                          }
+                        if (accNos.isEmpty) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Accounts Not found",
+                          );
                         } else {
-                          if (double.parse(amt.text == "" ? "0" : amt.text) >
-                              double.parse(userBal)) {
-                            GlobalWidgets().showSnackBar(
-                              context,
-                              "Insufficient Balance",
-                            );
-                          } else
-                            GlobalWidgets().showSnackBar(
-                              context,
-                              ("Minimum amount is ${StaticValues.rupeeSymbol}$_minTransferAmt and Maximum amount is ${StaticValues.rupeeSymbol}$_maxTransferAmt"),
-                            );
+                          customPrint("proceed button clicked");
+                          if (amt.text.isNotEmpty &&
+                              int.parse(amt.text) >=
+                                  int.parse(_minTransferAmt) &&
+                              double.parse(amt.text) <=
+                                  int.parse(_maxTransferAmt) &&
+                              double.parse(amt.text) <= double.parse(userBal)) {
+                            customPrint("proceed button inside if");
+
+                            customPrint("payment type=$selectedPaymentMode");
+                            String transferType = selectedPaymentMode;
+                            warningPrint("ttransfer :: $transferType");
+                            if (transferType == "NEFT") {
+                              Map<String, String> params = {
+                                "Customer_AccNo": userAcc,
+                                "BankId": "",
+                                "Customer_Mobileno": "",
+                                "ShopAccno": "1",
+                                "PayAmount": amt.text,
+                              };
+
+                              _referenceNo = await RestAPI().get(
+                                APis.generateRefID("OtherBankTransfer"),
+                              );
+                              successPrint("REFRESPONSE$_referenceNo");
+                              // print(
+                              //     "object////// $params\n${APis.checkFundTransferDailyLimit2(params)}");
+                              _transferBloc.add(
+                                SendDetails(
+                                  APis.checkFundTransferDailyLimit2(params),
+                                ),
+                              );
+                            }
+                          } else {
+                            if (double.parse(amt.text == "" ? "0" : amt.text) >
+                                double.parse(userBal)) {
+                              GlobalWidgets().showSnackBar(
+                                context,
+                                "Insufficient Balance",
+                              );
+                            } else
+                              GlobalWidgets().showSnackBar(
+                                context,
+                                ("Minimum amount is ${StaticValues.rupeeSymbol}$_minTransferAmt and Maximum amount is ${StaticValues.rupeeSymbol}$_maxTransferAmt"),
+                              );
+                          }
                         }
                       },
                     );
