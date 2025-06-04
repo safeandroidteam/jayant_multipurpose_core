@@ -270,7 +270,7 @@ class APis {
   ///Card Topup
   static String cardTopUp = "$_superLinkJayant1/TopUpCard";
 
-  //http://103.230.37.187:6556/ChangePassword?userid=chitra&Newpassword=1234567
+  //http://103.230.37.187:6   556/ChangePassword?userid=chitra&Newpassword=1234567
   static String changeForgotPass =
       "$_superLink/Validate_ForgetPasswordOTPVerification?";
 
@@ -425,8 +425,11 @@ class APis {
   static String fetchShoppingInfo(String accNo) =>
       "$_superLink/Mobile_Getdetails_onlinepayment?AccNo=$accNo";
 
+  // ///Recharge Operators
+  // static String rechargeOperators = "$_superLink/Mobile_Getoperaters";
+
   ///Recharge Operators
-  static String rechargeOperators = "$_superLink/Mobile_Getoperaters";
+  static String rechargeOperators = "$_superLink/Fetch_SimOperatorList";
 
   ///Dish TV Operators
   static String dishTvOperators = "$_superLink/DishTv_Getoperater";

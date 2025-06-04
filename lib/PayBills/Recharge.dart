@@ -5,13 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passbook_core_jayant/FundTransfer/Receipt.dart';
 import 'package:passbook_core_jayant/FundTransfer/bloc/bloc.dart';
-import 'package:passbook_core_jayant/MainScreens/home_page.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/util.dart';
-import 'package:passbook_core_jayant/configuration.dart';
-import 'package:passbook_core_jayant/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Util/custom_print.dart';
 
 class Recharge extends StatefulWidget {
   final String title;
@@ -27,7 +26,8 @@ class _RechargeState extends State<Recharge> {
   int payModeGroupValue = 0;
   String? userName,
       userAcc = "",
-      userId,
+      custId,
+      cmpCode,
       userBal = "",
       _hint = "",
       _errorhint = "",
@@ -39,9 +39,7 @@ class _RechargeState extends State<Recharge> {
   Map? sendOTPParams;
   Future<Map?>? _future;
   GlobalKey _mobKey = GlobalKey(), _amtKey = GlobalKey();
-  TransferBloc _transferBloc = TransferBloc(
-   
-  );
+  TransferBloc _transferBloc = TransferBloc();
   FocusNode _mobFocusNode = FocusNode(), _amtFocusNode = FocusNode();
   SharedPreferences? preferences;
   ScrollController _customScrollController = ScrollController();
@@ -170,13 +168,13 @@ class _RechargeState extends State<Recharge> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        TextView(text:
-                          "To ${mob.text.isEmpty ? "____" : mob.text}",
+                        TextView(
+                          text: "To ${mob.text.isEmpty ? "____" : mob.text}",
                           color: Colors.white,
                           size: 16.0,
                         ),
                         SizedBox(height: 10.0),
-                        TextView(text:operatorName??"", color: Colors.white),
+                        TextView(text: operatorName ?? "", color: Colors.white),
                         SizedBox(
                           key: _amtKey,
                           width: amtBoxSize,
@@ -195,8 +193,8 @@ class _RechargeState extends State<Recharge> {
                             borderColor: Colors.transparent,
                             textAlign: TextAlign.center,
                             textCapitalization: TextCapitalization.words,
-                            prefix: TextView(text:
-                              StaticValues.rupeeSymbol,
+                            prefix: TextView(
+                              text: StaticValues.rupeeSymbol,
                               size: 24,
                               color: Colors.white,
                             ),
@@ -211,15 +209,23 @@ class _RechargeState extends State<Recharge> {
                           ),
                         ),
                         SizedBox(height: 20.0),
-                        TextView(text:
-                          "Minimum amount ${StaticValues.rupeeSymbol} $_minRechargeAmt",
+                        TextView(
+                          text:
+                              "Minimum amount ${StaticValues.rupeeSymbol} $_minRechargeAmt",
                           size: 10,
                           color: Colors.white,
                         ),
                         SizedBox(height: 20.0),
-                        TextView(text:userBal??"", size: 24, color: Colors.greenAccent),
+                        TextView(
+                          text: userBal ?? "",
+                          size: 24,
+                          color: Colors.greenAccent,
+                        ),
                         SizedBox(height: 10.0),
-                        TextView(text:"Available Balance", color: Colors.white),
+                        TextView(
+                          text: "Available Balance",
+                          color: Colors.white,
+                        ),
                       ],
                     ),
                   ),
@@ -235,7 +241,8 @@ class _RechargeState extends State<Recharge> {
                           FutureBuilder<Map?>(
                             future: _future,
                             builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
                                 return Padding(
                                   padding: const EdgeInsets.all(20.0),
                                   child: Center(
@@ -243,37 +250,39 @@ class _RechargeState extends State<Recharge> {
                                   ),
                                 );
                               }
-                              operators = snapshot.data!["Table"];
+
+                              if (snapshot.hasError) {
+                                return Center(
+                                  child: Text("Error: ${snapshot.error}"),
+                                );
+                              }
+
+                              final data = snapshot.data;
+
+                              if (data == null || data["Data"] == null) {
+                                return Center(child: Text("No data available"));
+                              }
+
+                              operators = data["Data"];
+
                               return Column(
                                 children: <Widget>[
                                   SizedBox(height: 16.0),
                                   EditTextBordered(
                                     key: _mobKey,
-                                    //  enabled: operatorName.isNotEmpty,
                                     controller: mob,
-                                    /*     hint: operatorName.isNotEmpty
-                                            ? _changeHint(operatorName)
-                                            : _hint,
-                                        errorText: operatorName.isNotEmpty
-                                            ? validateNumber(
-                                            operatorName, mob.text)
-                                            : null,*/
-                                    hint: _hint??"",
+                                    hint: _hint ?? "",
                                     errorText: null,
                                     textCapitalization:
                                         TextCapitalization.words,
                                     focusNode: _mobFocusNode,
                                     keyboardType: TextInputType.number,
-                                    onSubmitted: (string) {
-                                      _mobFocusNode.unfocus();
-                                    },
-                                    onChange: (value) {
-                                      setState(() {});
-                                    },
+                                    onSubmitted: (_) => _mobFocusNode.unfocus(),
+                                    onChange: (value) => setState(() {}),
                                   ),
                                   SizedBox(height: 20.0),
-                                  TextView(text:
-                                    "Select Operator",
+                                  TextView(
+                                    text: "Select Operator",
                                     size: 22.0,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xff707070),
@@ -289,17 +298,22 @@ class _RechargeState extends State<Recharge> {
                                     shrinkWrap: true,
                                     itemCount: operators!.length,
                                     itemBuilder: (context, index) {
+                                      final opId =
+                                          operators![index]["Operater_ID"]
+                                              .toString(); // Ensure string
+                                      final opName =
+                                          operators![index]["Operater_Name"];
+
+                                      final isSelected =
+                                          opId ==
+                                          operatorId; // Compare directly
+
                                       return Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
                                           GlobalWidgets().btnWithText(
                                             icon: Image.asset(
-                                              /*        widget.title
-                                                          .toLowerCase()
-                                                          .contains("mobile")
-                                                      ? "assets/recharge.png"
-                                                      : "assets/dishTv.png",*/
                                               widget.title
                                                       .toLowerCase()
                                                       .contains("mobile")
@@ -320,32 +334,21 @@ class _RechargeState extends State<Recharge> {
                                               height: 30.0,
                                               width: 30.0,
                                               color:
-                                                  operators![index]["Operater_Id"] ==
-                                                          operatorId
+                                                  isSelected
                                                       ? Colors.green
                                                       : Theme.of(
                                                         context,
                                                       ).primaryColor,
                                             ),
-                                            name:
-                                                operators![index]["Operater_Name"],
+                                            name: opName,
                                             textColor:
-                                                operators![index]["Operater_Id"] ==
-                                                        operatorId
+                                                isSelected
                                                     ? Colors.green
                                                     : Colors.black,
                                             onPressed: () {
                                               setState(() {
-                                                operatorName =
-                                                    operators![index]["Operater_Name"];
-                                                operatorId =
-                                                    operators![index]["Operater_Id"];
-                                                print(
-                                                  "OPERATOR ID : $operatorId  $operatorName",
-                                                );
-                                                /* Scrollable.ensureVisible(_mobKey.currentContext,
-                                                        duration: Duration(milliseconds: 350),
-                                                        curve: Curves.easeIn);*/
+                                                operatorName = opName;
+                                                operatorId = opId;
                                                 _mobFocusNode.requestFocus();
                                               });
                                             },
@@ -469,22 +472,36 @@ class _RechargeState extends State<Recharge> {
     preferences = StaticValues.sharedPreferences;
     setState(() {
       userName = preferences?.getString(StaticValues.accName) ?? "";
-      userId = preferences?.getString(StaticValues.custID) ?? "";
+      custId = preferences?.getString(StaticValues.custID) ?? "";
+      cmpCode = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
     });
-    Map? balanceResponse = await RestAPI().get(
-      APis.fetchFundTransferBal(userId),
+    // Map? balanceResponse = await RestAPI().get(
+    //   APis.fetchFundTransferBal(userId),
+    // );
+
+    Map<String, dynamic> fetchCustomerSBBody = {
+      "Cmp_Code": cmpCode,
+      // "Cust_ID": custId,
+      // "Cust_ID": "3629",
+    };
+
+    Map? balanceResponse = await RestAPI().post(
+      APis.fetchCustomerSB,
+      params: fetchCustomerSBBody,
     );
+    successPrint("Frm Acc =$balanceResponse");
+
     setState(() {
-      userBal = balanceResponse!["Table"][0]["BalAmt"].toString();
-      userAcc = balanceResponse["Table"][0]["AccNo"].toString();
+      userBal = balanceResponse!["Data"][0]["Balance"].toString();
+      userAcc = balanceResponse["Data"][0]["Acc_No"].toString();
     });
-    Map? transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
-    print("transDailyLimit::: $transDailyLimit");
-    setState(() {
-      _minRechargeAmt = transDailyLimit!["Table"][0]["Min_rcghbal"];
-      _maxRechargeAmt = transDailyLimit["Table"][0]["Max_rcghbal"];
-      //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
-    });
+    // Map? transDailyLimit = await RestAPI().get(APis.checkFundTransAmountLimit);
+    // print("transDailyLimit::: $transDailyLimit");
+    // setState(() {
+    //   _minRechargeAmt = transDailyLimit!["Table"][0]["Min_rcghbal"];
+    //   _maxRechargeAmt = transDailyLimit["Table"][0]["Max_rcghbal"];
+    //   //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
+    // });
     print(
       "Which title : ${widget.title.trim().toLowerCase().contains("mobile")}",
     );
@@ -511,14 +528,28 @@ class _RechargeState extends State<Recharge> {
   }
 
   Future<Map?> loadMobOperators() async {
-    final response = await RestAPI().get(APis.rechargeOperators);
-    print(response);
+    final cmpCode = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
+
+    Map<String, dynamic> loadSimOperator = {"Cmp_Code": cmpCode};
+
+    final response = await RestAPI().post(
+      APis.rechargeOperators,
+      params: loadSimOperator,
+    );
+    successPrint("get sim operators $response");
     return response;
   }
 
   Future<Map?> loadMobPostOperators() async {
-    final response = await RestAPI().get(APis.mobPostpaidOperators);
-    print(response);
+    final cmpCode = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
+
+    Map<String, dynamic> loadSimOperator = {"Cmp_Code": cmpCode};
+
+    final response = await RestAPI().post(
+      APis.rechargeOperators,
+      params: loadSimOperator,
+    );
+    successPrint("get postpaid operators $response");
     return response;
   }
 
@@ -635,13 +666,13 @@ class _RechargeState extends State<Recharge> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextView(text:"${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
+          TextView(text: "${StaticValues.rupeeSymbol}${amt.text}", size: 24.0),
           SizedBox(height: 10.0),
-          TextView(text:"Pay from : $userAcc", size: 14.0),
+          TextView(text: "Pay from : $userAcc", size: 14.0),
           SizedBox(height: 10.0),
-          TextView(text:"${_hint!.substring(6)}: ${mob.text}", size: 14.0),
+          TextView(text: "${_hint!.substring(6)}: ${mob.text}", size: 14.0),
           SizedBox(height: 10.0),
-          TextView(text:"Operator : $operatorName", size: 14.0),
+          TextView(text: "Operator : $operatorName", size: 14.0),
           SizedBox(height: 30.0),
         ],
       ),
@@ -717,14 +748,14 @@ class _RechargeState extends State<Recharge> {
                                     MaterialPageRoute(
                                       builder:
                                           (context) => Receipt(
-                                pushReplacementNamed:  "/HomePage",
+                                            pushReplacementNamed: "/HomePage",
                                             amount: amt.text,
                                             transID:
                                                 response[0]["orderId"]
                                                     .toString(),
-                                            paidTo: operatorName??"",
+                                            paidTo: operatorName ?? "",
                                             accTo: "",
-                                            accFrom: userAcc??"",
+                                            accFrom: userAcc ?? "",
                                             message:
                                                 ("${response[0]["status"]} : ${response[0]["message"]}"),
                                           ),
@@ -737,13 +768,12 @@ class _RechargeState extends State<Recharge> {
                                       builder:
                                           (context) => Receipt(
                                             isFailure: true,
-                                                                            pushReplacementNamed:
-                                                "/HomePage",
+                                            pushReplacementNamed: "/HomePage",
 
                                             amount: amt.text,
-                                            paidTo: operatorName??"",
+                                            paidTo: operatorName ?? "",
                                             accTo: "",
-                                            accFrom: userAcc??"",
+                                            accFrom: userAcc ?? "",
                                             message:
                                                 ("${response[0]["status"]} : ${response[0]["message"]}"),
                                           ),
