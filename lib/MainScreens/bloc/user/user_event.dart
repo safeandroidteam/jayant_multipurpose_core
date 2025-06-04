@@ -26,7 +26,7 @@ class SelectPickUpTypeEvent extends UserEvent {
   List<Object> get props => [selectedItem];
 }
 
-class IndividualUserOnBoardingEvent extends UserEvent {
+class InstitutionUserOnBoardingEvent extends UserEvent {
   final String firmName;
   final String firmRegNo;
   final String firmAddress;
@@ -48,7 +48,7 @@ class IndividualUserOnBoardingEvent extends UserEvent {
   final String institutionCurrentCommAddress;
   final String aadharOtpVerification;
 
-  const IndividualUserOnBoardingEvent({
+  const InstitutionUserOnBoardingEvent({
     required this.firmName,
     required this.firmRegNo,
     required this.firmAddress,

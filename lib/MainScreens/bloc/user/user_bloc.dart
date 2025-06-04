@@ -112,7 +112,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     productDetails.dispose();
     turnOver.dispose();
 
-    proprietorName.dispose();
+    // proprietorName.dispose();
     proprietorMobileNumber.dispose();
     proprietorDOB.dispose();
     proprietorMotherName.dispose();
@@ -150,7 +150,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final TextEditingController turnOver = TextEditingController();
 
   /// Proprietor Details
-  final TextEditingController proprietorName = TextEditingController();
+  List<Map<String, TextEditingController>> proprietorControllers = [
+    {
+      'name': TextEditingController(),
+      'dob': TextEditingController(),
+      'fatherName': TextEditingController(),
+      'motherName': TextEditingController(),
+      'mobile': TextEditingController(),
+      'email': TextEditingController(),
+    },
+  ];
+
   final TextEditingController proprietorMobileNumber = TextEditingController();
   final TextEditingController proprietorDOB = TextEditingController();
   final TextEditingController proprietorMotherName = TextEditingController();
@@ -236,6 +246,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(UserSelectedCustomerType(event.selectedItem.pkcCode));
     warningPrint("_onSelectCustomerType Success");
   }
+
+  Future<void> saveOnboard() async {}
 
   static UserBloc get(context) => BlocProvider.of(context);
 }
