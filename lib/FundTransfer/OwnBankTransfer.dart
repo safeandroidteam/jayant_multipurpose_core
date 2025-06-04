@@ -166,33 +166,37 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                           ),
                         ),
 
-                        // TextView(
-                        //   text:
-                        //       "Minimum amount ${StaticValues.rupeeSymbol} $_minTransferAmt",
-                        //   size: 10,
-                        //   color: Colors.white,
-                        // ),
-                        BlocBuilder<TransferBloc, TransferState>(
-                          builder: (context, state) {
-                            if (state is FetchUserLimitLoading) {
-                              return const CircularProgressIndicator();
-                            } else if (state is FetchUserLimitResponse) {
-                              final _minTransferAmt =
-                                  state.userLimitList.first.minFundTranBal;
-                              return Text(
-                                "Minimum amount ${StaticValues.rupeeSymbol}$_minTransferAmt",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                ),
-                              );
-                            } else if (state is FetchUserLimitError) {
-                              return Text("Error: ${state.error}");
-                            }
-                            return const SizedBox();
-                          },
+                        TextView(
+                          text:
+                              "Minimum amount ${StaticValues.rupeeSymbol} $_minTransferAmt",
+                          size: 10,
+                          color: Colors.white,
                         ),
 
+                        // BlocBuilder<TransferBloc, TransferState>(
+                        //   buildWhen:
+                        //       (previous, current) =>
+                        //           current is FetchUserLimitLoading ||
+                        //           current is FetchUserLimitResponse,
+                        //   builder: (context, state) {
+                        //     if (state is FetchUserLimitLoading) {
+                        //       return const CircularProgressIndicator();
+                        //     } else if (state is FetchUserLimitResponse) {
+                        //       final minTransferAmt =
+                        //           state.userLimitList.first.minFundTranBal;
+                        //       return Text(
+                        //         "Minimum amount ${StaticValues.rupeeSymbol}$minTransferAmt",
+                        //         style: TextStyle(
+                        //           fontSize: 12,
+                        //           color: Colors.red,
+                        //         ),
+                        //       );
+                        //     } else if (state is FetchUserLimitError) {
+                        //       return Text("Error: ${state.error}");
+                        //     }
+                        //     return const SizedBox();
+                        //   },
+                        // ),
                         SizedBox(height: 20.0),
                         TextView(
                           text: userBal,
@@ -716,8 +720,8 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
     try {
       Map<String, dynamic> fetchCustomerSBBody = {
         "Cmp_Code": cmpCode,
-        "Cust_ID": custId,
-        // "Cust_ID": "3629",
+         "Cust_ID": custId,
+       // "Cust_ID": "3629",
       };
       Map balanceResponse = await RestAPI().post(
         APis.fetchCustomerSB,
@@ -735,11 +739,8 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
           // fromAc = balanceResponse["Data"];
           fromAc = data;
           fromAcLoading = false;
-          // fromAc.add([
-          //   {
-          //     2: {"BalAmt": 12, "AccNo": "10", "Types": ""}
-          //   }
-          // ]);
+          // fromAc.add({"Balance": 12.0, "Acc_No": "10", "Sch_Name": "ff"});
+
           warningPrint("UserAcc=$userAcc");
         });
       } else {
@@ -768,7 +769,8 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
       _maxTransferAmt = transDailyLimit["Data"][0]["Max_interfundtranbal"];
       //      userBal = balanceResponse["Table"][0]["BalAmt"].toString();
     });
-
+    warningPrint("min trans limit =$_minTransferAmt");
+    warningPrint("max trans limit =$_maxTransferAmt");
     // fetchCustomerFromAccNo();
     // fetchUserLimit();
   }

@@ -1,20 +1,20 @@
-class SaveBeneficiaryModal {
+class DeleteBeneficiaryModal {
   final String proceedStatus;
   final String proceedMessage;
-  final List<SaveBeneficiaryData> data;
+  final List<DeleteBeneficiaryData> data;
 
-  SaveBeneficiaryModal({
+  DeleteBeneficiaryModal({
     required this.proceedStatus,
     required this.proceedMessage,
     required this.data,
   });
 
-  factory SaveBeneficiaryModal.fromJson(Map<String, dynamic> json) {
-    return SaveBeneficiaryModal(
+  factory DeleteBeneficiaryModal.fromJson(Map<String, dynamic> json) {
+    return DeleteBeneficiaryModal(
       proceedStatus: json['ProceedStatus'] ?? '',
       proceedMessage: json['ProceedMessage'] ?? '',
       data: (json['Data'] as List<dynamic>?)
-          ?.map((item) => SaveBeneficiaryData.fromJson(item))
+          ?.map((item) => DeleteBeneficiaryData.fromJson(item))
           .toList() ??
           [],
     );
@@ -29,26 +29,26 @@ class SaveBeneficiaryModal {
   }
 }
 
-class SaveBeneficiaryData {
-  final int beneficiaryId;
+class DeleteBeneficiaryData {
+  final String proceedStatus;
   final String proceedMessage;
 
-  SaveBeneficiaryData({
-    required this.beneficiaryId,
+  DeleteBeneficiaryData({
+    required this.proceedStatus,
     required this.proceedMessage,
   });
 
-  factory SaveBeneficiaryData.fromJson(Map<String, dynamic> json) {
-    return SaveBeneficiaryData(
-      beneficiaryId: json['Beneficiary_ID'] ?? 0,
-      proceedMessage: json['Proceed_Message'] ?? '',
+  factory DeleteBeneficiaryData.fromJson(Map<String, dynamic> json) {
+    return DeleteBeneficiaryData(
+      proceedStatus: json['Proceed_Status'] ?? '',
+      proceedMessage: json['Procees_Message'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'Beneficiary_ID': beneficiaryId,
-      'Proceed_Message': proceedMessage,
+      'Proceed_Status': proceedStatus,
+      'Procees_Message': proceedMessage,
     };
   }
 }

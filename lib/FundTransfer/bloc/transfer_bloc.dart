@@ -127,12 +127,10 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     emit(FetchBenificiaryLoading());
     warningPrint("State: FetchBenificiaryLoading");
     try {
-      // final response = await RestAPI().get(APis.fetchBeneficiary(event.id));
-
       Map<String, dynamic> fetchBeneficiaryListBody = {
         "Cmp_Code": event.cmpCode,
-        "Cust_ID": event.custID,
-        // "Cust_ID": "1139",
+        //"Cust_ID": event.custID,
+        "Cust_ID": "1139",
       };
       final response = await RestAPI().post(
         APis.fetchBeneficiaryList,
@@ -153,8 +151,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               .toList();
       emit(FetchBenificiaryResponse(beneficiaryList));
       warningPrint("State: FetchBenificiaryResponse");
+      warningPrint("Cust id- ${event.custID}");
       successPrint("fetchBeneficiaryList=${beneficiaryList.first.toJson()}");
-    } on RestException catch (e) {
+      successPrint("fetchBeneficiaryList length=${beneficiaryList.length}");
+    } on RestException catch(e){
+
       warningPrint("State:  Account Not Found  - $e");
       emit(FetchBenificiaryError(e.message["ProceedMessage"]));
     }
