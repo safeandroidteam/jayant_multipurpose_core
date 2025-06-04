@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Util/StaticValue.dart';
 import '../Util/custom_drop_down.dart';
+import 'Model/proprietor_modal.dart';
 
 class NewUser extends StatefulWidget {
   const NewUser({super.key});
@@ -571,6 +572,7 @@ class UserInstitutionCreation extends StatefulWidget {
 class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
   final captureService = CaptureService();
   List<int> proprietorIndexes = [1];
+  List<ProprietorModel> proprietors = [ProprietorModel()];
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -578,6 +580,8 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
     final userBloc = UserBloc.get(context);
 
     Widget buildProprietorSection(int index) {
+      final modal = proprietors[index];
+
       alertPrint("Index added $index");
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -591,23 +595,47 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
             ),
           ),
           SizedBox(height: 8),
-          LabelCustomTextField(hintText: "Name", textFieldLabel: "Name"),
-          LabelCustomTextField(hintText: "DOB", textFieldLabel: "DOB"),
+          LabelCustomTextField(
+            hintText: "Name",
+            textFieldLabel: "Name",
+            onchanged: (val) {
+              modal.name = val;
+            },
+          ),
+          LabelCustomTextField(
+            hintText: "DOB",
+            textFieldLabel: "DOB",
+            onchanged: (val) {
+              modal.dob = val;
+            },
+          ),
           LabelCustomTextField(
             hintText: "Father Name",
             textFieldLabel: "Father Name",
+            onchanged: (val) {
+              modal.fatherName = val;
+            },
           ),
           LabelCustomTextField(
             hintText: "Mother Maiden Name",
             textFieldLabel: "Mother Maiden Name",
+            onchanged: (val) {
+              modal.motherName = val;
+            },
           ),
           LabelCustomTextField(
             hintText: "Mobile No",
             textFieldLabel: "Mobile No",
+            onchanged: (val) {
+              modal.mobile = val;
+            },
           ),
           LabelCustomTextField(
             hintText: "Email ID",
             textFieldLabel: "Email ID",
+            onchanged: (val) {
+              modal.email = val;
+            },
           ),
           SizedBox(height: 16),
         ],
