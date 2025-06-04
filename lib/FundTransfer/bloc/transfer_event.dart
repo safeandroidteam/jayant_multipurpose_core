@@ -36,6 +36,24 @@ class FetchBenificiaryevent extends TransferEvent {
   @override
   List<Object> get props => [custID];
 }
+class SaveBeneficiaryevent extends TransferEvent {
+  final String cmpCode;
+  final String custID;
+
+
+  SaveBeneficiaryevent(this.cmpCode, this.custID);
+  @override
+  List<Object> get props => [custID];
+
+}
+class FetchBeneficiaryBankDetailsevent extends TransferEvent {
+  final String ifscCode;
+
+  FetchBeneficiaryBankDetailsevent(this.ifscCode);
+  @override
+  List<Object> get props => [ifscCode];
+
+}
 
 class FetchUserLimitevent extends TransferEvent {
   final String cmpCode;

@@ -702,11 +702,11 @@ class _OwnBankTransferState extends State<OwnBankTransfer> {
                               _transferBloc.add(
                                 SendDetails(APis.ownFundTransferOTP(params)),
                               );
-                              _referanceNo = await RestAPI().get(
-                                APis.generateRefID("ownBankTransfer"),
-                              );
+                              // _referanceNo = await RestAPI().get(
+                              //   APis.generateRefID("ownBankTransfer"),
+                              // );
 
-                              print("REFNO$_referanceNo");
+                              // print("REFNO$_referanceNo");
                             }
                           } else {
                             if (double.parse(amt.text == "" ? "0" : amt.text) >

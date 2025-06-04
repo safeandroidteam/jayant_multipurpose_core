@@ -75,11 +75,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
     String verNameFromApi = versionMap["Data"][0]["Ver_Name"].toString();
     String verCodeFromApi = versionMap["Data"][0]["Ver_Code"].toString();
+    String versionCode = versionMap["Data"][0]["Cmp_Code"].toString();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences.setString(
-      StaticValues.cmpCodeKey,
-      versionMap["Data"][0]["Cmp_Code"].toString(),
-    );
+    await sharedPreferences.setString(StaticValues.cmpCodeKey, versionCode);
     String verCodeFromApiDouble =
         double.tryParse(verCodeFromApi)?.round().toString() ?? "";
     alertPrint("Ver_Name Frm Api==$verNameFromApi");
@@ -225,17 +223,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     checkVersionCompatible();
     SharedPreferences pref = StaticValues.sharedPreferences!;
     MPin = pref.getString(StaticValues.Mpin);
-    //   debugPrint("MPIN : $MPin");
-    /*  Future.delayed(Duration.zero, () {
-      termsAndConditions();
-    });*/
-
-    //  String myTerms = prefs.getString('Accept_Terms');
-
-    /*  if(myTerms != "true"){
-
-    }*/
-
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: pageCtrlTime),
@@ -925,7 +912,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   MPin == null ||
                   _tabController.index == 1) {
                 if (!passVal && !mobVal) {
-                  debugPrint("Login UN & PW > ALL true");
+                  customPrint("Login with UN & PW ");
                   _isLoading = true;
                   try {
                     response = await RestAPI().post(

@@ -620,10 +620,10 @@ class _OtherBankTransferState extends State<OtherBankTransfer> {
                                 "PayAmount": amt.text,
                               };
 
-                              _referenceNo = await RestAPI().get(
-                                APis.generateRefID("OtherBankTransfer"),
-                              );
-                              successPrint("REFRESPONSE$_referenceNo");
+                              // _referenceNo = await RestAPI().get(
+                              //   APis.generateRefID("OtherBankTransfer"),
+                              // );
+                              // successPrint("REFRESPONSE$_referenceNo");
                               // print(
                               //     "object////// $params\n${APis.checkFundTransferDailyLimit2(params)}");
                               _transferBloc.add(

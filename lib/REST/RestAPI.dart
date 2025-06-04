@@ -238,6 +238,9 @@ class APis {
       "$_superLink/Fill_TransferTypeDetails";
   //own Bank transfer
   static String ownBankToAccNo = "$_superLink/Fetch_OwnAccountNumber";
+  static String deleteBeneficiaryData= "$_superLink/DeleteBeneficiary";
+  //IFSC to get Bank Details
+  static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
 
   ///OLD
   static String generateRefID(String key) =>
@@ -307,7 +310,7 @@ class APis {
   static String getFuntransferLimit =
       "$_superLinkJayant/FillAmountLimit_T_Select";
 
-  ///Get IFSC  Bank Details
+  ///Get IFSC  Bank DetailsD
   static String getBeniBankDetails = "$_superLinkJayant/Fill_BeniBankDetails";
 
   ///Account Section

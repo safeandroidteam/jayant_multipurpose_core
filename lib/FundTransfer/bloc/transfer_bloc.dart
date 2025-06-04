@@ -158,8 +158,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               .toList();
       emit(FetchBenificiaryResponse(beneficiaryList));
       warningPrint("State: FetchBenificiaryResponse");
+      warningPrint("Cust id- ${event.custID}");
       successPrint("fetchBeneficiaryList=${beneficiaryList.first.toJson()}");
-    } on RestException catch (e) {
+      successPrint("fetchBeneficiaryList length=${beneficiaryList.length}");
+    } on RestException catch(e){
+
       warningPrint("State:  Account Not Found  - $e");
       emit(FetchBenificiaryError(e.message["ProceedMessage"]));
     }

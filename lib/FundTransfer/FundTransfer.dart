@@ -14,6 +14,8 @@ import 'package:passbook_core_jayant/Util/util.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../REST/app_exceptions.dart';
+
 class FundTransfer extends StatefulWidget {
   const FundTransfer({super.key});
 
@@ -27,7 +29,7 @@ class FundTransfer extends StatefulWidget {
 class _FundTransferState extends State<FundTransfer>
     with SingleTickerProviderStateMixin {
   String acc = "", name = "";
-  String cmpCode = "", custTypeCode = "";
+  String cmpCode = "", custTypeCode="";
   GlobalKey<ScaffoldState>? scaffoldKey;
   final _peopleKey = GlobalKey();
 
@@ -312,61 +314,81 @@ class _FundTransferState extends State<FundTransfer>
                                             context: context,
                                             builder: (context) {
                                               return AlertDialog(
-                                                title: Text("Are you sure?"),
+                                                title: const Text("Are you sure?"),
                                                 content: TextView(
                                                   text:
-                                                      "Do you want to delete ${state.beneficiaryList[index].recieverName} beneficiary",
+                                                  "Do you want to delete or edit ${state.beneficiaryList[index].recieverName} beneficiary",
                                                 ),
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        10.0,
-                                                      ),
+                                                  borderRadius: BorderRadius.circular(10.0),
                                                 ),
                                                 actions: <Widget>[
-                                                  ElevatedButton(
-                                                    onPressed:
-                                                        () =>
-                                                            Navigator.of(
-                                                              context,
-                                                            ).pop(),
-                                                    child: TextView(
-                                                      text: "No",
-                                                      size: 14.0,
-                                                    ),
-                                                  ),
-                                                  ElevatedButton(
-                                                    onPressed: () async {
-                                                      await deleteBeneficiary(
-                                                        state
-                                                            .beneficiaryList[index]
-                                                            .recieverId
-                                                            // .round()
-                                                            .toString(),
-                                                      );
-                                                      fetchBeneficiary();
-                                                      Navigator.pop(context);
-                                                    },
-                                                    style: ElevatedButton.styleFrom(
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              10.0,
-                                                            ),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      // Cancel button on the left
+                                                      ElevatedButton(
+                                                        onPressed: () => Navigator.of(context).pop(),
+                                                        style: ElevatedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          backgroundColor: Theme.of(context).cardColor,
+                                                          padding: const EdgeInsets.all(5.0),
+                                                        ),
+                                                        child: const TextView(
+                                                          text: "Cancel",
+                                                          size: 12.0,
+                                                          color: Colors.white,
+                                                        ),
                                                       ),
-                                                      backgroundColor:
-                                                          Theme.of(
-                                                            context,
-                                                          ).cardColor,
-                                                      padding: EdgeInsets.all(
-                                                        5.0,
+
+                                                      const Spacer(), // Push Edit & Delete to the right
+
+                                                      // Edit button
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          // Add your edit logic here
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          backgroundColor: Colors.green,
+                                                          padding: const EdgeInsets.all(5.0),
+                                                        ),
+                                                        child: const TextView(
+                                                          text: "Edit",
+                                                          size: 12.0,
+                                                          color: Colors.white,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    child: TextView(
-                                                      text: "Yes",
-                                                      size: 12.0,
-                                                      color: Colors.white,
-                                                    ),
+
+                                                      const SizedBox(width: 8), // spacing between Edit and Delete
+
+                                                      // Delete button
+                                                      ElevatedButton(
+                                                        onPressed: () async {
+                                                          await deleteBeneficiary(
+                                                            state.beneficiaryList[index].recieverId.toString(),
+                                                          );
+                                                          fetchBeneficiary();
+                                                          Navigator.pop(context);
+                                                        },
+                                                        style: ElevatedButton.styleFrom(
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(10.0),
+                                                          ),
+                                                          backgroundColor: Colors.red,
+                                                          padding: const EdgeInsets.all(5.0),
+                                                        ),
+                                                        child: const TextView(
+                                                          text: "Delete",
+                                                          size: 12.0,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               );
@@ -429,9 +451,9 @@ class _FundTransferState extends State<FundTransfer>
                                     },
                                   );
                                 } else
-                                // if(state.beneficiaryList
-                                //   .length<1)
-                                {
+                                  // if(state.beneficiaryList
+                                  //   .length<1)
+                                  {
                                   return Center(
                                     child: Text(
                                       "No Data Found",
@@ -442,7 +464,7 @@ class _FundTransferState extends State<FundTransfer>
                               } else if (state is FetchBenificiaryError) {
                                 return Column(
                                   children: [
-                                    SizedBox(height: 30),
+                                    SizedBox(height: 30,),
                                     Center(
                                       child: Text(
                                         "Error: ${state.error}",
