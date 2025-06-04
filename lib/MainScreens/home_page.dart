@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     context,
                     setState,
                     _scaffoldKey,
-                    preferences?.getString(StaticValues.accNumber) ?? "",
+                    preferences?.getString(StaticValues.accountNo) ?? "",
                   );
                 }
               },
