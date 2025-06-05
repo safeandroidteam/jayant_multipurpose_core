@@ -22,16 +22,16 @@ class DetailsResponse extends TransferState {
   DetailsResponse(this.response);
 }
 
-class FetchCustAccNoResponse extends TransferState {
-  final Map response;
+class FetchToAccNoResponse extends TransferState {
+  final Map ownBankToAccResponse;
 
-  FetchCustAccNoResponse(this.response);
+  FetchToAccNoResponse(this.ownBankToAccResponse);
 }
 
-class FetchCustAccNoError extends TransferState {
+class FetchToAccNoError extends TransferState {
   final String error;
 
-  FetchCustAccNoError(this.error);
+  FetchToAccNoError(this.error);
 }
 
 class DetailsError extends TransferState {
