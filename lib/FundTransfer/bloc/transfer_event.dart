@@ -55,8 +55,8 @@ class DeleteBeneficiaryevent extends TransferEvent {
 
   DeleteBeneficiaryevent(this.cmpCode, this.custID, this.beneficiaryID);
   @override
-  List<Object> get props => [custID];
-  List<Object> get propss => [beneficiaryID];
+  List<Object> get props => [custID, beneficiaryID];
+  
 
 }
 
@@ -67,8 +67,7 @@ class FetchBeneficiaryToUpdateevent extends TransferEvent {
 
   FetchBeneficiaryToUpdateevent(this.cmpCode, this.custID, this.beneficiaryID);
   @override
-  List<Object> get props => [custID];
-  List<Object> get propss => [beneficiaryID];
+  List<Object> get props => [custID, beneficiaryID];
 
 }
 

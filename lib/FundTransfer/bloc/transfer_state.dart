@@ -133,6 +133,7 @@ class FetchBeneficiaryToUpdateError extends TransferState {
   FetchBeneficiaryToUpdateError(this.error);
 }
 
+
 //check IFSC
 class FetchBeneficiaryBankDetailsLoading extends TransferState {}
 

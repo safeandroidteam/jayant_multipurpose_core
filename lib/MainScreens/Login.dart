@@ -76,16 +76,17 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     String verNameFromApi = versionMap["Data"][0]["Ver_Name"].toString();
     String verCodeFromApi = versionMap["Data"][0]["Ver_Code"].toString();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences.setString(
+    sharedPreferences.setString(
       StaticValues.cmpCodeKey,
       versionMap["Data"][0]["Cmp_Code"].toString(),
     );
+    String cmpCode = sharedPreferences.getString(StaticValues.cmpCodeKey) ?? "";
     String verCodeFromApiDouble =
         double.tryParse(verCodeFromApi)?.round().toString() ?? "";
     alertPrint("Ver_Name Frm Api==$verNameFromApi");
     alertPrint("Ver_Code Frm Api==$verCodeFromApiDouble");
     alertPrint("ver_Code From App==$buildNumber");
-
+    alertPrint("cmpcode test=$cmpCode");
     if (verCodeFromApiDouble != buildNumber) {
       showDialog(
         context: context,

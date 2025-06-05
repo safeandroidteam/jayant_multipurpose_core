@@ -234,6 +234,7 @@ class APis {
   static String saveBeneficiary = "$_superLink/SaveBeneficiary";
   static String deleteBeneficiaryNew= "$_superLink/DeleteBeneficiary";
   static String fetchBeneficiaryToUpdate= "$_superLink/FetchBeneficiary";
+  static String updateBeneficiary= "$_superLink/UpdateBeneficiary";
   //IFSC to get Bank Details
   static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
   //Other Bank Transfer
