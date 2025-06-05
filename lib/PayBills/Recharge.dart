@@ -534,7 +534,7 @@ class _RechargeState extends State<Recharge> {
 
     final response = await RestAPI().post(
       APis.rechargeOperators,
-      params: loadSimOperator,
+      params: {"Cmp_Code": cmpCode, "Recharge_Type": "MOBILE"},
     );
     successPrint("get sim operators $response");
     return response;
@@ -543,30 +543,35 @@ class _RechargeState extends State<Recharge> {
   Future<Map?> loadMobPostOperators() async {
     final cmpCode = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
 
-    Map<String, dynamic> loadSimOperator = {"Cmp_Code": cmpCode};
-
     final response = await RestAPI().post(
       APis.rechargeOperators,
-      params: loadSimOperator,
+      params: {"Cmp_Code": cmpCode, "Recharge_Type": "MOBILE"},
     );
     successPrint("get postpaid operators $response");
     return response;
   }
 
   Future<Map?> loadDTHOperators() async {
-    final response = await RestAPI().get(APis.dishTvOperators);
+    final response = await RestAPI().post(
+      APis.rechargeOperators,
+      params: {"Cmp_Code": cmpCode, "Recharge_Type": "DTH"},
+    );
     print(response);
     return response;
   }
 
   Future<Map?> loadElectricityOperators() async {
-    final response = await RestAPI().get(APis.electricityOperators);
+    final response = await RestAPI().post(
+      APis.rechargeOperators,
+      params: {"Cmp_Code": cmpCode, "Recharge_Type": "ELECTRICITY"},
+    );
     print(response);
     return response;
   }
 
   Future<Map?> loadWaterOperators() async {
-    final response = await RestAPI().get(APis.waterOperators);
+    final response = await RestAPI().post(  APis.rechargeOperators,
+        params: {"Cmp_Code": cmpCode, "Recharge_Type": "WATER"});
     print(response);
     return response;
   }

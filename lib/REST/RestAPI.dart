@@ -432,7 +432,8 @@ class APis {
   // static String rechargeOperators = "$_superLink/Mobile_Getoperaters";
 
   ///Recharge Operators
-  static String rechargeOperators = "$_superLink/Fetch_SimOperatorList";
+  
+  static String rechargeOperators = "$_superLink/Fetch_OperatorList";
 
   ///Dish TV Operators
   static String dishTvOperators = "$_superLink/DishTv_Getoperater";
