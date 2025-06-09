@@ -8,7 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/SignInModel.dart';
 import 'package:passbook_core_jayant/MainScreens/Register.dart';
-import 'package:passbook_core_jayant/MainScreens/new_user.dart';
+import 'package:passbook_core_jayant/MainScreens/new_user_screen.dart/new_user.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';

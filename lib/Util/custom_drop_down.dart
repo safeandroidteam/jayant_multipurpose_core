@@ -39,7 +39,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
     double h = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.symmetric(vertical: 7),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
