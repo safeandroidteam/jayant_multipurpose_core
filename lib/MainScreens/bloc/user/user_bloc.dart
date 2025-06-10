@@ -1,15 +1,12 @@
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/fill_pickUp_response_modal.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 
+part 'user_bloc.freezed.dart'; // GENERATED FILE
 part 'user_event.dart';
 part 'user_state.dart';
-part 'user_bloc.freezed.dart'; // GENERATED FILE
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc() : super(UserState.initial()) {

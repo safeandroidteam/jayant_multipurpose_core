@@ -1,9 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/fill_pickUp_response_modal.dart';
+import 'package:passbook_core_jayant/MainScreens/bloc/user/controllers/text_controllers.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 import 'package:passbook_core_jayant/Util/capture_image_video.dart';
@@ -24,26 +23,27 @@ class NewUser extends StatefulWidget {
 }
 
 class _NewUserState extends State<NewUser> {
+  late UserBloc userBloc;
+  final cntlrs = Textcntlrs();
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      SharedPreferences pref = StaticValues.sharedPreferences!;
-      String cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
-      final userBloc = UserBloc.get(context);
-      warningPrint("CmpCode $cmpCode");
-      userBloc.add(
-        FillPickUpTypesEvent(cmpCode: int.parse(cmpCode), pickUpType: 6),
-      );
-    });
-
     super.initState();
+    userBloc = UserBloc.get(context);
+
+    SharedPreferences pref = StaticValues.sharedPreferences!;
+    String cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
+
+    warningPrint("CmpCode $cmpCode");
+    userBloc.add(
+      FillPickUpTypesEvent(cmpCode: int.parse(cmpCode), pickUpType: 6),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
-    final userBloc = UserBloc.get(context);
+    // final userBloc = UserBloc.get(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -69,60 +69,96 @@ class _NewUserState extends State<NewUser> {
             LabelWithDropDownField(
               textDropDownLabel: "Branch",
               items: ["A", "B"],
+              onChanged: (value) {
+                cntlrs.selectedBranch = value;
+              },
             ),
 
-            BlocBuilder<UserBloc, UserState>(
-              buildWhen: (previous, current) {
-                return current is PickUpCustomerTypeLoading ||
-                    current is PickUpCustomerTypeResponse ||
-                    current is PickUpCustomerTypeError;
-              },
+            BlocConsumer<UserBloc, UserState>(
+              listener: (context, state) {},
+              buildWhen:
+                  (previous, current) =>
+                      previous.isPickupCustomerTypeLoading !=
+                      current.isPickupCustomerTypeLoading,
+              listenWhen:
+                  (previous, current) =>
+                      previous.isPickupCustomerTypeLoading !=
+                      current.isPickupCustomerTypeLoading,
+
               builder: (context, state) {
-                warningPrint("state in customer type =${state}");
-                if (state is PickUpCustomerTypeLoading) {
+                warningPrint("state in customer type =$state");
+                if (state.isPickupCustomerTypeLoading) {
                   return SizedBox(
                     child: Center(child: CircularProgressIndicator()),
                   );
-                } else if (state is PickUpCustomerTypeResponse) {
+                } else {
                   final customerTypeList = state.pickUpCustomerTypeList;
-                  alertPrint("customer Type List =${customerTypeList}");
-                  return LabelWithDropDownField(
+                  alertPrint("customer Type List =$customerTypeList");
+                  return LabelWithDropDownField<PickUpTypeResponseModal>(
                     textDropDownLabel: "Customer Type",
+                    hintText:
+                        cntlrs.selectedCustomerType.isEmpty
+                            ? "Select Customer Type"
+                            : cntlrs.selectedCustomerType,
                     items: customerTypeList,
-                    // itemAsString: (item) => item.pkcDescription,
+
+                    itemAsString: (item) => item.pkcDescription,
                     onChanged: (value) {
-                      if (value != null) {
-                        userBloc.add(SelectPickUpTypeEvent(value));
-                        successPrint("Selected: ${value}");
-                      }
+                      cntlrs.selectedCustomerType = value.pkcDescription;
+                      successPrint("Selected customer type : $value");
+                      userBloc.add(selectCustomerTypeEvent(value.pkcCode));
                     },
                   );
-                } else {
-                  return Text('Something Went Wrong');
                 }
               },
             ),
-
+            SizedBox(height: h * 0.02),
             BlocBuilder<UserBloc, UserState>(
               buildWhen:
                   (previous, current) =>
-                      current is UserSelectedCustomerTypeLoading ||
-                      current is UserSelectedCustomerType,
+                      previous.selectedCustomerTypeCode !=
+                      current.selectedCustomerTypeCode,
+
               builder: (context, state) {
-                return Column(
-                  children: [
-                    if (state is UserSelectedCustomerType) ...[
-                      if (state.selectedCustomerTypeCode == 46)
-                        UserIndividualCreation(),
-                      if (state.selectedCustomerTypeCode == 11473)
-                        UserInstitutionCreation(),
-                    ],
-                  ],
+                return CustomRaisedButton(
+                  buttonText: "Continue",
+                  onPressed: () {
+                    customPrint(
+                      "selected customer Type =${cntlrs.selectedCustomerType}",
+                    );
+                    if (cntlrs.selectedBranch.isEmpty &&
+                        cntlrs.selectedCustomerType.isEmpty) {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "Select Branch & Customer Type",
+                      );
+                    } else if (cntlrs.selectedBranch.isEmpty) {
+                      GlobalWidgets().showSnackBar(context, "Select Branch");
+                    } else if (cntlrs.selectedCustomerType.isEmpty) {
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "Select Customer Type",
+                      );
+                    } else {
+                      if (cntlrs.selectedCustomerType == "INDIVIDUAL") {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => UserIndividualCreation(),
+                          ),
+                        );
+                      }
+                      if (cntlrs.selectedCustomerType == "INSTITUTION") {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => UserInstitutionCreation(),
+                          ),
+                        );
+                      }
+                    }
+                  },
                 );
               },
             ),
-
-            CustomRaisedButton(buttonText: "Submit", onPressed: () {}),
           ],
         ),
       ),
@@ -170,41 +206,11 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BlocBuilder<UserBloc, UserState>(
-              buildWhen:
-                  (previous, current) =>
-                      current is PickUpTitleTypeLoading ||
-                      current is PickUpTitleTypeResponse ||
-                      current is PickUpTitleTypeError,
-              // listener: (context, state) {
-              //   if (state is PickUpTitleTypeError) {
-              //     GlobalWidgets().showSnackBar(context, "${state.error}");
-              //   }
-              // },
-              builder: (context, state) {
-                if (state is PickUpTitleTypeLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (state is PickUpTitleTypeResponse) {
-                  return LabelWithDropDownField(
-                    textDropDownLabel: "Title",
-                    items: state.pickUpTitleTypeList,
-                    itemAsString: (e) => e.pkcDescription,
-                    onChanged: (val) {
-                      if (val != null) {
-                        userBloc.individualTitle = val.pkcDescription;
-                        successPrint(
-                          "Title Value Selected ${userBloc.individualTitle}",
-                        );
-                        successPrint("Title Value Selected ${val}");
-                      }
-                    },
-                  );
-                } else {
-                  return SizedBox.shrink();
-                }
-              },
+            LabelWithDropDownField(
+              textDropDownLabel: "Title",
+              items: [],
+              // itemAsString: (e) => e.pkcDescription,
             ),
-
             LabelCustomTextField(
               hintText: "First Name",
               textFieldLabel: "Customer First Name",
@@ -234,33 +240,10 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
               textFieldLabel: "Guardian",
             ),
             LabelCustomTextField(hintText: "DOB", textFieldLabel: "DOB"),
-            BlocBuilder<UserBloc, UserState>(
-              buildWhen:
-                  (previous, current) =>
-                      current is PickUpGenderTypeLoading ||
-                      current is PickUpGenderTypeResponse ||
-                      current is PickUpGenderTypeError,
-
-              builder: (context, state) {
-                if (state is PickUpGenderTypeLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (state is PickUpGenderTypeResponse) {
-                  final genderList = state.pickUpGenderTypeList;
-                  return LabelWithDropDownField(
-                    textDropDownLabel: "Gender",
-                    items: genderList,
-                    onChanged: (value) {
-                      if (value != null) {
-                        userBloc.individualGender = value.pkcDescription;
-                        successPrint(
-                          "Gender Value Selected ${userBloc.individualGender}",
-                        );
-                      }
-                    },
-                  );
-                } else
-                  return SizedBox.shrink();
-              },
+            LabelWithDropDownField(
+              textDropDownLabel: "Gender",
+              items: [],
+              onChanged: (value) {},
             ),
             LabelCustomTextField(
               hintText: "Mobile Number",
@@ -373,50 +356,15 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                 ///Customer Image
                 ImageWidget(
                   text: "Customer Image",
-                  imageFile: userBloc.individualCustomerImageFile,
-                  onTap: () async {
-                    final file = await CaptureService().captureImage();
-                    if (file != null) {
-                      final base64 = await ImageUtils.compressXFileToBase64(
-                        file,
-                      );
-                      setState(() {
-                        userBloc.individualCustomerImageFile = file;
-                        userBloc.individualCustomerImageFileBase64 = base64;
-                        userBloc.individualCustomerImageFile = File(file.path);
-                        userBloc.individualCustomerImageFileBase64 = base64;
-                      });
-                      successPrint(
-                        "Individual Capture Image ${userBloc.individualCustomerImageFileBase64}",
-                      );
-                    }
-                  },
+                  // imageFile: userBloc.individualCustomerImageFile,
+                  onTap: () async {},
                 ),
 
                 ///Signature Image
                 ImageWidget(
                   text: "Customer Signature",
-                  imageFile: userBloc.individualCustomerSignatureFile,
-                  onTap: () async {
-                    final file = await CaptureService().captureImage();
-                    if (file != null) {
-                      final base64 = await ImageUtils.compressXFileToBase64(
-                        file,
-                      );
-                      setState(() {
-                        userBloc.individualCustomerSignatureFile = file;
-                        userBloc.individualCustomerSignatureFileBase64 = base64;
-                        // Convert File to XFile here
-                        userBloc.individualCustomerSignatureFile = File(
-                          file.path,
-                        );
-                        userBloc.individualCustomerSignatureFileBase64 = base64;
-                      });
-                      successPrint(
-                        "Individual Customer signature ${userBloc.individualCustomerSignatureFileBase64}",
-                      );
-                    }
-                  },
+                  // imageFile: userBloc.individualCustomerSignatureFile,
+                  onTap: () async {},
                 ),
               ],
             ),
@@ -428,48 +376,15 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                 ///Id Proof
                 ImageWidget(
                   text: "Id Proof",
-                  imageFile: userBloc.individualIdProofFile,
-                  onTap: () async {
-                    final file = await CaptureService().captureImage();
-                    if (file != null) {
-                      final base64 = await ImageUtils.compressXFileToBase64(
-                        file,
-                      );
-                      setState(() {
-                        userBloc.individualIdProofFile = file;
-                        userBloc.individualIdProofFileBase64 = base64;
-
-                        userBloc.individualIdProofFile = File(file.path);
-                        userBloc.individualIdProofFileBase64 = base64;
-                      });
-                      successPrint(
-                        "Individual Selfie Image ${userBloc.individualIdProofFileBase64}",
-                      );
-                    }
-                  },
+                  // imageFile: userBloc.individualIdProofFile,
+                  onTap: () async {},
                 ),
 
                 ///Customer Bank Details
                 ImageWidget(
                   text: "Customer Bank details",
-                  imageFile: userBloc.individualBankDetailsFile,
-                  onTap: () async {
-                    final file = await CaptureService().captureImage();
-                    if (file != null) {
-                      final base64 = await ImageUtils.compressXFileToBase64(
-                        file,
-                      );
-                      setState(() {
-                        userBloc.individualBankDetailsFile = file;
-                        userBloc.individualBankDetailsFileBase64 = base64;
-                        userBloc.individualBankDetailsFile = File(file.path);
-                      });
-                      userBloc.individualBankDetailsFileBase64 = base64;
-                      successPrint(
-                        "Individual Bank Image ${userBloc.individualBankDetailsFileBase64}",
-                      );
-                    }
-                  },
+                  // imageFile: userBloc.individualBankDetailsFile,
+                  onTap: () async {},
                 ),
               ],
             ),
@@ -481,50 +396,16 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                 ///Selfie
                 ImageWidget(
                   text: "Selfie",
-                  imageFile: userBloc.individualSelfieFile,
-                  onTap: () async {
-                    final file = await CaptureService().captureImage();
-                    if (file != null) {
-                      final base64 = await ImageUtils.compressXFileToBase64(
-                        file,
-                      );
-                      setState(() {
-                        userBloc.individualSelfieFile = file;
-                        userBloc.individualSelfieFileBase64 = base64;
-                        userBloc.individualSelfieFile = File(file.path);
-                      });
-                      userBloc.individualSelfieFileBase64 = base64;
-                      successPrint(
-                        "Individual Selfie Image ${userBloc.individualSelfieFileBase64}",
-                      );
-                    }
-                  },
+                  // imageFile: userBloc.individualSelfieFile,
+                  onTap: () async {},
                 ),
 
                 ///Video Recording
                 ImageWidget(
                   text: "Video Recording",
-                  imageFile: userBloc.individualVideoRecordingFile,
+                  // imageFile: userBloc.individualVideoRecordingFile,
                   isVideo: true,
-                  onTap: () async {
-                    final video = await CaptureService().captureVideo();
-                    if (video != null) {
-                      final bytes = await video.readAsBytes();
-                      final base64 = base64Encode(bytes);
-                      setState(() {
-                        userBloc.individualVideoRecordingFile = File(
-                          video.path,
-                        );
-                        userBloc.individualVideoRecordingFileBase64 = base64;
-                      });
-                      successPrint("Blinking Video ${base64}");
-                      successPrint(
-                        "Blinking Video ${userBloc.individualVideoRecordingFileBase64}",
-                      );
-                    } else {
-                      warningPrint("Video recording cancelled or failed.");
-                    }
-                  },
+                  onTap: () async {},
                 ),
               ],
             ),
@@ -562,7 +443,7 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
 
 ///Institution Page
 class UserInstitutionCreation extends StatefulWidget {
-  UserInstitutionCreation({super.key});
+  const UserInstitutionCreation({super.key});
 
   @override
   State<UserInstitutionCreation> createState() =>
@@ -570,347 +451,197 @@ class UserInstitutionCreation extends StatefulWidget {
 }
 
 class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
+  final cntlrs = Textcntlrs();
   final captureService = CaptureService();
   List<int> proprietorIndexes = [0];
   List<ProprietorModel> proprietors = [ProprietorModel()];
+
+  Widget buildProprietorSection(int index) {
+    final modal = proprietors[index];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Proprietor Details $index",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        LabelCustomTextField(
+          hintText: "Name",
+          textFieldLabel: "Name",
+          onchanged: (val) => modal.name = val,
+        ),
+        LabelCustomTextField(
+          hintText: "DOB",
+          textFieldLabel: "DOB",
+          onchanged: (val) => modal.dob = val,
+        ),
+        LabelCustomTextField(
+          hintText: "Father Name",
+          textFieldLabel: "Father Name",
+          onchanged: (val) => modal.fatherName = val,
+        ),
+        LabelCustomTextField(
+          hintText: "Mother Maiden Name",
+          textFieldLabel: "Mother Maiden Name",
+          onchanged: (val) => modal.motherName = val,
+        ),
+        LabelCustomTextField(
+          hintText: "Mobile No",
+          textFieldLabel: "Mobile No",
+          onchanged: (val) => modal.mobile = val,
+        ),
+        LabelCustomTextField(
+          hintText: "Email ID",
+          textFieldLabel: "Email ID",
+          onchanged: (val) => modal.email = val,
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
-    final userBloc = UserBloc.get(context);
 
-    Widget buildProprietorSection(int index) {
-      final modal = proprietors[index];
-
-      alertPrint("Index added $index");
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Proprietor Details $index",
-            style: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              fontSize: 16,
-            ),
-          ),
-          SizedBox(height: 8),
-          LabelCustomTextField(
-            hintText: "Name",
-            textFieldLabel: "Name",
-            onchanged: (val) {
-              modal.name = val;
-            },
-          ),
-          LabelCustomTextField(
-            hintText: "DOB",
-            textFieldLabel: "DOB",
-            onchanged: (val) {
-              modal.dob = val;
-            },
-          ),
-          LabelCustomTextField(
-            hintText: "Father Name",
-            textFieldLabel: "Father Name",
-            onchanged: (val) {
-              modal.fatherName = val;
-            },
-          ),
-          LabelCustomTextField(
-            hintText: "Mother Maiden Name",
-            textFieldLabel: "Mother Maiden Name",
-            onchanged: (val) {
-              modal.motherName = val;
-            },
-          ),
-          LabelCustomTextField(
-            hintText: "Mobile No",
-            textFieldLabel: "Mobile No",
-            onchanged: (val) {
-              modal.mobile = val;
-            },
-          ),
-          LabelCustomTextField(
-            hintText: "Email ID",
-            textFieldLabel: "Email ID",
-            onchanged: (val) {
-              modal.email = val;
-            },
-          ),
-          SizedBox(height: 16),
-        ],
-      );
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: h * 0.03),
-        Text(
-          "Firms Details",
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: w * 0.042,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(
+          "Institution Creation",
+          style: TextStyle(color: Colors.white),
         ),
-        SizedBox(height: h * 0.02),
-        LabelCustomTextField(
-          hintText: "Firm Name",
-          textFieldLabel: "Firm Name",
-        ),
-        LabelCustomTextField(
-          hintText: "Firm Reg No",
-          textFieldLabel: "Firm Reg No",
-        ),
-        LabelCustomTextField(
-          hintText: "Firm Registered Address",
-          textFieldLabel: "Firm Registered Address",
-          lines: 3,
-        ),
-        Text("Document Attached"),
-        SizedBox(height: h * 0.01),
-        Container(
-          height: h * 0.07,
-          width: w,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey, width: 0.3),
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.add, color: Colors.blueAccent),
-              ),
-            ],
-          ),
-        ),
-        LabelCustomTextField(
-          hintText: "Product Details",
-          textFieldLabel: "Product Details",
-        ),
-        LabelCustomTextField(
-          hintText: "Turn Over",
-          textFieldLabel: "Turn Over",
-        ),
-        SizedBox(height: h * 0.03),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Proprietor Details",
+              "Firms Details",
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
                 fontSize: w * 0.042,
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.add_circle),
-              onPressed: () {
-                setState(() {
-                  proprietorIndexes.add(proprietorIndexes.length + 1);
-                });
-              },
+            SizedBox(height: h * 0.02),
+            LabelCustomTextField(
+              hintText: "Firm Name",
+              textFieldLabel: "Firm Name",
             ),
-          ],
-        ),
-
-        /// All Proprietor Sections
-        ...proprietorIndexes
-            .map((index) => buildProprietorSection(index))
-            .toList(),
-
-        LabelWithDropDownField(
-          textDropDownLabel: "Gender",
-          items: ["MALE", "FEMALE"],
-        ),
-        LabelWithDropDownField(
-          textDropDownLabel: "Nationality",
-          items: ["A", "B"],
-        ),
-        LabelCustomTextField(
-          hintText: "Qualification",
-          textFieldLabel: "Qualification",
-        ),
-        LabelCustomTextField(
-          hintText: "Profession",
-          textFieldLabel: "Profession",
-        ),
-        LabelCustomTextField(
-          hintText: "PAN CARD No",
-          textFieldLabel: "PAN CARD No",
-        ),
-        LabelCustomTextField(
-          hintText: "Aadhar CARD No",
-          textFieldLabel: "Aadhar CARD No",
-        ),
-        LabelCustomTextField(
-          lines: 3,
-          hintText: "Permanent Address",
-          textFieldLabel: "Permanent Address",
-        ),
-        LabelCustomTextField(
-          lines: 3,
-          hintText: "Current/ Communication Address",
-          textFieldLabel: "Curent/ Communication Address",
-        ),
-        //fetch the geo location
-        SizedBox(height: h * 0.03),
-        Text(
-          "Nomination",
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: w * 0.042,
-          ),
-        ),
-        SizedBox(height: h * 0.05),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ImageWidget(
-              text: "Selfie",
-              imageFile: userBloc.institutionSelfieFile,
-              onTap: () async {
-                final file = await captureService.captureImage();
-                if (file != null) {
-                  final base64 = await ImageUtils.compressXFileToBase64(file);
-                  setState(() {
-                    userBloc.institutionSelfieFile = file;
-                    userBloc.institutionSelfieBase64 = base64;
-
-                    userBloc.institutionSelfieFile = File(file.path);
-                    userBloc.institutionSelfieBase64 = base64;
-                  });
-
-                  successPrint(
-                    "Individual Capture Image ${userBloc.individualCustomerImageFileBase64}",
-                  );
-                }
-              },
+            LabelCustomTextField(
+              hintText: "Firm Reg No",
+              textFieldLabel: "Firm Reg No",
             ),
-            ImageWidget(
-              text: "Blinking Eyes",
-              isVideo: true,
-              imageFile: userBloc.institutionBlinkEyeVideoFile,
-              onTap: () async {
-                final video = await captureService.captureVideo();
-                if (video != null) {
-                  final bytes = await video.readAsBytes();
-                  final base64 = base64Encode(bytes);
-                  setState(() {
-                    userBloc.institutionBlinkEyeVideoFile = File(video.path);
-                    userBloc.institutionBlinkEyeVideoBase64 = base64;
-                  });
-                  successPrint("Blinking Video ${base64}");
-                  successPrint(
-                    "Blinking Video ${userBloc.institutionBlinkEyeVideoBase64}",
-                  );
-                } else {
-                  warningPrint("Video recording cancelled or failed.");
-                }
-              },
+            LabelCustomTextField(
+              hintText: "Firm Registered Address",
+              textFieldLabel: "Firm Registered Address",
+              lines: 3,
             ),
-          ],
-        ),
-
-        SizedBox(height: h * 0.05),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ImageWidget(
-              text: "Signature",
-              imageFile: userBloc.institutionSignatureFile,
-              onTap: () async {
-                final file = await captureService.captureImage();
-                if (file != null) {
-                  final base64 = await ImageUtils.compressXFileToBase64(file);
-                  setState(() {
-                    userBloc.institutionSignatureFile = file;
-                    userBloc.institutionSignatureBase64 = base64;
-                    userBloc.institutionSignatureFile = File(file.path);
-                  });
-                  userBloc.institutionSignatureBase64 = base64;
-                  successPrint(
-                    "Individual Selfie Image ${userBloc.institutionSignatureBase64}",
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-        SizedBox(height: h * 0.05),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ImageWidget(
-              text: "Selfie",
-              imageFile: userBloc.institutionSelfieFile,
-              onTap: () async {
-                final file = await captureService.captureImage();
-                if (file != null) {
-                  final base64 = await ImageUtils.compressXFileToBase64(file);
-                  setState(() {
-                    userBloc.institutionSelfieFile = file;
-                    userBloc.institutionSelfieBase64 = base64;
-                    userBloc.institutionSelfieFile = File(file.path);
-                  });
-                  userBloc.institutionSelfieBase64 = base64;
-                  successPrint(
-                    "Individual Selfie Image ${userBloc.institutionSelfieBase64}",
-                  );
-                }
-              },
-            ),
-            ImageWidget(
-              text: "Video Recording",
-              isVideo: true,
-              imageFile: userBloc.institutionTalkingVideoFile,
-              onTap: () async {
-                final video = await captureService.captureVideo();
-                if (video != null) {
-                  final bytes = await video.readAsBytes();
-                  final base64 = base64Encode(bytes);
-                  setState(() {
-                    userBloc.institutionTalkingVideoFile = File(video.path);
-                    userBloc.institutionTalkingVideoBase64 = base64;
-                  });
-                  successPrint("Blinking Video ${base64}");
-                  successPrint(
-                    "Blinking Video ${userBloc.institutionTalkingVideoBase64}",
-                  );
-                } else {
-                  warningPrint("Video recording cancelled or failed.");
-                }
-              },
-            ),
-          ],
-        ),
-
-        SizedBox(height: h * 0.05),
-        LabelCustomTextField(
-          hintText: "Aadhar Card OTP",
-          textFieldLabel: "Aadhar Card OTP Verification",
-        ),
-        SizedBox(height: h * 0.03),
-        Row(
-          children: [
-            Checkbox(value: true, onChanged: (value) {}),
-            Text(
-              "Terms & Conditions",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
+            const Text("Document Attached"),
+            SizedBox(height: h * 0.01),
+            Container(
+              height: h * 0.07,
+              width: w,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey, width: 0.3),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.add, color: Colors.blueAccent),
+                  ),
+                ],
               ),
             ),
+            LabelCustomTextField(
+              hintText: "Product Details",
+              textFieldLabel: "Product Details",
+            ),
+            LabelCustomTextField(
+              hintText: "Turn Over",
+              textFieldLabel: "Turn Over",
+            ),
+            SizedBox(height: h * 0.03),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Proprietor Details",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: w * 0.042,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle),
+                  onPressed: () {
+                    setState(() {
+                      proprietorIndexes.add(proprietorIndexes.length);
+                      proprietors.add(ProprietorModel());
+                    });
+                  },
+                ),
+              ],
+            ),
+            ...proprietorIndexes.map((index) => buildProprietorSection(index)),
+
+            LabelWithDropDownField(
+              textDropDownLabel: "Gender",
+              items: ["MALE", "FEMALE"],
+            ),
+            LabelWithDropDownField(
+              textDropDownLabel: "Nationality",
+              items: ["A", "B"],
+            ),
+            LabelCustomTextField(
+              hintText: "Qualification",
+              textFieldLabel: "Qualification",
+            ),
+            LabelCustomTextField(
+              hintText: "Profession",
+              textFieldLabel: "Profession",
+            ),
+            LabelCustomTextField(
+              hintText: "PAN CARD No",
+              textFieldLabel: "PAN CARD No",
+            ),
+            LabelCustomTextField(
+              hintText: "Aadhar CARD No",
+              textFieldLabel: "Aadhar CARD No",
+            ),
+            LabelCustomTextField(
+              lines: 3,
+              hintText: "Permanent Address",
+              textFieldLabel: "Permanent Address",
+            ),
+            LabelCustomTextField(
+              lines: 3,
+              hintText: "Current/ Communication Address",
+              textFieldLabel: "Curent/ Communication Address",
+            ),
+            const SizedBox(height: 30),
+            const Text("Nomination"),
+            const SizedBox(height: 20),
+            CheckboxListTile(
+              value: true,
+              onChanged: (_) {},
+              title: const Text("Accept Terms & Conditions"),
+            ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
