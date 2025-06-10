@@ -571,7 +571,7 @@ class UserInstitutionCreation extends StatefulWidget {
 
 class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
   final captureService = CaptureService();
-  List<int> proprietorIndexes = [1];
+  List<int> proprietorIndexes = [0];
   List<ProprietorModel> proprietors = [ProprietorModel()];
   @override
   Widget build(BuildContext context) {
