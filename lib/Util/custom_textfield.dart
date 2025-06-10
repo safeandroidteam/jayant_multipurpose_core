@@ -30,6 +30,7 @@ class LabelCustomTextField extends StatefulWidget {
     this.textFieldLabelstyle,
     this.isRemoveVerticalPadding,
     this.padding,
+    this.isOptional = false,
   });
 
   final TextEditingController? controller;
@@ -56,6 +57,7 @@ class LabelCustomTextField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final bool? isRemoveVerticalPadding;
   final EdgeInsetsGeometry? padding;
+  final bool? isOptional;
 
   @override
   State<LabelCustomTextField> createState() => _LabelCustomTextField();
@@ -95,20 +97,34 @@ class _LabelCustomTextField extends State<LabelCustomTextField> {
           widget.padding ??
           (widget.isRemoveVerticalPadding == true
               ? EdgeInsets.symmetric(horizontal: 6)
-              : const EdgeInsets.all(6)),
+              : const EdgeInsets.all(7)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.textFieldLabel,
-            style:
-                widget.textFieldLabelstyle ??
-                GoogleFonts.poppins(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: widget.textFieldLabel,
+                  style:
+                      widget.textFieldLabelstyle ??
+                      GoogleFonts.poppins(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
                 ),
+                TextSpan(
+                  text: widget.isOptional == false ? ' *' : "",
+                  style: GoogleFonts.poppins(
+                    color: Colors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
           ),
           SizedBox(height: widget.textFieldLabel.isEmpty ? 0 : 5),
           TextFormField(
@@ -136,7 +152,7 @@ class _LabelCustomTextField extends State<LabelCustomTextField> {
             textInputAction: widget.textInputAction ?? TextInputAction.done,
             maxLines: widget.passwordfield == true ? 1 : widget.lines,
             decoration: InputDecoration(
-              filled: true,
+              filled: false,
               label: widget.label,
               labelText: widget.labelText,
               labelStyle: const TextStyle(),
