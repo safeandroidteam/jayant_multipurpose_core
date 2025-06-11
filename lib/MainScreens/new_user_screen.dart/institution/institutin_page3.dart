@@ -6,19 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Util/GlobalWidgets.dart';
 import '../../../Util/StaticValue.dart';
+import '../../../Util/custom_drop_down.dart';
 import '../../../Util/custom_print.dart';
 import '../../../Util/custom_textfield.dart';
+import '../../Model/institution/proprietor_modal.dart';
 import '../../bloc/user/controllers/text_controllers.dart';
 import 'new_user_institution.dart';
 
 class InstitutionPage3 extends StatefulWidget {
-  const InstitutionPage3({super.key});
+  final List<ProprietorModal> proprietors;
+  const InstitutionPage3({super.key, required this.proprietors});
 
   @override
   State<InstitutionPage3> createState() => _InstitutionPage3State();
 }
 
 class _InstitutionPage3State extends State<InstitutionPage3> {
+  String cmpCode = "";
   bool isAccepted = false;
   final cntlrs = Textcntlrs();
   late UserBloc userBloc;
@@ -29,7 +33,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
     userBloc = UserBloc.get(context);
 
     SharedPreferences pref = StaticValues.sharedPreferences!;
-    String cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
+    cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
     alertPrint("CmpCode $cmpCode");
 
     userBloc.add(
@@ -261,6 +265,27 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                   LengthLimitingTextInputFormatter(6), // max length 6
                 ],
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: LabelWithDropDownField(
+                  isHintvalue:
+                      cntlrs.communicationAddress.isEmpty ? false : true,
+                  labelText:
+                      cntlrs.communicationAddress.isEmpty
+                          ? "Select Communication Address"
+                          : cntlrs.communicationAddress,
+                  hintText:
+                      cntlrs.communicationAddress.isEmpty
+                          ? "Select Communication Address"
+                          : cntlrs.communicationAddress,
+                  textDropDownLabel: "Communication Address",
+                  items: ["Permanant Adress", "Present Address"],
+
+                  onChanged: (value) {
+                    cntlrs.communicationAddress = value;
+                  },
+                ),
+              ),
 
               SizedBox(height: h * 0.03),
 
@@ -332,6 +357,22 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                       ),
                     );
                     successPrint('''
+                    ------FIRM DETAILS------
+                  Firm Name: ${cntlrs.firmName.text}  
+Firm Reg No: ${cntlrs.firmReg_No.text}  
+Firm Primary Email: ${cntlrs.institutionPrimaryEmail.text} 
+Mobile No: ${cntlrs.institutionMobileNo.text}   
+Firm GSTIN: ${cntlrs.institutionFirmGstin.text}  
+Firm Establishment Date: ${cntlrs.institutionFirmStartDate.text}  
+Firm Place: ${cntlrs.institutionFirmPlace.text}  
+Turn Over: ${cntlrs.turnOver.text}  
+Firm PAN Card Number: ${cntlrs.institutionFirmPanCard.text}  
+Uploaded PAN Card Image: ${cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
+Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}    
+----------------------------  
+                   
+"✅ Saved Proprietor ${widget.proprietors}
+                    
 --------- Permanent Address ---------
 Address 1: ${cntlrs.institutionPermanentAddress1.text}
 Address 2: ${cntlrs.institutionPermanentAddress2.text}

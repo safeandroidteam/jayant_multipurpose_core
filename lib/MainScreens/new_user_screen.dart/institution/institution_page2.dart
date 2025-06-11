@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
-import 'package:xml/xml.dart' as xml;
 
 import '../../../Util/custom_print.dart';
 import '../../../Util/custom_textfield.dart';
-import '../../Model/user_modal/proprietor_modal.dart';
+import '../../Model/institution/proprietor_modal.dart';
 import '../../bloc/user/controllers/text_controllers.dart';
 import 'institutin_page3.dart';
 
@@ -182,48 +181,30 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                         isValid = false;
                         break;
                       }
+
                       model.name = name;
                       model.address = address;
                       model.panCardNo = panCardNo;
-                      successPrint("------ Proprietor ${i + 1} ------");
+
+                      successPrint("✅ Saved Proprietor ${i + 1}");
                       controllerSet.forEach((key, controller) {
-                        successPrint("$key: ${controller.text}");
+                        successPrint("  $key: ${controller.text}");
                       });
-                      successPrint("------------------------------");
                     }
 
                     if (!isValid) return;
 
-                    final builder = xml.XmlBuilder();
-                    builder.processing('xml', 'version="1.0" encoding="UTF-8"');
-                    builder.element(
-                      'Proprietors',
-                      nest: () {
-                        for (var prop in contrls.proprietors) {
-                          builder.element(
-                            'Proprietor',
-                            nest: () {
-                              builder.element('Name', nest: prop.name);
-                              builder.element('Address', nest: prop.address);
-                              builder.element(
-                                'PanCardNo',
-                                nest: prop.panCardNo,
-                              );
-                            },
-                          );
-                        }
-                      },
+                    successPrint(
+                      "✅ All proprietor fields are valid. Moving to next page...",
                     );
-
-                    final xmlPayload = builder.buildDocument().toXmlString(
-                      pretty: true,
-                    );
-                    successPrint("Generated XML Payload:\n$xmlPayload");
 
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const InstitutionPage3(),
+                        builder:
+                            (context) => InstitutionPage3(
+                              proprietors: contrls.proprietors,
+                            ),
                       ),
                     );
                   },

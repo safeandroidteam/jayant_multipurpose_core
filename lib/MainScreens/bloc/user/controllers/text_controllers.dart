@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 
-import '../../../Model/user_modal/proprietor_modal.dart';
+import '../../../Model/institution/proprietor_modal.dart';
 
 class Textcntlrs {
   // ///Individual image data type
@@ -238,6 +238,11 @@ class Textcntlrs {
     firmName.dispose();
     firmReg_No.dispose();
     turnOver.dispose();
+    for (var map in proprietorControllers) {
+      for (var controller in map.values) {
+        controller.dispose();
+      }
+    }
     institutionPermanentAddress1.dispose();
     institutionPermanentAddress2.dispose();
     institutionPermanentAddress3.dispose();
@@ -323,4 +328,5 @@ class Textcntlrs {
       TextEditingController();
   final TextEditingController institutionCurrentPinCode =
       TextEditingController();
+  String institutionCommunicationAddress = "";
 }

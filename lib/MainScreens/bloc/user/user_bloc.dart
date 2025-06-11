@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/fill_pickUp_response_modal.dart';
@@ -11,9 +13,9 @@ import 'package:passbook_core_jayant/MainScreens/Model/user_modal/response/valid
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
+import 'package:xml/xml.dart' as xml;
 
 part 'user_bloc.freezed.dart'; // GENERATED FILE
-
 part 'user_event.dart';
 part 'user_state.dart';
 
@@ -25,6 +27,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetBranchesEvent>(_getBranches);
     on<IndividualUserCreationEvent>(_individualCreation);
     on<ValidateRefIDEvent>(_validateRefID);
+    // on<InstitutionCreationEvent>(_institutionCreation);
+
     on<ClearRefEvent>(_clearRef);
     on<ClearDobEvent>(_clearDob);
   }
@@ -254,6 +258,46 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
     }
   }
+
+  // Future<void> _institutionCreation(
+  //   InstitutionCreationEvent event,
+  //   Emitter<UserState> emit,
+  // ) async {
+  //   emit(state.copyWith(isInstitutionCreationLoading: true));
+  //
+  //   try {
+  //     // Prepare your request model
+  //     final requestModel = InstitutionUserRequestModel(
+  //       // assign values from event.institutionUserCreationUiModal
+  //     );
+  //
+  //     final response = await RestAPI().post(
+  //       APis.institutionUserCreation,
+  //       params: requestModel.toJson(),
+  //     );
+  //
+  //     final parsedResponse = InstitutionResponseModal.fromJson(response);
+  //
+  //     emit(
+  //       state.copyWith(
+  //         isInstitutionCreationLoading: false,
+  //         institutionResponse: parsedResponse,
+  //         institutionCreationError: null,
+  //       ),
+  //     );
+  //
+  //     successPrint("✅ Institution creation success");
+  //   } catch (e) {
+  //     emit(
+  //       state.copyWith(
+  //         isInstitutionCreationLoading: false,
+  //         institutionResponse: null,
+  //         institutionCreationError: "Institution creation failed",
+  //       ),
+  //     );
+  //     errorPrint("❌ Institution creation error: $e");
+  //   }
+  // }
 
   Future<void> _validateRefID(
     ValidateRefIDEvent event,
