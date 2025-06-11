@@ -1,25 +1,87 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/user_modal/individual_user_modal.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/user_modal/prsent_address_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/controllers/text_controllers.dart';
+import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
+import 'package:passbook_core_jayant/Util/StaticValue.dart';
 import 'package:passbook_core_jayant/Util/capture_image_video.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/image_picker_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserIndividualCreation3 extends StatefulWidget {
-  const UserIndividualCreation3({super.key});
+  const UserIndividualCreation3({super.key, required this.cntlrs});
+  final Textcntlrs cntlrs;
   @override
   State<UserIndividualCreation3> createState() =>
       _UserIndividualCreation3State();
 }
 
 class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
-  final cntlrs = Textcntlrs();
-
+  late UserBloc userBloc;
+  String cmpCode = "";
   final capture = CaptureService();
   bool isTermsAccepted = false;
+  @override
+  void initState() {
+    super.initState();
+    userBloc = UserBloc.get(context);
+    SharedPreferences pref = StaticValues.sharedPreferences!;
+    cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
+
+    customPrint("=== INDIVIDUAL USER CREATION DATA  INITSTATE===");
+    customPrint("Company Code: $cmpCode");
+    customPrint("Selected Branch: ${widget.cntlrs.selectedBranch}");
+    customPrint(
+      "Selected Customer Type: ${widget.cntlrs.selectedCustomerType}",
+    );
+    customPrint("Selected Account Type: ${widget.cntlrs.selectedAccType}");
+    customPrint("Reference ID: ${widget.cntlrs.newUserRefIDCntlr.text}");
+    customPrint("Title: ${widget.cntlrs.selectedIndividualTitle}");
+    customPrint("First Name: ${widget.cntlrs.firstNameCntlr.text}");
+    customPrint("Middle Name: ${widget.cntlrs.middleNameCntlr.text}");
+    customPrint("Last Name: ${widget.cntlrs.lastNameCntlr.text}");
+    customPrint("Father Name: ${widget.cntlrs.fatherNameCntlr.text}");
+    customPrint("Mother Name: ${widget.cntlrs.motherNameCntlr.text}");
+    customPrint("Spouse Name: ${widget.cntlrs.spouseNameCntlr.text}");
+    customPrint("DOB: ${widget.cntlrs.slectedCustomerDob.text}");
+    customPrint("Gender: ${widget.cntlrs.selectedIndividualGender}");
+    customPrint(
+      "Primary Mobile: ${widget.cntlrs.customerPrimaryMobileNumberCntlr.text}",
+    );
+    customPrint("Email: ${widget.cntlrs.customerPrimaryEmailCntlr.text}");
+    customPrint(
+      "Aadhaar Number: ${widget.cntlrs.customerAadharNumberCntlr.text}",
+    );
+    customPrint("PAN Number: ${widget.cntlrs.customerPanNumberCntlr.text}");
+    customPrint(
+      "Qualification: ${widget.cntlrs.customerQualificationCntlr.text}",
+    );
+    customPrint("CKYC Number: ${widget.cntlrs.customerCkycNumberCntlr.text}");
+
+    customPrint("--- PERMANENT ADDRESS ---");
+    customPrint(
+      "House No/Name: ${widget.cntlrs.permanentAddressHouseNoNameCntlr.text}",
+    );
+    customPrint("Address Line 1: ${widget.cntlrs.permanentAddress1Cntrl.text}");
+    customPrint("Address Line 2: ${widget.cntlrs.permanentAddress2Cntrl.text}");
+    customPrint(
+      "City/Town/Village: ${widget.cntlrs.permanent_City_town_village_cntlr.text}",
+    );
+    customPrint(
+      "Pincode: ${widget.cntlrs.permanent_post_office_pincode_cntlr.text}",
+    );
+    customPrint("Country: ${widget.cntlrs.permanent_country_cntlr.text}");
+    customPrint("State: ${widget.cntlrs.permanent_states_cntlr.text}");
+    customPrint("District: ${widget.cntlrs.permanent_district_cntlr.text}");
+    customPrint("=========================================");
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -73,7 +135,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                     ///Customer Image
                     ImageWidget(
                       text: "Customer Image",
-                      imageFile: cntlrs.individualCustomerImageFile,
+                      imageFile: widget.cntlrs.individualCustomerImageFile,
                       onTap: () async {
                         final file = await CaptureService().captureImage();
                         if (file != null) {
@@ -81,15 +143,17 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                             file,
                           );
                           setState(() {
-                            cntlrs.individualCustomerImageFile = file;
-                            cntlrs.individualCustomerImageFileBase64 = base64;
-                            cntlrs.individualCustomerImageFile = File(
+                            widget.cntlrs.individualCustomerImageFile = file;
+                            widget.cntlrs.individualCustomerImageFileBase64 =
+                                base64;
+                            widget.cntlrs.individualCustomerImageFile = File(
                               file.path,
                             );
-                            cntlrs.individualCustomerImageFileBase64 = base64;
+                            widget.cntlrs.individualCustomerImageFileBase64 =
+                                base64;
                           });
                           successPrint(
-                            "Individual Capture Image ${cntlrs.individualCustomerImageFileBase64}",
+                            "Individual Capture Image ${widget.cntlrs.individualCustomerImageFileBase64}",
                           );
                         }
                       },
@@ -98,7 +162,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                     ///Signature Image
                     ImageWidget(
                       text: "Signature",
-                      imageFile: cntlrs.individualCustomerSignatureFile,
+                      imageFile: widget.cntlrs.individualCustomerSignatureFile,
                       onTap: () async {
                         final file = await CaptureService().captureImage();
                         if (file != null) {
@@ -106,49 +170,51 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                             file,
                           );
                           setState(() {
-                            cntlrs.individualCustomerSignatureFile = file;
-                            cntlrs.individualCustomerSignatureFileBase64 =
-                                base64;
+                            widget.cntlrs.individualCustomerSignatureFile =
+                                file;
+                            widget
+                                .cntlrs
+                                .individualCustomerSignatureFileBase64 = base64;
                             // Convert File to XFile here
-                            cntlrs.individualCustomerSignatureFile = File(
-                              file.path,
-                            );
-                            cntlrs.individualCustomerSignatureFileBase64 =
-                                base64;
+                            widget.cntlrs.individualCustomerSignatureFile =
+                                File(file.path);
+                            widget
+                                .cntlrs
+                                .individualCustomerSignatureFileBase64 = base64;
                           });
                           successPrint(
-                            "Individual Customer signature ${cntlrs.individualCustomerSignatureFileBase64}",
+                            "Individual Customer signature ${widget.cntlrs.individualCustomerSignatureFileBase64}",
                           );
                         }
                       },
                     ),
                   ],
                 ),
-                SizedBox(height: h * 0.02),
-                Padding(
-                  padding: EdgeInsets.only(left: w * 0.04),
-                  child: ImageWidget(
-                    text: "Customer Selfie",
-                    imageFile: cntlrs.individualSelfieFile,
-                    onTap: () async {
-                      final file = await CaptureService().captureImage();
-                      if (file != null) {
-                        final base64 = await ImageUtils.compressXFileToBase64(
-                          file,
-                        );
-                        setState(() {
-                          cntlrs.individualSelfieFile = file;
-                          cntlrs.individualSelfieFileBase64 = base64;
-                          cntlrs.individualSelfieFile = File(file.path);
-                        });
-                        cntlrs.individualSelfieFileBase64 = base64;
-                        successPrint(
-                          "Individual Selfie Image ${cntlrs.individualSelfieFileBase64}",
-                        );
-                      }
-                    },
-                  ),
-                ),
+                // SizedBox(height: h * 0.02),
+                // Padding(
+                //   padding: EdgeInsets.only(left: w * 0.04),
+                //   child: ImageWidget(
+                //     text: "Customer Selfie",
+                //     imageFile: widget.cntlrs.individualSelfieFile,
+                //     onTap: () async {
+                //       final file = await CaptureService().captureImage();
+                //       if (file != null) {
+                //         final base64 = await ImageUtils.compressXFileToBase64(
+                //           file,
+                //         );
+                //         setState(() {
+                //           widget.cntlrs.individualSelfieFile = file;
+                //           widget.cntlrs.individualSelfieFileBase64 = base64;
+                //           widget.cntlrs.individualSelfieFile = File(file.path);
+                //         });
+                //         widget.cntlrs.individualSelfieFileBase64 = base64;
+                //         successPrint(
+                //           "Individual Selfie Image ${widget.cntlrs.individualSelfieFileBase64}",
+                //         );
+                //       }
+                //     },
+                //   ),
+                // ),
               ],
             ),
             SizedBox(height: h * 0.05),
@@ -163,7 +229,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                 ///Id Proof
                 ImageWidget(
                   text: 'Aadhaar Card – Front',
-                  imageFile: cntlrs.individualAadhaarFrontProofFile,
+                  imageFile: widget.cntlrs.individualAadhaarFrontProofFile,
                   onTap: () async {
                     final file = await CaptureService().captureImage();
                     if (file != null) {
@@ -171,16 +237,18 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                         file,
                       );
                       setState(() {
-                        cntlrs.individualAadhaarFrontProofFile = file;
-                        cntlrs.individualAadhaarFrontProofFileBase64 = base64;
+                        widget.cntlrs.individualAadhaarFrontProofFile = file;
+                        widget.cntlrs.individualAadhaarFrontProofFileBase64 =
+                            base64;
 
-                        cntlrs.individualAadhaarFrontProofFile = File(
+                        widget.cntlrs.individualAadhaarFrontProofFile = File(
                           file.path,
                         );
-                        cntlrs.individualAadhaarFrontProofFileBase64 = base64;
+                        widget.cntlrs.individualAadhaarFrontProofFileBase64 =
+                            base64;
                       });
                       successPrint(
-                        "Aadhar front Image ${cntlrs.individualAadhaarFrontProofFileBase64}",
+                        "Aadhar front Image ${widget.cntlrs.individualAadhaarFrontProofFileBase64}",
                       );
                     }
                   },
@@ -189,7 +257,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                 ///Id Proof
                 ImageWidget(
                   text: 'Aadhaar Card – Back',
-                  imageFile: cntlrs.individualAadhaarBackProofFile,
+                  imageFile: widget.cntlrs.individualAadhaarBackProofFile,
                   onTap: () async {
                     final file = await CaptureService().captureImage();
                     if (file != null) {
@@ -197,14 +265,18 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                         file,
                       );
                       setState(() {
-                        cntlrs.individualAadhaarBackProofFile = file;
-                        cntlrs.individualAadhaarBackProofFileBase64 = base64;
+                        widget.cntlrs.individualAadhaarBackProofFile = file;
+                        widget.cntlrs.individualAadhaarBackProofFileBase64 =
+                            base64;
 
-                        cntlrs.individualAadhaarBackProofFile = File(file.path);
-                        cntlrs.individualAadhaarBackProofFileBase64 = base64;
+                        widget.cntlrs.individualAadhaarBackProofFile = File(
+                          file.path,
+                        );
+                        widget.cntlrs.individualAadhaarBackProofFileBase64 =
+                            base64;
                       });
                       successPrint(
-                        "Aadhar back  ${cntlrs.individualAadhaarBackProofFileBase64}",
+                        "Aadhar back  ${widget.cntlrs.individualAadhaarBackProofFileBase64}",
                       );
                     }
                   },
@@ -220,20 +292,22 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
               alignment: Alignment.centerLeft,
               child: ImageWidget(
                 text: 'Pan Card – Front',
-                imageFile: cntlrs.individualPanCardProofFile,
+                imageFile: widget.cntlrs.individualPanCardProofFile,
                 onTap: () async {
                   final file = await CaptureService().captureImage();
                   if (file != null) {
                     final base64 = await ImageUtils.compressXFileToBase64(file);
                     setState(() {
-                      cntlrs.individualPanCardProofFile = file;
-                      cntlrs.individualPanCardProofFileBase64 = base64;
+                      widget.cntlrs.individualPanCardProofFile = file;
+                      widget.cntlrs.individualPanCardProofFileBase64 = base64;
 
-                      cntlrs.individualPanCardProofFile = File(file.path);
-                      cntlrs.individualPanCardProofFileBase64 = base64;
+                      widget.cntlrs.individualPanCardProofFile = File(
+                        file.path,
+                      );
+                      widget.cntlrs.individualPanCardProofFileBase64 = base64;
                     });
                     successPrint(
-                      "Pan Card  ${cntlrs.individualPanCardProofFileBase64}",
+                      "Pan Card  ${widget.cntlrs.individualPanCardProofFileBase64}",
                     );
                   }
                 },
@@ -264,98 +338,377 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
             SizedBox(height: h * 0.03),
             SizedBox(
               width: w,
-              child: CustomRaisedButton(
-                buttonText: "Continue",
-                onPressed: () {
-                  // Check if all base64 fields are empty
-                  if ((cntlrs.individualCustomerImageFileBase64?.isEmpty ??
-                          true) &&
-                      (cntlrs.individualCustomerSignatureFileBase64?.isEmpty ??
-                          true) &&
-                      (cntlrs.individualSelfieFileBase64?.isEmpty ?? true) &&
-                      (cntlrs.individualAadhaarFrontProofFileBase64?.isEmpty ??
-                          true) &&
-                      (cntlrs.individualAadhaarBackProofFileBase64?.isEmpty ??
-                          true) &&
-                      (cntlrs.individualPanCardProofFileBase64?.isEmpty ??
-                          true)) {
+              child: BlocConsumer<UserBloc, UserState>(
+                listener: (context, state) {
+                  // Handle failure case
+                  if (state.individualUserCreationError != null &&
+                      state.individualUserCreationError!.isNotEmpty) {
+                    customPrint(
+                      "individual creation error =${state.individualUserCreationError}",
+                    );
                     GlobalWidgets().showSnackBar(
                       context,
-                      "Please upload or capture required documents.",
+                      state.individualUserCreationError!,
                     );
                     return;
                   }
 
-                  // Check each individually and show specific message
-                  if (cntlrs.individualCustomerImageFileBase64?.isEmpty ??
-                      true) {
+                  // Handle success case
+                  if (state.individualResponse?.proceedMessage == "Y") {
+                    customPrint(
+                      "individual creation success =${state.individualResponse?.proceedMessage}",
+                    );
+                    widget.cntlrs.individualDispose();
                     GlobalWidgets().showSnackBar(
                       context,
-                      "Please capture Customer Image.",
+                      "User created successfully",
                     );
-                    return;
                   }
+                },
 
-                  if (cntlrs.individualCustomerSignatureFileBase64?.isEmpty ??
-                      true) {
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "Please capture Signature.",
+                buildWhen:
+                    (previous, current) =>
+                        previous.isIndividualUserLoading !=
+                        current.isIndividualUserLoading,
+
+                builder: (context, state) {
+                  if (state.isIndividualUserLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    return CustomRaisedButton(
+                      buttonText: "Create Account",
+                      onPressed: () {
+                        // Check if all base64 fields are empty
+                        if ((widget
+                                    .cntlrs
+                                    .individualCustomerImageFileBase64
+                                    ?.isEmpty ??
+                                true) &&
+                            (widget
+                                    .cntlrs
+                                    .individualCustomerSignatureFileBase64
+                                    ?.isEmpty ??
+                                true) &&
+                            
+                            (widget
+                                    .cntlrs
+                                    .individualAadhaarFrontProofFileBase64
+                                    ?.isEmpty ??
+                                true) &&
+                            (widget
+                                    .cntlrs
+                                    .individualAadhaarBackProofFileBase64
+                                    ?.isEmpty ??
+                                true) &&
+                            (widget
+                                    .cntlrs
+                                    .individualPanCardProofFileBase64
+                                    ?.isEmpty ??
+                                true)) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Please upload or capture required documents.",
+                          );
+                          return;
+                        }
+
+                        // Check each individually and show specific message
+                        if (widget
+                                .cntlrs
+                                .individualCustomerImageFileBase64
+                                ?.isEmpty ??
+                            true) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Please capture Customer Image.",
+                          );
+                          return;
+                        }
+
+                        if (widget
+                                .cntlrs
+                                .individualCustomerSignatureFileBase64
+                                ?.isEmpty ??
+                            true) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Please capture Signature.",
+                          );
+                          return;
+                        }
+
+                       
+
+                        if (widget
+                                .cntlrs
+                                .individualAadhaarFrontProofFileBase64
+                                ?.isEmpty ??
+                            true) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Please capture Aadhaar Card Front.",
+                          );
+                          return;
+                        }
+
+                        if (widget
+                                .cntlrs
+                                .individualAadhaarBackProofFileBase64
+                                ?.isEmpty ??
+                            true) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Please capture Aadhaar Card Back.",
+                          );
+                          return;
+                        }
+
+                        if (widget
+                                .cntlrs
+                                .individualPanCardProofFileBase64
+                                ?.isEmpty ??
+                            true) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Please capture PAN Card.",
+                          );
+                          return;
+                        }
+
+                        if (!isTermsAccepted) {
+                          GlobalWidgets().showSnackBar(
+                            context,
+                            "Please accept Terms & Conditions.",
+                          );
+                          return;
+                        }
+
+                        customPrint("=== INDIVIDUAL USER CREATION DATA ===");
+                        customPrint("Company Code: $cmpCode");
+                        customPrint(
+                          "Selected Branch: ${widget.cntlrs.selectedBranch}",
+                        );
+                        customPrint(
+                          "Selected Customer Type: ${widget.cntlrs.selectedCustomerType}",
+                        );
+                        customPrint(
+                          "Selected Account Type: ${widget.cntlrs.selectedAccType}",
+                        );
+                        customPrint(
+                          "Reference ID: ${widget.cntlrs.newUserRefIDCntlr.text}",
+                        );
+                        customPrint(
+                          "Title: ${widget.cntlrs.selectedIndividualTitle}",
+                        );
+                        customPrint(
+                          "First Name: ${widget.cntlrs.firstNameCntlr.text}",
+                        );
+                        customPrint(
+                          "Middle Name: ${widget.cntlrs.middleNameCntlr.text}",
+                        );
+                        customPrint(
+                          "Last Name: ${widget.cntlrs.lastNameCntlr.text}",
+                        );
+                        customPrint(
+                          "Father Name: ${widget.cntlrs.fatherNameCntlr.text}",
+                        );
+                        customPrint(
+                          "Mother Name: ${widget.cntlrs.motherNameCntlr.text}",
+                        );
+                        customPrint(
+                          "Spouse Name: ${widget.cntlrs.spouseNameCntlr.text}",
+                        );
+                        customPrint(
+                          "DOB: ${widget.cntlrs.slectedCustomerDob.text}",
+                        );
+                        customPrint(
+                          "Gender: ${widget.cntlrs.selectedIndividualGender}",
+                        );
+                        customPrint(
+                          "Primary Mobile: ${widget.cntlrs.customerPrimaryMobileNumberCntlr.text}",
+                        );
+                        customPrint(
+                          "Email: ${widget.cntlrs.customerPrimaryEmailCntlr.text}",
+                        );
+                        customPrint(
+                          "Aadhaar Number: ${widget.cntlrs.customerAadharNumberCntlr.text}",
+                        );
+                        customPrint(
+                          "PAN Number: ${widget.cntlrs.customerPanNumberCntlr.text}",
+                        );
+                        customPrint(
+                          "Qualification: ${widget.cntlrs.customerQualificationCntlr.text}",
+                        );
+                        customPrint(
+                          "CKYC Number: ${widget.cntlrs.customerCkycNumberCntlr.text}",
+                        );
+
+                        customPrint("--- PERMANENT ADDRESS ---");
+                        customPrint(
+                          "House No/Name: ${widget.cntlrs.permanentAddressHouseNoNameCntlr.text}",
+                        );
+                        customPrint(
+                          "Address Line 1: ${widget.cntlrs.permanentAddress1Cntrl.text}",
+                        );
+                        customPrint(
+                          "Address Line 2: ${widget.cntlrs.permanentAddress2Cntrl.text}",
+                        );
+                        customPrint(
+                          "City/Town/Village: ${widget.cntlrs.permanent_City_town_village_cntlr.text}",
+                        );
+                        customPrint(
+                          "Pincode: ${widget.cntlrs.permanent_post_office_pincode_cntlr.text}",
+                        );
+                        customPrint(
+                          "Country: ${widget.cntlrs.permanent_country_cntlr.text}",
+                        );
+                        customPrint(
+                          "State: ${widget.cntlrs.permanent_states_cntlr.text}",
+                        );
+                        customPrint(
+                          "District: ${widget.cntlrs.permanent_district_cntlr.text}",
+                        );
+                        customPrint(
+                          "=========================================",
+                        );
+
+                        userBloc.add(
+                          IndividualUserCreationEvent(
+                            individualUserCreationUiModal:
+                                IndividualUserCreationUIModal(
+                                  cmpCode,
+                                  widget.cntlrs.selectedBranch,
+                                  widget.cntlrs.selectedCustomerType,
+                                  widget.cntlrs.selectedAccType,
+                                  widget.cntlrs.newUserRefIDCntlr.text,
+                                  widget.cntlrs.selectedIndividualTitle,
+                                  widget.cntlrs.firstNameCntlr.text,
+                                  widget.cntlrs.middleNameCntlr.text,
+                                  widget.cntlrs.lastNameCntlr.text,
+                                  widget.cntlrs.fatherNameCntlr.text,
+                                  widget.cntlrs.motherNameCntlr.text,
+                                  widget.cntlrs.spouseNameCntlr.text,
+                                  widget.cntlrs.slectedCustomerDob.text,
+                                  widget.cntlrs.selectedIndividualGender,
+                                  widget
+                                      .cntlrs
+                                      .customerPrimaryMobileNumberCntlr
+                                      .text,
+                                  widget.cntlrs.customerPrimaryEmailCntlr.text,
+                                  widget.cntlrs.customerAadharNumberCntlr.text,
+
+                                  widget.cntlrs.customerPanNumberCntlr.text,
+                                  widget.cntlrs.customerQualificationCntlr.text,
+                                  widget.cntlrs.customerCkycNumberCntlr.text,
+                                  AddressModal(
+                                    addressType: "Permanent",
+                                    houseNoName:
+                                        widget
+                                            .cntlrs
+                                            .permanentAddressHouseNoNameCntlr
+                                            .text,
+                                    address1:
+                                        widget
+                                            .cntlrs
+                                            .permanentAddress1Cntrl
+                                            .text,
+                                    address2:
+                                        widget
+                                            .cntlrs
+                                            .permanentAddress2Cntrl
+                                            .text,
+                                    cityTownVillage:
+                                        widget
+                                            .cntlrs
+                                            .permanent_City_town_village_cntlr
+                                            .text,
+
+                                    pinCode:
+                                        widget
+                                            .cntlrs
+                                            .permanent_post_office_pincode_cntlr
+                                            .text,
+                                    country:
+                                        widget
+                                            .cntlrs
+                                            .permanent_country_cntlr
+                                            .text,
+
+                                    state:
+                                        widget
+                                            .cntlrs
+                                            .permanent_states_cntlr
+                                            .text,
+                                    district:
+                                        widget
+                                            .cntlrs
+                                            .permanent_district_cntlr
+                                            .text,
+                                  ),
+
+                                  AddressModal(
+                                    addressType: "Present",
+                                    houseNoName:
+                                        widget
+                                            .cntlrs
+                                            .presentAddressHouseNoNameCntlr
+                                            .text,
+                                    address1:
+                                        widget.cntlrs.presentAddress1Cntrl.text,
+                                    address2:
+                                        widget.cntlrs.presentAddress2Cntrl.text,
+                                    cityTownVillage:
+                                        widget
+                                            .cntlrs
+                                            .present_City_town_village_cntlr
+                                            .text,
+
+                                    pinCode:
+                                        widget
+                                            .cntlrs
+                                            .present_post_office_pincode_cntlr
+                                            .text,
+                                    country:
+                                        widget
+                                            .cntlrs
+                                            .present_country_cntlr
+                                            .text,
+
+                                    state:
+                                        widget.cntlrs.present_states_cntlr.text,
+                                    district:
+                                        widget
+                                            .cntlrs
+                                            .present_district_cntlr
+                                            .text,
+                                  ),
+                                  widget.cntlrs.communicationAddress.contains(
+                                        "Permanant",
+                                      )
+                                      ? "Permanant"
+                                      : "Present",
+                                  widget
+                                      .cntlrs
+                                      .individualCustomerImageFileBase64!,
+                                  widget
+                                      .cntlrs
+                                      .individualCustomerSignatureFileBase64!,
+                                
+                                  widget
+                                      .cntlrs
+                                      .individualAadhaarFrontProofFileBase64!,
+                                  widget
+                                      .cntlrs
+                                      .individualAadhaarBackProofFileBase64!,
+                                  widget
+                                      .cntlrs
+                                      .individualPanCardProofFileBase64!,
+                                ),
+                          ),
+                        );
+                      },
                     );
-                    return;
                   }
-
-                  if (cntlrs.individualSelfieFileBase64?.isEmpty ?? true) {
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "Please capture Customer Selfie.",
-                    );
-                    return;
-                  }
-
-                  if (cntlrs.individualAadhaarFrontProofFileBase64?.isEmpty ??
-                      true) {
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "Please capture Aadhaar Card Front.",
-                    );
-                    return;
-                  }
-
-                  if (cntlrs.individualAadhaarBackProofFileBase64?.isEmpty ??
-                      true) {
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "Please capture Aadhaar Card Back.",
-                    );
-                    return;
-                  }
-
-                  if (cntlrs.individualPanCardProofFileBase64?.isEmpty ??
-                      true) {
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "Please capture PAN Card.",
-                    );
-                    return;
-                  }
-
-                  if (!isTermsAccepted) {
-                    GlobalWidgets().showSnackBar(
-                      context,
-                      "Please accept Terms & Conditions.",
-                    );
-                    return;
-                  }
-
-                  // ✅ All validations passed — proceed
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              UserIndividualCreation3(), // or next screen
-                    ),
-                  );
                 },
               ),
             ),
@@ -387,7 +740,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
  ///Video Recording
                 // ImageWidget(
                 //   text: "Video Recording",
-                //   imageFile: cntlrs.individualVideoRecordingFile,
+                //   imageFile: widget.cntlrs.individualVideoRecordingFile,
                 //   isVideo: true,
                 //   onTap: () async {
                 //     final video = await CaptureService().captureVideo();
@@ -395,12 +748,12 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                 //       final bytes = await video.readAsBytes();
                 //       final base64 = base64Encode(bytes);
                 //       setState(() {
-                //         cntlrs.individualVideoRecordingFile = File(video.path);
-                //         cntlrs.individualVideoRecordingFileBase64 = base64;
+                //         widget.cntlrs.individualVideoRecordingFile = File(video.path);
+                //         widget.cntlrs.individualVideoRecordingFileBase64 = base64;
                 //       });
                 //       successPrint("Blinking Video $base64");
                 //       successPrint(
-                //         "Blinking Video ${cntlrs.individualVideoRecordingFileBase64}",
+                //         "Blinking Video ${widget.cntlrs.individualVideoRecordingFileBase64}",
                 //       );
                 //     } else {
                 //       warningPrint("Video recording cancelled or failed.");
@@ -411,7 +764,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                  // ///Customer Bank Details
                 // ImageWidget(
                 //   text: "Customer Bank details",
-                //   imageFile: cntlrs.individualBankDetailsFile,
+                //   imageFile: widget.cntlrs.individualBankDetailsFile,
                 //   onTap: () async {
                 //     final file = await CaptureService().captureImage();
                 //     if (file != null) {
@@ -419,13 +772,13 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                 //         file,
                 //       );
                 //       setState(() {
-                //         cntlrs.individualBankDetailsFile = file;
-                //         cntlrs.individualBankDetailsFileBase64 = base64;
-                //         cntlrs.individualBankDetailsFile = File(file.path);
+                //         widget.cntlrs.individualBankDetailsFile = file;
+                //         widget.cntlrs.individualBankDetailsFileBase64 = base64;
+                //         widget.cntlrs.individualBankDetailsFile = File(file.path);
                 //       });
-                //       cntlrs.individualBankDetailsFileBase64 = base64;
+                //       widget.cntlrs.individualBankDetailsFileBase64 = base64;
                 //       successPrint(
-                //         "Individual Bank Image ${cntlrs.individualBankDetailsFileBase64}",
+                //         "Individual Bank Image ${widget.cntlrs.individualBankDetailsFileBase64}",
                 //       );
                 //     }
                 //   },

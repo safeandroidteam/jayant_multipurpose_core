@@ -6,11 +6,12 @@ import 'package:passbook_core_jayant/MainScreens/bloc/user/controllers/text_cont
 import 'package:passbook_core_jayant/MainScreens/new_user_screen.dart/individual/new_user_ind_3.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 import 'package:passbook_core_jayant/Util/custom_drop_down.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/custom_textfield.dart';
 
 class UserIndividualCreation2 extends StatelessWidget {
-  UserIndividualCreation2({super.key});
-  final cntlrs = Textcntlrs();
+  const UserIndividualCreation2({super.key, required this.cntlrs});
+  final Textcntlrs cntlrs;
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -150,15 +151,20 @@ class UserIndividualCreation2 extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: w * 0.02),
               child: LabelWithDropDownField(
+                isHintvalue: cntlrs.communicationAddress.isEmpty ? false : true,
+                labelText:
+                    cntlrs.communicationAddress.isEmpty
+                        ? "Select Communication Address"
+                        : cntlrs.communicationAddress,
+                hintText:
+                    cntlrs.communicationAddress.isEmpty
+                        ? "Select Communication Address"
+                        : cntlrs.communicationAddress,
                 textDropDownLabel: "Communication Address",
                 items: ["Permanant Adress", "Present Address"],
 
                 onChanged: (value) {
-                  if (value == "Yes") {
-                    cntlrs.isthisCommuniCationAddress = true;
-                  } else {
-                    cntlrs.isthisCommuniCationAddress = false;
-                  }
+                  cntlrs.communicationAddress = value;
                 },
               ),
             ),
@@ -327,11 +333,75 @@ class UserIndividualCreation2 extends StatelessWidget {
                     );
                     return;
                   }
+                  customPrint(
+                    "=== INDIVIDUAL USER CREATION DATA new user 2===",
+                  );
 
+                  customPrint("Selected Branch: ${cntlrs.selectedBranch}");
+                  customPrint(
+                    "Selected Customer Type: ${cntlrs.selectedCustomerType}",
+                  );
+                  customPrint(
+                    "Selected Account Type: ${cntlrs.selectedAccType}",
+                  );
+                  customPrint("Reference ID: ${cntlrs.newUserRefIDCntlr.text}");
+                  customPrint("Title: ${cntlrs.selectedIndividualTitle}");
+                  customPrint("First Name: ${cntlrs.firstNameCntlr.text}");
+                  customPrint("Middle Name: ${cntlrs.middleNameCntlr.text}");
+                  customPrint("Last Name: ${cntlrs.lastNameCntlr.text}");
+                  customPrint("Father Name: ${cntlrs.fatherNameCntlr.text}");
+                  customPrint("Mother Name: ${cntlrs.motherNameCntlr.text}");
+                  customPrint("Spouse Name: ${cntlrs.spouseNameCntlr.text}");
+                  customPrint("DOB: ${cntlrs.slectedCustomerDob.text}");
+                  customPrint("Gender: ${cntlrs.selectedIndividualGender}");
+                  customPrint(
+                    "Primary Mobile: ${cntlrs.customerPrimaryMobileNumberCntlr.text}",
+                  );
+                  customPrint(
+                    "Email: ${cntlrs.customerPrimaryEmailCntlr.text}",
+                  );
+                  customPrint(
+                    "Aadhaar Number: ${cntlrs.customerAadharNumberCntlr.text}",
+                  );
+                  customPrint(
+                    "PAN Number: ${cntlrs.customerPanNumberCntlr.text}",
+                  );
+                  customPrint(
+                    "Qualification: ${cntlrs.customerQualificationCntlr.text}",
+                  );
+                  customPrint(
+                    "CKYC Number: ${cntlrs.customerCkycNumberCntlr.text}",
+                  );
+
+                  customPrint("--- PERMANENT ADDRESS ---");
+                  customPrint(
+                    "House No/Name: ${cntlrs.permanentAddressHouseNoNameCntlr.text}",
+                  );
+                  customPrint(
+                    "Address Line 1: ${cntlrs.permanentAddress1Cntrl.text}",
+                  );
+                  customPrint(
+                    "Address Line 2: ${cntlrs.permanentAddress2Cntrl.text}",
+                  );
+                  customPrint(
+                    "City/Town/Village: ${cntlrs.permanent_City_town_village_cntlr.text}",
+                  );
+                  customPrint(
+                    "Pincode: ${cntlrs.permanent_post_office_pincode_cntlr.text}",
+                  );
+                  customPrint(
+                    "Country: ${cntlrs.permanent_country_cntlr.text}",
+                  );
+                  customPrint("State: ${cntlrs.permanent_states_cntlr.text}");
+                  customPrint(
+                    "District: ${cntlrs.permanent_district_cntlr.text}",
+                  );
+                  customPrint("=========================================");
                   // All validations passed
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => UserIndividualCreation3(),
+                      builder:
+                          (context) => UserIndividualCreation3(cntlrs: cntlrs),
                     ),
                   );
                 },

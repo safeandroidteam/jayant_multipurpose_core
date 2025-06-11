@@ -1,16 +1,20 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/fill_pickUp_response_modal.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/user_modal/response/branch_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/controllers/text_controllers.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
 import 'package:passbook_core_jayant/MainScreens/new_user_screen.dart/individual/new_user_ind_1.dart';
 import 'package:passbook_core_jayant/MainScreens/new_user_screen.dart/institution/new_user_institution.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
+import 'package:passbook_core_jayant/Util/custom_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Util/StaticValue.dart';
@@ -26,17 +30,20 @@ class NewUser extends StatefulWidget {
 class _NewUserState extends State<NewUser> {
   late UserBloc userBloc;
   final cntlrs = Textcntlrs();
+  String cmpCode = "";
+  Timer? _debounce;
   @override
   void initState() {
     super.initState();
     userBloc = UserBloc.get(context);
 
     SharedPreferences pref = StaticValues.sharedPreferences!;
-    String cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
-
+    cmpCode = pref.getString(StaticValues.cmpCodeKey) ?? "";
+    userBloc.add(ClearRefEvent());
     warningPrint("CmpCode $cmpCode");
+    userBloc.add(GetBranchesEvent());
     userBloc.add(
-      FillPickUpTypesEvent(cmpCode: int.parse(cmpCode), pickUpType: 6),
+      FillPickUpTypesEvent(cmpCode: int.tryParse(cmpCode) ?? 0, pickUpType: 6),
     );
   }
 
@@ -52,7 +59,9 @@ class _NewUserState extends State<NewUser> {
           title: Text("New User", style: TextStyle(color: Colors.white)),
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
         ),
         body: ListView(
@@ -67,11 +76,38 @@ class _NewUserState extends State<NewUser> {
               ),
             ),
             SizedBox(height: h * 0.03),
-            LabelWithDropDownField(
-              textDropDownLabel: "Branch",
-              items: ["A", "B"],
-              onChanged: (value) {
-                cntlrs.selectedBranch = value;
+            BlocConsumer<UserBloc, UserState>(
+              listener: (context, state) {},
+              buildWhen:
+                  (previous, current) =>
+                      previous.isPickUpBranchLoading !=
+                          current.isPickUpBranchLoading ||
+                      previous.branchList != current.branchList,
+
+              builder: (context, state) {
+                if (state.isPickUpBranchLoading) {
+                  return SizedBox(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else {
+                  final branhcList = state.branchList;
+                  // alertPrint("branch List =$branhcList");
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: w * 0.02),
+                    child: LabelWithDropDownField<BranchData>(
+                      textDropDownLabel: "Branch",
+                      hintText:
+                          cntlrs.selectedBranch.isEmpty
+                              ? "Select Branch"
+                              : cntlrs.selectedBranch,
+                      items: branhcList,
+                      itemAsString: (p0) => p0.brName,
+                      onChanged: (value) {
+                        cntlrs.selectedBranch = value.brCode.toString();
+                      },
+                    ),
+                  );
+                }
               },
             ),
 
@@ -80,14 +116,12 @@ class _NewUserState extends State<NewUser> {
               buildWhen:
                   (previous, current) =>
                       previous.isPickupCustomerTypeLoading !=
-                      current.isPickupCustomerTypeLoading,
-              listenWhen:
-                  (previous, current) =>
-                      previous.isPickupCustomerTypeLoading !=
-                      current.isPickupCustomerTypeLoading,
+                          current.isPickupCustomerTypeLoading ||
+                      previous.pickUpCustomerTypeList !=
+                          current.pickUpCustomerTypeList,
 
               builder: (context, state) {
-                warningPrint("state in customer type =$state");
+                //  warningPrint("state in customer type =$state");
                 if (state.isPickupCustomerTypeLoading) {
                   return SizedBox(
                     child: Center(child: CircularProgressIndicator()),
@@ -95,38 +129,145 @@ class _NewUserState extends State<NewUser> {
                 } else {
                   final customerTypeList = state.pickUpCustomerTypeList;
                   alertPrint("customer Type List =$customerTypeList");
-                  return LabelWithDropDownField<PickUpTypeResponseModal>(
-                    textDropDownLabel: "Customer Type",
-                    hintText:
-                        cntlrs.selectedCustomerType.isEmpty
-                            ? "Select Customer Type"
-                            : cntlrs.selectedCustomerType,
-                    items: customerTypeList,
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: w * 0.02),
+                    child: LabelWithDropDownField<PickUpTypeResponseModal>(
+                      textDropDownLabel: "Customer Type",
+                      hintText:
+                          cntlrs.selectedCustomerType.isEmpty
+                              ? "Select Customer Type"
+                              : cntlrs.selectedCustomerType,
+                      items: customerTypeList,
 
-                    itemAsString: (item) => item.pkcDescription,
-                    onChanged: (value) {
-                      cntlrs.selectedCustomerType = value.pkcDescription;
-                      successPrint("Selected customer type : $value");
-                      userBloc.add(selectCustomerTypeEvent(value.pkcCode));
-                    },
+                      itemAsString: (item) => item.pkcDescription,
+
+                      onChanged: (value) {
+                        cntlrs.selectedCustomerType = value.pkcCode.toString();
+                        successPrint(
+                          "Selected customer type : ${cntlrs.selectedCustomerType}",
+                        );
+                        userBloc.add(selectCustomerTypeEvent(value.pkcCode));
+                      },
+                    ),
                   );
                 }
               },
             ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: w * 0.02),
+              child: LabelWithDropDownField<String>(
+                textDropDownLabel: "Account Type",
+                hintText:
+                    cntlrs.selectedAccType.isEmpty
+                        ? "Select Account Type"
+                        : cntlrs.selectedAccType,
+                items: ["SB", "CA"],
+
+                onChanged: (value) {
+                  cntlrs.selectedAccType = value;
+                  successPrint("Selected acc type : $value");
+                },
+              ),
+            ),
+
+            LabelCustomTextField(
+              hintText: "Enter Ref ID",
+              textFieldLabel: "Ref ID",
+              inputType: TextInputType.number,
+              controller: cntlrs.newUserRefIDCntlr,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              onchanged: (value) {
+                if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+                _debounce = Timer(const Duration(milliseconds: 500), () {
+                  userBloc.add(ValidateRefIDEvent(cmpCode, value));
+                });
+              },
+            ),
+            SizedBox(height: h * 0.02),
+            BlocConsumer<UserBloc, UserState>(
+              listener: (context, state) {
+                if (state.validateRefidResponse != null &&
+                    state.validateRefidResponse!.proceedStatus == "N") {
+                  GlobalWidgets().showSnackBar(
+                    context,
+                    state.validateRefidResponse!.proceedMessage,
+                  );
+                }
+              },
+
+              buildWhen:
+                  (previous, current) =>
+                      previous.validateRefIDLoading !=
+                          current.validateRefIDLoading ||
+                      previous.validateRefidResponse !=
+                          current.validateRefidResponse,
+              builder: (context, state) {
+                if (state.validateRefIDLoading) {
+                  return SizedBox(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (state.validateRefidResponse != null &&
+                    state.validateRefidResponse!.data.isNotEmpty) {
+                  return Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(w * 0.02),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Referred By",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                ": ",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              state.validateRefidResponse!.data.first.custName,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              },
+            ),
+
             SizedBox(height: h * 0.02),
             BlocBuilder<UserBloc, UserState>(
               buildWhen:
                   (previous, current) =>
                       previous.selectedCustomerTypeCode !=
-                      current.selectedCustomerTypeCode,
+                          current.selectedCustomerTypeCode ||
+                      previous.referenceID != current.referenceID,
 
               builder: (context, state) {
                 return CustomRaisedButton(
                   buttonText: "Continue",
                   onPressed: () {
-                    customPrint(
-                      "selected customer Type =${cntlrs.selectedCustomerType}",
-                    );
                     if (cntlrs.selectedBranch.isEmpty &&
                         cntlrs.selectedCustomerType.isEmpty) {
                       GlobalWidgets().showSnackBar(
@@ -140,15 +281,24 @@ class _NewUserState extends State<NewUser> {
                         context,
                         "Select Customer Type",
                       );
+                    } else if (cntlrs.newUserRefIDCntlr.text.isEmpty ||
+                        (state.referenceID?.isEmpty ?? true)) {
+                      alertPrint("state.referenceid=${state.referenceID}");
+                      GlobalWidgets().showSnackBar(
+                        context,
+                        "Enter a Valid Ref ID",
+                      );
                     } else {
-                      if (cntlrs.selectedCustomerType == "INDIVIDUAL") {
+                      if (cntlrs.selectedCustomerType == "46") {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => UserIndividualCreation(),
+                            builder:
+                                (context) =>
+                                    UserIndividualCreation(cntlrs: cntlrs),
                           ),
                         );
                       }
-                      if (cntlrs.selectedCustomerType == "INSTITUTION") {
+                      if (cntlrs.selectedCustomerType == "11473") {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => UserInstitutionCreation(),

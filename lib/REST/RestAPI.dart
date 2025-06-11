@@ -238,9 +238,14 @@ class APis {
       "$_superLink/Fill_TransferTypeDetails";
   //own Bank transfer
   static String ownBankToAccNo = "$_superLink/Fetch_OwnAccountNumber";
-  static String deleteBeneficiaryData= "$_superLink/DeleteBeneficiary";
+  static String deleteBeneficiaryData = "$_superLink/DeleteBeneficiary";
   //IFSC to get Bank Details
-  static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
+  static String fetchBeneficiaryBankDetails =
+      "$_superLink/Fetch_BenificiaryBankDetails";
+  static String getBranches = "$_superLink/Fill_BranchDetails";
+  static String validateRefID = "$_superLink/ValidateReferalID";
+  static String individualUserCreation =
+      "$_superLink/InsertUpdateCustomerOnBoarding";
 
   ///OLD
   static String generateRefID(String key) =>

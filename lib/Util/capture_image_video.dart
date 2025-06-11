@@ -13,11 +13,26 @@ class CaptureService {
   final ImagePicker _picker = ImagePicker();
 
   Future<File?> captureImage() async {
+    final status = await Permission.camera.request();
     alertPrint("Capturing Image");
-    final XFile? file = await _picker.pickImage(source: ImageSource.camera);
-    if (file == null) return null;
-    warningPrint("Captured Image Path: ${file.path}");
-    return File(file.path);
+
+    if (status.isGranted) {
+      final XFile? file = await _picker.pickImage(source: ImageSource.camera);
+      if (file == null) return null;
+      warningPrint("Captured Image Path: ${file.path}");
+      return File(file.path);
+    } else if (status.isDenied) {
+      
+      warningPrint("Camera permission denied by user.");
+      // Optionally show a dialog/snackbar here
+    } else if (status.isPermanentlyDenied) {
+      warningPrint(
+        "Camera permission permanently denied. Ask user to open settings.",
+      );
+      await openAppSettings(); // opens the app settings
+    }
+
+    return null;
   }
 
   Future<File?> captureVideo() async {
