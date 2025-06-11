@@ -199,50 +199,67 @@ class Textcntlrs {
     communicationAddress = "";
   }
 
-  void dispose() {
-    ///Individual
-    firstNameCntlr.dispose();
-    middleNameCntlr.dispose();
-    lastNameCntlr.dispose();
-    fatherNameCntlr.dispose();
-    motherNameCntlr.dispose();
-    spouseNameCntlr.dispose();
-    guardian.dispose();
-    customerPrimaryMobileNumberCntlr.dispose();
-    secondaryMobileNumberCntlr.dispose();
-    customerPrimaryEmailCntlr.dispose();
-    customerAadharNumberCntlr.dispose();
-    customerPanNumberCntlr.dispose();
-    customerQualificationCntlr.dispose();
-    customerCkycNumberCntlr.dispose();
-    permanentAddress.dispose();
-    permanentAddress1.dispose();
-    permanentAddress2.dispose();
-    permanent_City_town_village.dispose();
-    permanent_post_office_pincode.dispose();
-    permanent_country.dispose();
-    permanent_states_cntlr.dispose();
-    permanent_district.dispose();
+  // void dispose() {
+  //   ///Individual
+  //   firstNameCntlr.dispose();
+  //   middleNameCntlr.dispose();
+  //   lastNameCntlr.dispose();
+  //   fatherNameCntlr.dispose();
+  //   motherNameCntlr.dispose();
+  //   spouseNameCntlr.dispose();
+  //   guardian.dispose();
+  //   customerPrimaryMobileNumberCntlr.dispose();
+  //   secondaryMobileNumberCntlr.dispose();
+  //   customerPrimaryEmailCntlr.dispose();
+  //   customerAadharNumberCntlr.dispose();
+  //   customerPanNumberCntlr.dispose();
+  //   customerQualificationCntlr.dispose();
+  //   customerCkycNumberCntlr.dispose();
+  //   permanentAddress.dispose();
+  //   permanentAddress1.dispose();
+  //   permanentAddress2.dispose();
+  //   permanent_City_town_village.dispose();
+  //   permanent_post_office_pincode.dispose();
+  //   permanent_country.dispose();
+  //   permanent_states_cntlr.dispose();
+  //   permanent_district.dispose();
+  //
+  //   presentAddress.dispose();
+  //   presentAddressHouseNoNameCntlr.dispose();
+  //   presentAddress1Cntrl.dispose();
+  //   presentAddress2Cntrl.dispose();
+  //   present_City_town_village_cntlr.dispose();
+  //   present_post_office_pincode_cntlr.dispose();
+  //   present_country_cntlr.dispose();
+  //   present_states_cntlr.dispose();
+  //   present_district_cntlr.dispose();
+  //
+  //   ///Institution
+  //   firmName.dispose();
+  //   firmReg_No.dispose();
+  //   turnOver.dispose();
+  //   for (var map in proprietorControllers) {
+  //     for (var controller in map.values) {
+  //       controller.dispose();
+  //     }
+  //   }
+  // }
 
-    presentAddress.dispose();
-    presentAddressHouseNoNameCntlr.dispose();
-    presentAddress1Cntrl.dispose();
-    presentAddress2Cntrl.dispose();
-    present_City_town_village_cntlr.dispose();
-    present_post_office_pincode_cntlr.dispose();
-    present_country_cntlr.dispose();
-    present_states_cntlr.dispose();
-    present_district_cntlr.dispose();
-
-    ///Institution
+  void institutionDispose() {
     firmName.dispose();
     firmReg_No.dispose();
+    institutionCommunicationAddress = '';
+    institutionPrimaryEmail.dispose();
+    institutionMobileNo.dispose();
+    institutionFirmGstin.dispose();
+    institutionFirmStartDate.dispose();
+    institutionFirmPlace.dispose();
     turnOver.dispose();
-    for (var map in proprietorControllers) {
-      for (var controller in map.values) {
-        controller.dispose();
-      }
-    }
+    institutionFirmPanCard.dispose();
+    institutionPanCardImageBase64 = '';
+    proprietors.clear();
+    proprietorControllers.clear();
+
     institutionPermanentAddress1.dispose();
     institutionPermanentAddress2.dispose();
     institutionPermanentAddress3.dispose();
@@ -263,7 +280,6 @@ class Textcntlrs {
     institutionCurrentCountry.dispose();
     institutionCurrentPinCode.dispose();
   }
-
   //institution
 
   final TextEditingController firmName = TextEditingController();
@@ -278,8 +294,12 @@ class Textcntlrs {
   final TextEditingController institutionFirmPanCard = TextEditingController();
 
   File? institutionPanCardImage;
+  File? institutionAadhaarFrontImage;
+  File? institutionAadhaarBackImage;
 
   String? institutionPanCardImageBase64;
+  String? institutionAadhaarFrontImageBase64;
+  String? institutionAadhaarBackImageBase64;
 
   /// Proprietor Details
   List<ProprietorModal> proprietors = [ProprietorModal()];

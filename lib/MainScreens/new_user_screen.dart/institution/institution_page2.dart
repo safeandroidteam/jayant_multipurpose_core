@@ -16,9 +16,61 @@ class InstitutionPage2 extends StatefulWidget {
   State<InstitutionPage2> createState() => _InstitutionPage2State();
 }
 
-final contrls = Textcntlrs();
-
 class _InstitutionPage2State extends State<InstitutionPage2> {
+  final cntlrs = Textcntlrs();
+
+  @override
+  void initState() {
+    successPrint('''
+                          
+                          BR Code - ${cntlrs.selectedBranch}
+                          Customer Type - ${cntlrs.selectedCustomerType}
+                          Account Type - ${cntlrs.selectedAccType}
+                          Reference ID - ${cntlrs.newUserRefIDCntlr.text}
+
+                          
+                      ------FIRM DETAILS------
+                    Firm Name: ${cntlrs.firmName.text}  
+                  Firm Reg No: ${cntlrs.firmReg_No.text}  
+                  Firm Primary Email: ${cntlrs.institutionPrimaryEmail.text} 
+                  Mobile No: ${cntlrs.institutionMobileNo.text}   
+                  Firm GSTIN: ${cntlrs.institutionFirmGstin.text}  
+                  Firm Establishment Date: ${cntlrs.institutionFirmStartDate.text}  
+                  Firm Place: ${cntlrs.institutionFirmPlace.text}  
+                  Turn Over: ${cntlrs.turnOver.text}  
+                  Firm PAN Card Number: ${cntlrs.institutionFirmPanCard.text}  
+                  Uploaded PAN Card Image: ${cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
+                  Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}    
+                  ----------------------------  
+                     
+                
+                      
+                  --------- Permanent Address ---------
+                  Address 1: ${cntlrs.institutionPermanentAddress1.text}
+                  Address 2: ${cntlrs.institutionPermanentAddress2.text}
+                  Address 3: ${cntlrs.institutionPermanentAddress3.text}
+                  City/Town/Village: ${cntlrs.institutionPermanentCity.text}
+                  Taluk: ${cntlrs.institutionPermanentTaluk.text}
+                  District: ${cntlrs.institutionPermanentDistrict.text}
+                  State: ${cntlrs.institutionPermanentState.text}
+                  Country: ${cntlrs.institutionPermanentCountry.text}
+                  Pincode: ${cntlrs.institutionPermanentPinCode.text}
+                  
+                  --------- Current Address ---------
+                  Address 1: ${cntlrs.institutionCurrentAddress1.text}
+                  Address 2: ${cntlrs.institutionCurrentAddress2.text}
+                  Address 3: ${cntlrs.institutionCurrentAddress3.text}
+                  City/Town/Village: ${cntlrs.institutionCurrentCity.text}
+                  Taluk: ${cntlrs.institutionCurrentTaluk.text}
+                  District: ${cntlrs.institutionCurrentDistrict.text}
+                  State: ${cntlrs.institutionCurrentState.text}
+                  Country: ${cntlrs.institutionCurrentCountry.text}
+                  PinCode: ${cntlrs.institutionCurrentPinCode.text}
+                  ''');
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
@@ -26,8 +78,8 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
 
     /// Proprietor Details Section Builder
     Widget buildProprietorSection(int index) {
-      final modal = contrls.proprietors[index];
-      final controllerSet = contrls.proprietorControllers[index];
+      final modal = cntlrs.proprietors[index];
+      final controllerSet = cntlrs.proprietorControllers[index];
 
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -54,8 +106,8 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                       icon: const Icon(Icons.remove_circle, color: Colors.red),
                       onPressed: () {
                         setState(() {
-                          contrls.proprietors.removeAt(index);
-                          contrls.proprietorControllers.removeAt(index);
+                          cntlrs.proprietors.removeAt(index);
+                          cntlrs.proprietorControllers.removeAt(index);
                         });
                       },
                     ),
@@ -123,8 +175,8 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                     icon: const Icon(Icons.add_circle, color: Colors.green),
                     onPressed: () {
                       setState(() {
-                        contrls.proprietors.add(ProprietorModal());
-                        contrls.proprietorControllers.add({
+                        cntlrs.proprietors.add(ProprietorModal());
+                        cntlrs.proprietorControllers.add({
                           'name': TextEditingController(),
                           'address': TextEditingController(),
                           'panCardNo': TextEditingController(),
@@ -142,7 +194,7 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
               const Divider(thickness: 1.2),
               SizedBox(height: h * 0.02),
               ...List.generate(
-                contrls.proprietors.length,
+                cntlrs.proprietors.length,
                 buildProprietorSection,
               ),
               const SizedBox(height: 20),
@@ -153,7 +205,7 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                   onPressed: () {
                     bool isValid = true;
 
-                    if (contrls.proprietors.isEmpty) {
+                    if (cntlrs.proprietors.isEmpty) {
                       GlobalWidgets().showSnackBar(
                         context,
                         "Please add at least one proprietor.",
@@ -161,9 +213,9 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                       return;
                     }
 
-                    for (int i = 0; i < contrls.proprietors.length; i++) {
-                      final controllerSet = contrls.proprietorControllers[i];
-                      final model = contrls.proprietors[i];
+                    for (int i = 0; i < cntlrs.proprietors.length; i++) {
+                      final controllerSet = cntlrs.proprietorControllers[i];
+                      final model = cntlrs.proprietors[i];
 
                       String name = controllerSet['name']?.text.trim() ?? '';
                       String address =
@@ -203,7 +255,7 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                       MaterialPageRoute(
                         builder:
                             (context) => InstitutionPage3(
-                              proprietors: contrls.proprietors,
+                              proprietors: cntlrs.proprietors,
                             ),
                       ),
                     );

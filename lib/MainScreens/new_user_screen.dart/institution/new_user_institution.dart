@@ -413,8 +413,7 @@ Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}
 ----------------------------  
 ''');
 
-                  Navigator.push(
-                    context,
+                  Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => InstitutionPage2()),
                   );
                 },

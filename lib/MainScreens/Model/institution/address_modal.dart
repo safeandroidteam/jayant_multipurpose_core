@@ -1,6 +1,7 @@
 import 'package:xml/xml.dart' as xml;
 
 class InstitutionAddressModal {
+  final String addType;
   final String add1;
   final String add2;
   final String add3;
@@ -12,6 +13,7 @@ class InstitutionAddressModal {
   final String pinCode;
 
   InstitutionAddressModal(
+    this.addType,
     this.add1,
     this.add2,
     this.add3,

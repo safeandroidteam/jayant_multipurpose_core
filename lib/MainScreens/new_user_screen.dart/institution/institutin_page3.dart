@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/institution/address_modal.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/institution/institution_request_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,7 +14,6 @@ import '../../../Util/custom_print.dart';
 import '../../../Util/custom_textfield.dart';
 import '../../Model/institution/proprietor_modal.dart';
 import '../../bloc/user/controllers/text_controllers.dart';
-import 'new_user_institution.dart';
 
 class InstitutionPage3 extends StatefulWidget {
   final List<ProprietorModal> proprietors;
@@ -39,6 +41,52 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
     userBloc.add(
       FillPickUpTypesEvent(cmpCode: int.parse(cmpCode), pickUpType: 8),
     );
+    successPrint('''
+                          
+                          BR Code - ${cntlrs.selectedBranch}
+                          Customer Type - ${cntlrs.selectedCustomerType}
+                          Account Type - ${cntlrs.selectedAccType}
+                          Reference ID - ${cntlrs.newUserRefIDCntlr.text}
+
+                          
+                      ------FIRM DETAILS------
+                    Firm Name: ${cntlrs.firmName.text}  
+                  Firm Reg No: ${cntlrs.firmReg_No.text}  
+                  Firm Primary Email: ${cntlrs.institutionPrimaryEmail.text} 
+                  Mobile No: ${cntlrs.institutionMobileNo.text}   
+                  Firm GSTIN: ${cntlrs.institutionFirmGstin.text}  
+                  Firm Establishment Date: ${cntlrs.institutionFirmStartDate.text}  
+                  Firm Place: ${cntlrs.institutionFirmPlace.text}  
+                  Turn Over: ${cntlrs.turnOver.text}  
+                  Firm PAN Card Number: ${cntlrs.institutionFirmPanCard.text}  
+                  Uploaded PAN Card Image: ${cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
+                  Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}    
+                  ----------------------------  
+                     
+                  "✅ Saved Proprietor ${widget.proprietors}
+                      
+                  --------- Permanent Address ---------
+                  Address 1: ${cntlrs.institutionPermanentAddress1.text}
+                  Address 2: ${cntlrs.institutionPermanentAddress2.text}
+                  Address 3: ${cntlrs.institutionPermanentAddress3.text}
+                  City/Town/Village: ${cntlrs.institutionPermanentCity.text}
+                  Taluk: ${cntlrs.institutionPermanentTaluk.text}
+                  District: ${cntlrs.institutionPermanentDistrict.text}
+                  State: ${cntlrs.institutionPermanentState.text}
+                  Country: ${cntlrs.institutionPermanentCountry.text}
+                  Pincode: ${cntlrs.institutionPermanentPinCode.text}
+                  
+                  --------- Current Address ---------
+                  Address 1: ${cntlrs.institutionCurrentAddress1.text}
+                  Address 2: ${cntlrs.institutionCurrentAddress2.text}
+                  Address 3: ${cntlrs.institutionCurrentAddress3.text}
+                  City/Town/Village: ${cntlrs.institutionCurrentCity.text}
+                  Taluk: ${cntlrs.institutionCurrentTaluk.text}
+                  District: ${cntlrs.institutionCurrentDistrict.text}
+                  State: ${cntlrs.institutionCurrentState.text}
+                  Country: ${cntlrs.institutionCurrentCountry.text}
+                  PinCode: ${cntlrs.institutionCurrentPinCode.text}
+                  ''');
   }
 
   bool isSameAsPermanent = false;
@@ -309,92 +357,205 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
 
               SizedBox(
                 width: w,
-                child: CustomRaisedButton(
-                  buttonText: "Continue",
-                  onPressed: () {
-                    bool isEmpty(String val) => val.trim().isEmpty;
-                    if (!isAccepted) {
+                child: BlocConsumer<UserBloc, UserState>(
+                  bloc: userBloc,
+                  listener: (context, state) {
+                    if (state.institutionCreationError != null &&
+                        state.institutionCreationError!.isEmpty) {
+                      errorPrint(
+                        "Institution Creation Error ${state.institutionCreationError}",
+                      );
                       GlobalWidgets().showSnackBar(
                         context,
-                        "Please accept terms to continue.",
+                        state.institutionCreationError!,
                       );
                       return;
                     }
-
-                    if (isEmpty(cntlrs.institutionPermanentAddress1.text) ||
-                        isEmpty(cntlrs.institutionPermanentCity.text) ||
-                        isEmpty(cntlrs.institutionPermanentTaluk.text) ||
-                        isEmpty(cntlrs.institutionPermanentDistrict.text) ||
-                        isEmpty(cntlrs.institutionPermanentState.text) ||
-                        isEmpty(cntlrs.institutionPermanentCountry.text) ||
-                        isEmpty(cntlrs.institutionPermanentPinCode.text)) {
+                    if (state.institutionResponse?.proceedMessage == "Y") {
+                      successPrint(
+                        "Institution Created Successfully ${state.institutionResponse?.proceedMessage}",
+                      );
+                      cntlrs.institutionDispose();
                       GlobalWidgets().showSnackBar(
                         context,
-                        "Please fill all Permanent Address fields",
+                        "User created successfully",
                       );
-                      return;
                     }
+                  },
+                  buildWhen:
+                      (previous, current) =>
+                          previous.isInstitutionCreationLoading !=
+                          current.isInstitutionCreationLoading,
+                  builder: (context, state) {
+                    if (state.isInstitutionCreationLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      return CustomRaisedButton(
+                        buttonText: "Continue",
+                        onPressed: () {
+                          bool isEmpty(String val) => val.trim().isEmpty;
+                          if (!isAccepted) {
+                            GlobalWidgets().showSnackBar(
+                              context,
+                              "Please accept terms to continue.",
+                            );
+                            return;
+                          }
 
-                    if (!isSameAsPermanent &&
-                        (isEmpty(cntlrs.institutionCurrentAddress1.text) ||
-                            isEmpty(cntlrs.institutionCurrentCity.text) ||
-                            isEmpty(cntlrs.institutionCurrentTaluk.text) ||
-                            isEmpty(cntlrs.institutionCurrentDistrict.text) ||
-                            isEmpty(cntlrs.institutionCurrentState.text) ||
-                            isEmpty(cntlrs.institutionCurrentCountry.text) ||
-                            isEmpty(cntlrs.institutionCurrentPinCode.text))) {
-                      GlobalWidgets().showSnackBar(
-                        context,
-                        "Please fill all Current Address fields",
+                          if (isEmpty(
+                                cntlrs.institutionPermanentAddress1.text,
+                              ) ||
+                              isEmpty(cntlrs.institutionPermanentCity.text) ||
+                              isEmpty(cntlrs.institutionPermanentTaluk.text) ||
+                              isEmpty(
+                                cntlrs.institutionPermanentDistrict.text,
+                              ) ||
+                              isEmpty(cntlrs.institutionPermanentState.text) ||
+                              isEmpty(
+                                cntlrs.institutionPermanentCountry.text,
+                              ) ||
+                              isEmpty(
+                                cntlrs.institutionPermanentPinCode.text,
+                              )) {
+                            GlobalWidgets().showSnackBar(
+                              context,
+                              "Please fill all Permanent Address fields",
+                            );
+                            return;
+                          }
+
+                          if (!isSameAsPermanent &&
+                              (isEmpty(
+                                    cntlrs.institutionCurrentAddress1.text,
+                                  ) ||
+                                  isEmpty(cntlrs.institutionCurrentCity.text) ||
+                                  isEmpty(
+                                    cntlrs.institutionCurrentTaluk.text,
+                                  ) ||
+                                  isEmpty(
+                                    cntlrs.institutionCurrentDistrict.text,
+                                  ) ||
+                                  isEmpty(
+                                    cntlrs.institutionCurrentState.text,
+                                  ) ||
+                                  isEmpty(
+                                    cntlrs.institutionCurrentCountry.text,
+                                  ) ||
+                                  isEmpty(
+                                    cntlrs.institutionCurrentPinCode.text,
+                                  ))) {
+                            GlobalWidgets().showSnackBar(
+                              context,
+                              "Please fill all Current Address fields",
+                            );
+                            return;
+                          }
+
+                          userBloc.add(
+                            InstitutionUserCreationEvent(
+                              institutionUiModal: InstitutionUiModal(
+                                cmpCode,
+                                cntlrs.selectedBranch,
+                                cntlrs.selectedCustomerType,
+                                cntlrs.selectedAccType,
+                                cntlrs.newUserRefIDCntlr.text,
+                                cntlrs.firmName.text,
+                                cntlrs.firmReg_No.text,
+                                '0',
+                                cntlrs.institutionFirmStartDate.text,
+                                cntlrs.institutionFirmPlace.text,
+                                cntlrs.institutionFirmPanCard.text,
+                                cntlrs.institutionPrimaryEmail.text,
+                                cntlrs.institutionFirmGstin.text,
+                                InstitutionAddressModal(
+                                  "Present",
+                                  cntlrs.institutionCurrentAddress1.text,
+                                  cntlrs.institutionCurrentAddress2.text,
+                                  cntlrs.institutionCurrentAddress3.text,
+                                  cntlrs.institutionCurrentCity.text,
+                                  cntlrs.institutionCurrentTaluk.text,
+                                  cntlrs.institutionCurrentDistrict.text,
+                                  cntlrs.institutionCurrentState.text,
+                                  cntlrs.institutionCurrentCountry.text,
+                                  cntlrs.institutionCurrentPinCode.text,
+                                ),
+                                InstitutionAddressModal(
+                                  "Permanent",
+                                  cntlrs.institutionPermanentAddress1.text,
+                                  cntlrs.institutionPermanentAddress2.text,
+                                  cntlrs.institutionPermanentAddress3.text,
+                                  cntlrs.institutionPermanentCity.text,
+                                  cntlrs.institutionPermanentTaluk.text,
+                                  cntlrs.institutionPermanentDistrict.text,
+                                  cntlrs.institutionPermanentState.text,
+                                  cntlrs.institutionPermanentCountry.text,
+                                  cntlrs.institutionPermanentPinCode.text,
+                                ),
+                                cntlrs.institutionCommunicationAddress,
+                                cntlrs.proprietors,
+                                cntlrs.institutionAadhaarFrontImageBase64 ?? "",
+                                cntlrs.institutionAadhaarBackImageBase64 ?? "",
+                                cntlrs.institutionPanCardImageBase64 ?? "",
+                              ),
+                            ),
+                          );
+
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder:
+                          //         (context) => const UserInstitutionCreation(),
+                          //   ),
+                          // );
+                          successPrint('''
+                          
+                          BR Code - ${cntlrs.selectedBranch}
+                          Customer Type - ${cntlrs.selectedCustomerType}
+                          Account Type - ${cntlrs.selectedAccType}
+                          Reference ID - ${cntlrs.newUserRefIDCntlr.text}
+
+                          
+                      ------FIRM DETAILS------
+                    Firm Name: ${cntlrs.firmName.text}  
+                  Firm Reg No: ${cntlrs.firmReg_No.text}  
+                  Firm Primary Email: ${cntlrs.institutionPrimaryEmail.text} 
+                  Mobile No: ${cntlrs.institutionMobileNo.text}   
+                  Firm GSTIN: ${cntlrs.institutionFirmGstin.text}  
+                  Firm Establishment Date: ${cntlrs.institutionFirmStartDate.text}  
+                  Firm Place: ${cntlrs.institutionFirmPlace.text}  
+                  Turn Over: ${cntlrs.turnOver.text}  
+                  Firm PAN Card Number: ${cntlrs.institutionFirmPanCard.text}  
+                  Uploaded PAN Card Image: ${cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
+                  Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}    
+                  ----------------------------  
+                     
+                  "✅ Saved Proprietor ${widget.proprietors}
+                      
+                  --------- Permanent Address ---------
+                  Address 1: ${cntlrs.institutionPermanentAddress1.text}
+                  Address 2: ${cntlrs.institutionPermanentAddress2.text}
+                  Address 3: ${cntlrs.institutionPermanentAddress3.text}
+                  City/Town/Village: ${cntlrs.institutionPermanentCity.text}
+                  Taluk: ${cntlrs.institutionPermanentTaluk.text}
+                  District: ${cntlrs.institutionPermanentDistrict.text}
+                  State: ${cntlrs.institutionPermanentState.text}
+                  Country: ${cntlrs.institutionPermanentCountry.text}
+                  Pincode: ${cntlrs.institutionPermanentPinCode.text}
+                  
+                  --------- Current Address ---------
+                  Address 1: ${cntlrs.institutionCurrentAddress1.text}
+                  Address 2: ${cntlrs.institutionCurrentAddress2.text}
+                  Address 3: ${cntlrs.institutionCurrentAddress3.text}
+                  City/Town/Village: ${cntlrs.institutionCurrentCity.text}
+                  Taluk: ${cntlrs.institutionCurrentTaluk.text}
+                  District: ${cntlrs.institutionCurrentDistrict.text}
+                  State: ${cntlrs.institutionCurrentState.text}
+                  Country: ${cntlrs.institutionCurrentCountry.text}
+                  PinCode: ${cntlrs.institutionCurrentPinCode.text}
+                  ''');
+                        },
                       );
-                      return;
                     }
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const UserInstitutionCreation(),
-                      ),
-                    );
-                    successPrint('''
-                    ------FIRM DETAILS------
-                  Firm Name: ${cntlrs.firmName.text}  
-Firm Reg No: ${cntlrs.firmReg_No.text}  
-Firm Primary Email: ${cntlrs.institutionPrimaryEmail.text} 
-Mobile No: ${cntlrs.institutionMobileNo.text}   
-Firm GSTIN: ${cntlrs.institutionFirmGstin.text}  
-Firm Establishment Date: ${cntlrs.institutionFirmStartDate.text}  
-Firm Place: ${cntlrs.institutionFirmPlace.text}  
-Turn Over: ${cntlrs.turnOver.text}  
-Firm PAN Card Number: ${cntlrs.institutionFirmPanCard.text}  
-Uploaded PAN Card Image: ${cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
-Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}    
-----------------------------  
-                   
-"✅ Saved Proprietor ${widget.proprietors}
-                    
---------- Permanent Address ---------
-Address 1: ${cntlrs.institutionPermanentAddress1.text}
-Address 2: ${cntlrs.institutionPermanentAddress2.text}
-Address 3: ${cntlrs.institutionPermanentAddress3.text}
-City/Town/Village: ${cntlrs.institutionPermanentCity.text}
-Taluk: ${cntlrs.institutionPermanentTaluk.text}
-District: ${cntlrs.institutionPermanentDistrict.text}
-State: ${cntlrs.institutionPermanentState.text}
-Country: ${cntlrs.institutionPermanentCountry.text}
-Pincode: ${cntlrs.institutionPermanentPinCode.text}
-
---------- Current Address ---------
-Address 1: ${cntlrs.institutionCurrentAddress1.text}
-Address 2: ${cntlrs.institutionCurrentAddress2.text}
-Address 3: ${cntlrs.institutionCurrentAddress3.text}
-City/Town/Village: ${cntlrs.institutionCurrentCity.text}
-Taluk: ${cntlrs.institutionCurrentTaluk.text}
-District: ${cntlrs.institutionCurrentDistrict.text}
-State: ${cntlrs.institutionCurrentState.text}
-Country: ${cntlrs.institutionCurrentCountry.text}
-PinCode: ${cntlrs.institutionCurrentPinCode.text}
-''');
                   },
                 ),
               ),

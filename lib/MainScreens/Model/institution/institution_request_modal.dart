@@ -45,4 +45,32 @@ class InstitutionUiModal {
     this.aadhaarCardBack,
     this.panCardFront,
   );
+
+  // Method to convert an InstitutionUiModal object to a JSON map
+  Map<String, dynamic> toJson() {
+    return {
+      'cmpCode': cmpCode,
+      'brCode': brCode,
+      'custTypeCode': custTypeCode,
+      'accountType': accountType,
+      'refID': refID,
+      'firmName': firmName,
+      'firmRegNo': firmRegNo,
+      'firmRegType': firmRegType,
+      'firmStartDate': firmStartDate,
+      'firmPlaceINC': firmPlaceINC,
+      'firmPanNo': firmPanNo,
+      'firmPrimaryEmail': firmPrimaryEmail,
+      'firmGstin': firmGstin,
+      // Call toJson() on nested InstitutionAddressModal objects
+      'firmPresentAdd': firmPresentAdd,
+      'firmPermanentAdd': firmPermanentAdd,
+      'communicationAddress': communicationAddress,
+      // Map the list of ProprietorModal objects to a list of JSON maps
+      'proprietors': proprietors,
+      'aadhaarCardFront': aadhaarCardFront,
+      'aadhaarCardBack': aadhaarCardBack,
+      'panCardFront': panCardFront,
+    };
+  }
 }
