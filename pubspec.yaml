@@ -76,6 +76,7 @@ dependencies:
   freezed_annotation: ^2.4.4
   freezed: ^2.5.7
   json_annotation: ^4.9.0
+  xml: ^6.5.0
   
 dev_dependencies:
   flutter_test:

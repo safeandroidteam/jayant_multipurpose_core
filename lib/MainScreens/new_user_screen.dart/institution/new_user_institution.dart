@@ -30,8 +30,6 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
-    final userBloc = UserBloc.get(context);
-
     Widget buildProprietorSection(int index) {
       final modal = proprietors[index];
 

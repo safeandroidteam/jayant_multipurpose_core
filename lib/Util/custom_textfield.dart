@@ -10,6 +10,7 @@ class LabelCustomTextField extends StatefulWidget {
     this.hintstyle,
     this.onPressed,
     this.onchanged,
+    this.onFieldSubmit,
     this.passwordfield,
     this.showSuffixicon,
     this.controller,
@@ -41,6 +42,7 @@ class LabelCustomTextField extends StatefulWidget {
   final Function? onPressed;
   final Function? onTap;
   final Function? onchanged;
+  final Function? onFieldSubmit;
   final bool? passwordfield;
   final Widget? suffix;
   final Function(String)? validator;
@@ -140,6 +142,11 @@ class _LabelCustomTextField extends State<LabelCustomTextField> {
             onChanged: (value) {
               if (widget.onchanged != null) {
                 widget.onchanged!(value);
+              }
+            },
+            onFieldSubmitted: (value) {
+              if (widget.onFieldSubmit != null) {
+                widget.onFieldSubmit!(value);
               }
             },
             controller: widget.controller,

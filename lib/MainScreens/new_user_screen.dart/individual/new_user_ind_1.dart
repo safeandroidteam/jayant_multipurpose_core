@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/fill_pickUp_response_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/controllers/text_controllers.dart';
@@ -15,8 +14,8 @@ import 'package:passbook_core_jayant/Util/custom_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserIndividualCreation extends StatefulWidget {
-  const UserIndividualCreation({super.key});
-
+  const UserIndividualCreation({super.key, required this.cntlrs});
+  final Textcntlrs cntlrs;
   @override
   State<UserIndividualCreation> createState() => _UserIndividualCreationState();
 }
@@ -24,7 +23,7 @@ class UserIndividualCreation extends StatefulWidget {
 class _UserIndividualCreationState extends State<UserIndividualCreation> {
   String? cmpCode;
   late UserBloc userBloc;
-  final cntlrs = Textcntlrs();
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +55,11 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
           ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              userBloc.add(ClearDobEvent());
+              widget.cntlrs.individualClear();
+              Navigator.of(context).pop();
+            },
           ),
         ),
         body: SingleChildScrollView(
@@ -84,15 +87,24 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                         child: LabelWithDropDownField<PickUpTypeResponseModal>(
                           textDropDownLabel: "Title",
                           items: state.pickUpTitileList,
-                          hintText:
-                              cntlrs.selectedIndividualTitle.isEmpty
+                          hintText: "Select Title",
+                          isHintvalue:
+                              widget.cntlrs.selectedIndividualTitle.isEmpty
+                                  ? false
+                                  : true,
+                          labelText:
+                              widget.cntlrs.selectedIndividualTitle.isEmpty
                                   ? "Select Title"
-                                  : cntlrs.selectedIndividualTitle,
+                                  : widget.cntlrs.selectedIndividualTitle,
+
+                          showSelectedItems: true,
+
                           itemAsString: (e) => e.pkcDescription,
                           onChanged: (val) {
-                            cntlrs.selectedIndividualTitle = val.pkcDescription;
+                            widget.cntlrs.selectedIndividualTitle =
+                                val.pkcCode.toString();
                             successPrint(
-                              "Title Value Selected ${cntlrs.selectedIndividualTitle}",
+                              "Title Value Selected ${widget.cntlrs.selectedIndividualTitle}",
                             );
                             successPrint("Title Value Selected $val");
                           },
@@ -105,40 +117,47 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                 LabelCustomTextField(
                   hintText: "First Name",
                   textFieldLabel: "Customer First Name",
-                  controller: cntlrs.firstNameCntlr,
+                  controller: widget.cntlrs.firstNameCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
                 LabelCustomTextField(
                   hintText: "Middle Name",
                   isOptional: true,
                   textFieldLabel: "Customer Middle Name",
-                  controller: cntlrs.middleNameCntlr,
+                  controller: widget.cntlrs.middleNameCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
                 LabelCustomTextField(
                   hintText: "Last Name",
                   textFieldLabel: "Customer Last Name",
-                  controller: cntlrs.lastNameCntlr,
+                  controller: widget.cntlrs.lastNameCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
                 LabelCustomTextField(
                   hintText: "Father Name",
                   textFieldLabel: "Father Name",
-                  controller: cntlrs.fatherNameCntlr,
+                  controller: widget.cntlrs.fatherNameCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
                 LabelCustomTextField(
                   hintText: "Mother Name",
                   textFieldLabel: "Mother Name",
-                  controller: cntlrs.motherNameCntlr,
+                  controller: widget.cntlrs.motherNameCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
                 LabelCustomTextField(
                   hintText: "Spouse Name",
                   textFieldLabel: "Spouse Name",
-                  controller: cntlrs.spouseNameCntlr,
+                  controller: widget.cntlrs.spouseNameCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
 
                 BlocConsumer<UserBloc, UserState>(
                   listener: (context, state) {
                     if (state.dobCustomer != null &&
                         state.dobCustomer!.isNotEmpty) {
-                      cntlrs.slectedCustomerDob.text = state.dobCustomer ?? "";
+                      widget.cntlrs.slectedCustomerDob.text =
+                          state.dobCustomer ?? "";
                     }
                   },
                   buildWhen:
@@ -147,11 +166,11 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                   builder: (context, state) {
                     return LabelCustomTextField(
                       hintText:
-                          cntlrs.slectedCustomerDob.text.isEmpty
+                          widget.cntlrs.slectedCustomerDob.text.isEmpty
                               ? "select Date of Birth"
-                              : cntlrs.slectedCustomerDob.text,
+                              : widget.cntlrs.slectedCustomerDob.text,
                       textFieldLabel: "Date of Birth",
-                      controller: cntlrs.slectedCustomerDob,
+                      controller: widget.cntlrs.slectedCustomerDob,
                       readOnly: true,
                       onTap: () async {
                         final picked = await showDatePicker(
@@ -192,17 +211,22 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                         padding: EdgeInsets.symmetric(horizontal: w * 0.02),
                         child: LabelWithDropDownField<PickUpTypeResponseModal>(
                           textDropDownLabel: "Gender",
-                          hintText:
-                              cntlrs.selectedIndividualGender.isEmpty
+                          isHintvalue:
+                              widget.cntlrs.selectedIndividualGender.isEmpty
+                                  ? false
+                                  : true,
+                          hintText: "Select Gender",
+                          labelText:
+                              widget.cntlrs.selectedIndividualGender.isEmpty
                                   ? "Select Gender"
-                                  : cntlrs.selectedIndividualGender,
+                                  : widget.cntlrs.selectedIndividualGender,
                           itemAsString: (p0) => p0.pkcDescription,
                           items: genderList,
                           onChanged: (value) {
-                            cntlrs.selectedIndividualGender =
-                                value.pkcDescription;
+                            widget.cntlrs.selectedIndividualGender =
+                                value.pkcCode.toString();
                             successPrint(
-                              "Gender Value Selected ${cntlrs.selectedIndividualGender}",
+                              "Gender Value Selected ${widget.cntlrs.selectedIndividualGender}",
                             );
                           },
                         ),
@@ -213,8 +237,9 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                 LabelCustomTextField(
                   hintText: "Mobile Number",
                   textFieldLabel: "Primary Mobile Number",
-                  controller: cntlrs.customerPrimaryMobileNumberCntlr,
+                  controller: widget.cntlrs.customerPrimaryMobileNumberCntlr,
                   inputType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(10),
@@ -225,13 +250,15 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                   hintText: "Primary Email",
                   textFieldLabel: "Primary Email",
                   isOptional: true,
-                  controller: cntlrs.customerPrimaryEmailCntlr,
+                  controller: widget.cntlrs.customerPrimaryEmailCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
                 LabelCustomTextField(
                   hintText: "Aadhar Number",
                   textFieldLabel: "Aadhar Number",
-                  controller: cntlrs.customerAadharNumberCntlr,
+                  controller: widget.cntlrs.customerAadharNumberCntlr,
                   inputType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(12),
@@ -240,7 +267,8 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                 LabelCustomTextField(
                   hintText: "PAN Number",
                   textFieldLabel: "PAN Number",
-                  controller: cntlrs.customerPanNumberCntlr,
+                  controller: widget.cntlrs.customerPanNumberCntlr,
+                  textInputAction: TextInputAction.next,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
                       RegExp(r'[a-zA-Z0-9]'),
@@ -252,13 +280,15 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                 LabelCustomTextField(
                   hintText: "Qualification",
                   textFieldLabel: "Qualification",
-                  controller: cntlrs.customerQualificationCntlr,
+                  controller: widget.cntlrs.customerQualificationCntlr,
+                  textInputAction: TextInputAction.next,
                 ),
                 LabelCustomTextField(
                   hintText: "CKYC Number",
                   textFieldLabel: "CKYC Number",
-                  controller: cntlrs.customerCkycNumberCntlr,
+                  controller: widget.cntlrs.customerCkycNumberCntlr,
                   inputType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(14),
@@ -275,20 +305,24 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
 
                       // Check if all required fields are empty
                       bool allEmpty =
-                          isEmpty(cntlrs.selectedIndividualTitle) &&
-                          isEmpty(cntlrs.firstNameCntlr.text) &&
-                          isEmpty(cntlrs.lastNameCntlr.text) &&
-                          isEmpty(cntlrs.fatherNameCntlr.text) &&
-                          isEmpty(cntlrs.motherNameCntlr.text) &&
-                          isEmpty(cntlrs.selectedIndividualGender) &&
-                          isEmpty(cntlrs.slectedCustomerDob.text) &&
+                          isEmpty(widget.cntlrs.selectedIndividualTitle) &&
+                          isEmpty(widget.cntlrs.firstNameCntlr.text) &&
+                          isEmpty(widget.cntlrs.lastNameCntlr.text) &&
+                          isEmpty(widget.cntlrs.fatherNameCntlr.text) &&
+                          isEmpty(widget.cntlrs.motherNameCntlr.text) &&
+                          isEmpty(widget.cntlrs.selectedIndividualGender) &&
+                          isEmpty(widget.cntlrs.slectedCustomerDob.text) &&
                           isEmpty(
-                            cntlrs.customerPrimaryMobileNumberCntlr.text,
+                            widget.cntlrs.customerPrimaryMobileNumberCntlr.text,
                           ) &&
-                          isEmpty(cntlrs.customerAadharNumberCntlr.text) &&
-                          isEmpty(cntlrs.customerPanNumberCntlr.text) &&
-                          isEmpty(cntlrs.customerQualificationCntlr.text) &&
-                          isEmpty(cntlrs.customerCkycNumberCntlr.text);
+                          isEmpty(
+                            widget.cntlrs.customerAadharNumberCntlr.text,
+                          ) &&
+                          isEmpty(widget.cntlrs.customerPanNumberCntlr.text) &&
+                          isEmpty(
+                            widget.cntlrs.customerQualificationCntlr.text,
+                          ) &&
+                          isEmpty(widget.cntlrs.customerCkycNumberCntlr.text);
 
                       if (allEmpty) {
                         GlobalWidgets().showSnackBar(
@@ -299,49 +333,49 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                       }
 
                       // Individual field checks
-                      if (isEmpty(cntlrs.selectedIndividualTitle)) {
+                      if (isEmpty(widget.cntlrs.selectedIndividualTitle)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please select a title",
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.firstNameCntlr.text)) {
+                      if (isEmpty(widget.cntlrs.firstNameCntlr.text)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter first name",
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.lastNameCntlr.text)) {
+                      if (isEmpty(widget.cntlrs.lastNameCntlr.text)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter last name",
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.fatherNameCntlr.text)) {
+                      if (isEmpty(widget.cntlrs.fatherNameCntlr.text)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter father name",
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.motherNameCntlr.text)) {
+                      if (isEmpty(widget.cntlrs.motherNameCntlr.text)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter mother name",
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.selectedIndividualGender)) {
+                      if (isEmpty(widget.cntlrs.selectedIndividualGender)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please select gender",
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.slectedCustomerDob.text)) {
+                      if (isEmpty(widget.cntlrs.slectedCustomerDob.text)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please select date of birth",
@@ -349,14 +383,15 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                         return;
                       }
                       if (isEmpty(
-                        cntlrs.customerPrimaryMobileNumberCntlr.text,
+                        widget.cntlrs.customerPrimaryMobileNumberCntlr.text,
                       )) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter primary mobile number",
                         );
                         return;
-                      } else if (cntlrs
+                      } else if (widget
+                              .cntlrs
                               .customerPrimaryMobileNumberCntlr
                               .text
                               .length !=
@@ -368,13 +403,19 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                         return;
                       }
 
-                      if (isEmpty(cntlrs.customerAadharNumberCntlr.text)) {
+                      if (isEmpty(
+                        widget.cntlrs.customerAadharNumberCntlr.text,
+                      )) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter Aadhar number",
                         );
                         return;
-                      } else if (cntlrs.customerAadharNumberCntlr.text.length !=
+                      } else if (widget
+                              .cntlrs
+                              .customerAadharNumberCntlr
+                              .text
+                              .length !=
                           12) {
                         GlobalWidgets().showSnackBar(
                           context,
@@ -382,13 +423,17 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.customerPanNumberCntlr.text)) {
+                      if (isEmpty(widget.cntlrs.customerPanNumberCntlr.text)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter PAN number",
                         );
                         return;
-                      } else if (cntlrs.customerPanNumberCntlr.text.length !=
+                      } else if (widget
+                              .cntlrs
+                              .customerPanNumberCntlr
+                              .text
+                              .length !=
                           10) {
                         GlobalWidgets().showSnackBar(
                           context,
@@ -396,20 +441,26 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.customerQualificationCntlr.text)) {
+                      if (isEmpty(
+                        widget.cntlrs.customerQualificationCntlr.text,
+                      )) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter qualification",
                         );
                         return;
                       }
-                      if (isEmpty(cntlrs.customerCkycNumberCntlr.text)) {
+                      if (isEmpty(widget.cntlrs.customerCkycNumberCntlr.text)) {
                         GlobalWidgets().showSnackBar(
                           context,
                           "Please enter CKYC number",
                         );
                         return;
-                      } else if (cntlrs.customerCkycNumberCntlr.text.length !=
+                      } else if (widget
+                              .cntlrs
+                              .customerCkycNumberCntlr
+                              .text
+                              .length !=
                           14) {
                         GlobalWidgets().showSnackBar(
                           context,
@@ -421,7 +472,10 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                       // ✅ All validations passed → Go to next page
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => UserIndividualCreation2(),
+                          builder:
+                              (context) => UserIndividualCreation2(
+                                cntlrs: widget.cntlrs,
+                              ),
                         ),
                       );
                     },
@@ -431,17 +485,6 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _sectionTitle(String title, double w) {
-    return Text(
-      title,
-      style: GoogleFonts.poppins(
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-        fontSize: w * 0.042,
       ),
     );
   }
