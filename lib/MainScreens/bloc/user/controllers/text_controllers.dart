@@ -28,11 +28,13 @@ class Textcntlrs {
   ///new user jishnu
   final TextEditingController firstNameCntlr = TextEditingController();
   String selectedCustomerType = "";
+  String selectedAccType = "";
   String selectedIndividualTitle = "";
   String selectedBranch = "";
   String selectedIndividualGender = "";
   final TextEditingController customerPrimaryMobileNumberCntlr =
       TextEditingController();
+  final TextEditingController newUserRefIDCntlr = TextEditingController();
   final TextEditingController secondaryMobileNumberCntlr =
       TextEditingController();
   final TextEditingController customerPrimaryEmailCntlr =
@@ -75,7 +77,7 @@ class Textcntlrs {
   final TextEditingController motherNameCntlr = TextEditingController();
   final TextEditingController spouseNameCntlr = TextEditingController();
   final TextEditingController guardian = TextEditingController();
-  bool isthisCommuniCationAddress = false;
+  String communicationAddress = "";
   final TextEditingController permanentAddress = TextEditingController();
   final TextEditingController permanentAddress1 = TextEditingController();
   final TextEditingController permanentAddress2 = TextEditingController();
@@ -86,9 +88,116 @@ class Textcntlrs {
   final TextEditingController permanent_country = TextEditingController();
   //final TextEditingController permanent_states = TextEditingController();
   final TextEditingController permanent_district = TextEditingController();
-  final TextEditingController communicationAddress = TextEditingController();
+
   final TextEditingController presentAddress = TextEditingController();
-  String? individualCommunticationAddress;
+
+  void newUserDispose() {
+    selectedCustomerType = "";
+    selectedAccType = "";
+    selectedIndividualTitle = "";
+    selectedBranch = "";
+  }
+
+  void newUserClear() {
+    selectedCustomerType = "";
+    selectedAccType = "";
+
+    selectedBranch = "";
+    newUserRefIDCntlr.clear();
+  }
+
+  void individualClear() {
+    firstNameCntlr.clear();
+    selectedIndividualTitle = "";
+    selectedIndividualGender = "";
+    customerPrimaryMobileNumberCntlr.clear();
+    secondaryMobileNumberCntlr.clear();
+    customerPrimaryEmailCntlr.clear();
+    customerAadharNumberCntlr.clear();
+    customerPanNumberCntlr.clear();
+    customerQualificationCntlr.clear();
+    customerCkycNumberCntlr.clear();
+    presentAddressHouseNoNameCntlr.clear();
+    presentAddress1Cntrl.clear();
+    presentAddress2Cntrl.clear();
+    present_City_town_village_cntlr.clear();
+    present_post_office_pincode_cntlr.clear();
+    present_country_cntlr.clear();
+    present_states_cntlr.clear();
+    present_district_cntlr.clear();
+    permanentAddressHouseNoNameCntlr.clear();
+    permanentAddress1Cntrl.clear();
+    permanentAddress2Cntrl.clear();
+    permanent_City_town_village_cntlr.clear();
+    permanent_post_office_pincode_cntlr.clear();
+    permanent_country_cntlr.clear();
+    permanent_states_cntlr.clear();
+    permanent_district_cntlr.clear();
+    slectedCustomerDob.clear();
+    middleNameCntlr.clear();
+    lastNameCntlr.clear();
+    fatherNameCntlr.clear();
+    motherNameCntlr.clear();
+    spouseNameCntlr.clear();
+    guardian.clear();
+    permanentAddress.clear();
+    permanentAddress1.clear();
+    permanentAddress2.clear();
+    permanent_City_town_village.clear();
+    permanent_post_office_pincode.clear();
+    permanent_country.clear();
+    permanent_district.clear();
+    presentAddress.clear();
+  }
+
+  void individualDispose() {
+    // Dispose controllers
+    firstNameCntlr.dispose();
+    customerPrimaryMobileNumberCntlr.dispose();
+    newUserRefIDCntlr.dispose();
+    secondaryMobileNumberCntlr.dispose();
+    customerPrimaryEmailCntlr.dispose();
+    customerAadharNumberCntlr.dispose();
+    customerPanNumberCntlr.dispose();
+    customerQualificationCntlr.dispose();
+    customerCkycNumberCntlr.dispose();
+    presentAddressHouseNoNameCntlr.dispose();
+    presentAddress1Cntrl.dispose();
+    presentAddress2Cntrl.dispose();
+    present_City_town_village_cntlr.dispose();
+    present_post_office_pincode_cntlr.dispose();
+    present_country_cntlr.dispose();
+    present_states_cntlr.dispose();
+    present_district_cntlr.dispose();
+    permanentAddressHouseNoNameCntlr.dispose();
+    permanentAddress1Cntrl.dispose();
+    permanentAddress2Cntrl.dispose();
+    permanent_City_town_village_cntlr.dispose();
+    permanent_post_office_pincode_cntlr.dispose();
+    permanent_country_cntlr.dispose();
+    permanent_states_cntlr.dispose();
+    permanent_district_cntlr.dispose();
+    slectedCustomerDob.dispose();
+    middleNameCntlr.dispose();
+    lastNameCntlr.dispose();
+    fatherNameCntlr.dispose();
+    motherNameCntlr.dispose();
+    spouseNameCntlr.dispose();
+    guardian.dispose();
+    permanentAddress.dispose();
+    permanentAddress1.dispose();
+    permanentAddress2.dispose();
+    permanent_City_town_village.dispose();
+    permanent_post_office_pincode.dispose();
+    permanent_country.dispose();
+    permanent_district.dispose();
+    presentAddress.dispose();
+
+    // Reset all string variables
+
+    selectedIndividualGender = "";
+    communicationAddress = "";
+  }
 
   void dispose() {
     ///Individual
@@ -114,7 +223,7 @@ class Textcntlrs {
     permanent_country.dispose();
     permanent_states_cntlr.dispose();
     permanent_district.dispose();
-    communicationAddress.dispose();
+
     presentAddress.dispose();
     presentAddressHouseNoNameCntlr.dispose();
     presentAddress1Cntrl.dispose();

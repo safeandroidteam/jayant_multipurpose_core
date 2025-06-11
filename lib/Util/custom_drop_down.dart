@@ -9,6 +9,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
     this.hintText,
     this.labelText,
     this.onChanged,
+    this.selectedItem,
     required this.items,
     this.icon,
     this.showSelectedItems = true,
@@ -24,6 +25,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
   final String? hintText;
   final String? labelText;
   final List<T>? items;
+  final T? selectedItem;
   final ValueChanged<T>? onChanged;
   final bool? alignLabelWithHint;
   final Widget? icon;
@@ -54,6 +56,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           DropdownSearch<T>(
+            selectedItem: selectedItem,
             popupProps: PopupProps.menu(
               fit: FlexFit.loose,
               showSelectedItems: showSelectedItems,
