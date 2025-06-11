@@ -43,9 +43,9 @@ class IndividualUserData {
 
   factory IndividualUserData.fromJson(Map<String, dynamic> json) {
     return IndividualUserData(
-      custId: json['Cust_ID'] ?? '',
-      accNo: json['Acc_No'] ?? '',
-      shareNo: json['Share_No'] ?? '',
+      custId: json['Cust_ID']?.toString() ?? '',
+      accNo: json['Acc_No']?.toString() ?? '',
+      shareNo: json['Share_No']?.toString() ?? '',
     );
   }
 

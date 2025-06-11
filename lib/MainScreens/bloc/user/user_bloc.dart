@@ -225,10 +225,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         params: requestModel.toJson(),
       );
 
+      final parsedResponse = IndividualUserResponseModel.fromJson(response);
       emit(
         state.copyWith(
           isIndividualUserLoading: false,
-          individualResponse: response,
+          individualResponse: parsedResponse,
           individualUserCreationError: response["ProceedMessage"],
         ),
       );
