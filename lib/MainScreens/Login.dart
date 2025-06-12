@@ -98,11 +98,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
               return false;
             },
             child: AlertDialog(
-              // content:
-              //     Text("A new version of this application is available now. "
-              //         "Please update to get new features."),
-
-              // title: Text("Update Jayant India?"),
               title: Text("Update $appName?"),
               content: Text(
                 "A new version of this application is available now. "
@@ -496,7 +491,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   String? MPin, strCustName;
   Map? response;
   String? str_Otp;
-  String? cmpCode;
+
   var _pass;
   bool isLoading = false;
   int count = 0;
@@ -574,8 +569,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       SharedPreferences pref = StaticValues.sharedPreferences!;
       MPin = pref.getString(StaticValues.Mpin);
       strCustName = pref.getString(StaticValues.accName);
-      cmpCode = pref.getString(StaticValues.cmpCodeKey);
-      debugPrint("cmpCode : $cmpCode");
+
       debugPrint("MPIN : $MPin");
       isMPinEmpty = false;
       /*usernameCtrl.text = "nira";
@@ -915,6 +909,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   customPrint("Login with UN & PW ");
                   _isLoading = true;
                   try {
+                    SharedPreferences pref = StaticValues.sharedPreferences!;
+                    String cmpCode =
+                        pref.getString(StaticValues.cmpCodeKey) ?? "";
                     response = await RestAPI().post(
                       APis.loginUrl,
                       params: {
@@ -1039,6 +1036,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       );
                       _isLoading = false;
                     } else {
+                      SharedPreferences pref = StaticValues.sharedPreferences!;
+                      String cmpCode =
+                          pref.getString(StaticValues.cmpCodeKey) ?? "";
                       response = await RestAPI().post(
                         APis.loginMPin,
                         params: {
@@ -1362,6 +1362,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                           ///UN & PW Login
                           else {
                             try {
+                              SharedPreferences pref =
+                                  StaticValues.sharedPreferences!;
+                              String cmpCode =
+                                  pref.getString(StaticValues.cmpCodeKey) ?? "";
                               debugPrint("OTP: $pass");
                               setState(() {
                                 isLoading = true;
