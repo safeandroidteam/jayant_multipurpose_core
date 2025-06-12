@@ -150,7 +150,10 @@ class _ImageWidgetState extends State<ImageWidget> {
                           ),
                         )
                     : widget.imageFile != null
-                    ? Image.file(widget.imageFile!, fit: BoxFit.cover)
+                    ? ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.file(widget.imageFile!, fit: BoxFit.cover),
+                    )
                     : SizedBox(
                       height: 50,
                       child: Center(

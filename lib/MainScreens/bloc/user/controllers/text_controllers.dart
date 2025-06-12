@@ -105,6 +105,23 @@ class Textcntlrs {
   }
 
   void individualClear() {
+    communicationAddress = "";
+    individualCustomerImageFileBase64 = null;
+    individualCustomerSignatureFileBase64 = null;
+    individualAadhaarFrontProofFileBase64 = null;
+    individualAadhaarBackProofFileBase64 = null;
+    individualPanCardProofFileBase64 = null;
+    individualBankDetailsFileBase64 = null;
+    individualSelfieFileBase64 = null;
+    individualVideoRecordingFileBase64 = null;
+    individualCustomerImageFile = null;
+    individualCustomerSignatureFile = null;
+    individualAadhaarFrontProofFile = null;
+    individualAadhaarBackProofFile = null;
+    individualPanCardProofFile = null;
+    individualBankDetailsFile = null;
+    individualSelfieFile = null;
+    individualVideoRecordingFile = null;
     firstNameCntlr.clear();
     selectedIndividualTitle = "";
     selectedIndividualGender = "";
