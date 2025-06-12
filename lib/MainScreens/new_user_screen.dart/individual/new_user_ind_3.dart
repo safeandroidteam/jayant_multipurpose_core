@@ -317,7 +317,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                           context,
                           state.individualResponse!,
                         );
-                        widget.cntlrs.individualDispose();
+                        widget.cntlrs.individualClear();
                       } else {
                         customPrint(
                           "individual creation  msg=${state.individualUserCreationError}",

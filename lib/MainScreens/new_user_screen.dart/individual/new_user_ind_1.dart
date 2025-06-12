@@ -185,7 +185,7 @@ class _UserIndividualCreationState extends State<UserIndividualCreation> {
                           );
                           if (picked != null) {
                             final formattedDate = DateFormat(
-                              'dd-MM-yyyy',
+                              'dd/MM/yyyy',
                             ).format(picked);
 
                             successPrint("pciked date =$formattedDate");
