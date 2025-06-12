@@ -1,63 +1,115 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:io';
 
-import '../../Model/fill_pickUP_request_modal.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/fill_pickUp_response_modal.dart';
+import 'package:passbook_core_jayant/REST/RestAPI.dart';
+import 'package:passbook_core_jayant/Util/custom_print.dart';
 
 part 'user_event.dart';
 part 'user_state.dart';
+part 'user_bloc.freezed.dart'; // GENERATED FILE
 
 class UserBloc extends Bloc<UserEvent, UserState> {
-  List<PickUpTypeData> pickUpList = [];
-
-  UserBloc() : super(UserInitial()) {
-    on<FillPickUpTypesEvent>(_onFetchCustomerTypes); //FetchCustomerTypesEvent
-    on<SelectFillPickUpTypeEvent>(
-      _onSelectCustomerType,
-    ); //SelectFillPickUpTypeEvent
+  UserBloc() : super(UserState.initial()) {
+    on<FillPickUpTypesEvent>(_FillPickUpTypesEvent);
+    on<selectCustomerTypeEvent>(_onSelectCustomerType);
+    on<PickCustomerDobEvent>(_pickDobOfCustomer);
   }
-  Future<void> _onFetchCustomerTypes(
+
+  void _FillPickUpTypesEvent(
     FillPickUpTypesEvent event,
     Emitter<UserState> emit,
   ) async {
-    emit(UserLoading());
+    warningPrint("pick type code when starting= ${event.pickUpType}");
+    List<PickUpTypeResponseModal> customerTypeList = [];
+    List<PickUpTypeResponseModal> customerTitleList = [];
+    List<PickUpTypeResponseModal> customerGenderList = [];
+    if (event.pickUpType == 6) {
+      emit(state.copyWith(isPickupCustomerTypeLoading: true));
+    } else if (event.pickUpType == 5) {
+      emit(state.copyWith(isPickupTitleeLoading: true));
+    } else if (event.pickUpType == 8) {
+      emit(state.copyWith(isPickupGenderLoading: true));
+    }
 
     try {
-      // Replace with actual API call if needed
-      await Future.delayed(Duration(seconds: 1));
-      pickUpList = [
-        PickUpTypeData(pkcCode: 46, pkcDescription: 'Individual'),
-        PickUpTypeData(pkcCode: 11473, pkcDescription: 'Institution'),
-      ];
-      emit(UserTypeLoaded(pickUpList: pickUpList));
+      final response = await RestAPI().post(
+        APis.fillPickUp,
+        params: {"Cmp_Code": event.cmpCode, "PickUpType": event.pickUpType},
+      );
+
+      successPrint("CmpCode ${event.cmpCode}");
+      successPrint("PickUpTYpe ${event.pickUpType}");
+
+      final data = response['Data'] as List<dynamic>;
+
+      final List<PickUpTypeResponseModal> list =
+          data.map((e) => PickUpTypeResponseModal.fromJson(e)).toList();
+
+      successPrint("Data ${data.first.toString()}");
+
+      successPrint("List Starting $list");
+
+      if (event.pickUpType == 6) {
+        customerTypeList.clear();
+        customerTypeList.addAll(list);
+        emit(
+          state.copyWith(
+            isPickupCustomerTypeLoading: false,
+            pickUpCustomerTypeList: customerTypeList,
+            pickUpGenderList: customerGenderList,
+            pickUpTitileList: customerTitleList,
+          ),
+        );
+      } else if (event.pickUpType == 5) {
+        customerTitleList.clear();
+        customerTitleList.addAll(list);
+        emit(
+          state.copyWith(
+            isPickupTitleeLoading: false,
+            pickUpCustomerTypeList: customerTypeList,
+            pickUpGenderList: customerGenderList,
+            pickUpTitileList: customerTitleList,
+          ),
+        );
+      } else if (event.pickUpType == 8) {
+        customerGenderList.clear();
+        customerGenderList.addAll(list);
+        emit(
+          state.copyWith(
+            isPickupGenderLoading: false,
+            pickUpCustomerTypeList: customerTypeList,
+            pickUpGenderList: customerGenderList,
+            pickUpTitileList: customerTitleList,
+          ),
+        );
+      }
     } catch (e) {
-      emit(UserTypeError("Failed to load customer types."));
+      if (event.pickUpType == 6) {
+        emit(state.copyWith(isPickupCustomerTypeLoading: false));
+      } else if (event.pickUpType == 5) {
+        emit(state.copyWith(isPickupTitleeLoading: false));
+      } else if (event.pickUpType == 8) {
+        emit(state.copyWith(isPickupGenderLoading: false));
+      }
+      errorPrint("Error: $e");
     }
   }
 
   void _onSelectCustomerType(
-    SelectFillPickUpTypeEvent event,
+    selectCustomerTypeEvent event,
     Emitter<UserState> emit,
   ) {
-    emit(
-      UserTypeLoaded(pickUpList: pickUpList, selectedType: event.selectedType),
-    );
+    warningPrint("_onSelectCustomerType Loading");
+    emit(state.copyWith(selectedCustomerTypeCode: event.selectedItem));
+    warningPrint("_onSelectCustomerType ${state.runtimeType}");
+  }
+
+  void _pickDobOfCustomer(PickCustomerDobEvent event, Emitter<UserState> emit) {
+    emit(state.copyWith(dobCustomer: event.dob));
   }
 
   static UserBloc get(context) => BlocProvider.of(context);
 }
-
-// Future<void> _userCreation(
-//     UserCreationType event,
-//     Emitter<UserState> emit,
-//     ) async {
-//   emit(UserTypeSelectionStateLoading());
-//
-//   try {
-//     emit(UserTypeSelectionState(event.userCreationId));
-//     successPrint("user type selection changed to=${event.userCreationId}");
-//   } catch (e) {
-//     emit(UserTypeSelectionState(0));
-//     errorPrint("user type selection changedError=$e");
-//   }
-// }
-// on<UserCreationType>(_userCreation);

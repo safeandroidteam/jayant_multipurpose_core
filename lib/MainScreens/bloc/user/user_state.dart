@@ -1,43 +1,18 @@
 part of 'user_bloc.dart';
 
-abstract class UserState extends Equatable {
-  const UserState();
+@freezed
+class UserState with _$UserState {
+  const factory UserState({
+    String? slectedBranch,
+    int? selectedCustomerTypeCode,
+    @Default(false) bool isPickupCustomerTypeLoading,
+    @Default(false) bool isPickupTitleeLoading,
+    @Default(false) bool isPickupGenderLoading,
+    @Default([]) List<PickUpTypeResponseModal> pickUpCustomerTypeList,
+    @Default([]) List<PickUpTypeResponseModal> pickUpTitileList,
+    @Default([]) List<PickUpTypeResponseModal> pickUpGenderList,
+    String? dobCustomer,
+  }) = NewUserState;
 
-  @override
-  List<Object?> get props => [];
+  factory UserState.initial() => UserState();
 }
-
-class UserInitial extends UserState {}
-
-class UserLoading extends UserState {}
-
-class UserTypeLoaded extends UserState {
-  final List<PickUpTypeData> pickUpList;
-  final PickUpTypeData? selectedType;
-
-  const UserTypeLoaded({required this.pickUpList, this.selectedType});
-
-  @override
-  List<Object?> get props => [pickUpList, selectedType];
-}
-
-class UserTypeError extends UserState {
-  final String message;
-
-  const UserTypeError(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}
-
-/// old one already exist
-
-class UserTypeSelectionState extends UserState {
-  final int id;
-
-  UserTypeSelectionState(this.id);
-  @override
-  List<Object> get props => [id];
-}
-
-class UserTypeSelectionStateLoading extends UserState {}

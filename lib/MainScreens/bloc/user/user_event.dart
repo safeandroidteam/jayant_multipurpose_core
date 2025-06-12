@@ -1,29 +1,13 @@
 part of 'user_bloc.dart';
 
-abstract class UserEvent extends Equatable {
-  const UserEvent();
+@freezed
+class UserEvent with _$UserEvent {
+  const factory UserEvent.fillPickUpTypesEvent({
+    required int cmpCode,
+    required int pickUpType,
+  }) = FillPickUpTypesEvent;
 
-  @override
-  List<Object> get props => [];
-}
-
-class FillPickUpTypesEvent extends UserEvent {}
-
-class SelectFillPickUpTypeEvent extends UserEvent {
-  final PickUpTypeData selectedType;
-
-  const SelectFillPickUpTypeEvent(this.selectedType);
-
-  @override
-  List<Object> get props => [selectedType];
-}
-
-///old already existed
-class UserCreationType extends UserEvent {
-  final int userCreationId;
-
-  const UserCreationType(this.userCreationId);
-
-  @override
-  List<Object> get props => [userCreationId];
+  const factory UserEvent.selectCustomerType(int selectedItem) =
+      selectCustomerTypeEvent;
+  const factory UserEvent.pickCustomerDob(String dob) = PickCustomerDobEvent;
 }

@@ -237,10 +237,13 @@ class APis {
   static String updateBeneficiary= "$_superLink/UpdateBeneficiary";
   //IFSC to get Bank Details
   static String fetchBeneficiaryBankDetails= "$_superLink/Fetch_BenificiaryBankDetails";
+  //vishnu done
+
   //Other Bank Transfer
   static String fillTransferTypeDetails =
       "$_superLink/Fill_TransferTypeDetails";
-
+  //own Bank transfer
+  static String ownBankToAccNo = "$_superLink/Fetch_OwnAccountNumber";
 
   ///OLD
   static String generateRefID(String key) =>

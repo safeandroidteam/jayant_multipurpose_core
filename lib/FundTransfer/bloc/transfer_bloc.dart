@@ -16,7 +16,7 @@ import './bloc.dart';
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
   TransferBloc() : super(InitialTransferState()) {
     on<SendDetails>(_onSendDetails);
-    on<FetchCustomerAccNo>(_onFetchCustomerAccNo);
+    on<FetchToAccNo>(_onFetchToAccNo);
     on<FetchCustomerFromAccNo>(_fetchCustFromAccNo);
     on<FetchFundTransferType>(_fetchFundTransferType);
     on<FetchBenificiaryevent>(_fetchBeneficiaryType);
@@ -39,16 +39,23 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     }
   }
 
-  Future<void> _onFetchCustomerAccNo(
-    FetchCustomerAccNo event,
+  Future<void> _onFetchToAccNo(
+    FetchToAccNo event,
     Emitter<TransferState> emit,
   ) async {
     emit(LoadingTransferState());
     try {
-      final response = await RestAPI().get(APis.fetchAccNo(event.mobileNo));
-      emit(FetchCustAccNoResponse(response));
+      Map<String, dynamic> ownBanlToaccNoBody = {
+        "Cmp_Code": event.cmpCode,
+        "Mobile_No": event.mobileNo,
+      };
+      final response = await RestAPI().post(
+        APis.ownBankToAccNo,
+        params: ownBanlToaccNoBody,
+      );
+      emit(FetchToAccNoResponse(response));
     } on RestException catch (e) {
-      emit(FetchCustAccNoError(e.toString()));
+      emit(FetchToAccNoError(e.toString()));
     }
   }
 

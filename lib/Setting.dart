@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'REST/app_exceptions.dart';
 
 class Settings extends StatefulWidget {
+  const Settings({super.key});
+
   @override
   _SettingsState createState() => _SettingsState();
 }
@@ -19,7 +21,7 @@ class _SettingsState extends State<Settings> {
       newPassCtrl = TextEditingController(),
       confirmPassCtrl = TextEditingController();
   bool oldPassValid = false, newPassValid = false, confirmPassValid = false;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   SharedPreferences? preferences;
   var cmpCodeKey = "",
       userId = "",
@@ -188,7 +190,7 @@ class _SettingsState extends State<Settings> {
       cmpCodeKey = preferences?.getString(StaticValues.cmpCodeKey) ?? "";
       userId = preferences?.getString(StaticValues.userID) ?? "";
       custId = preferences?.getString(StaticValues.custID) ?? "";
-      acc = preferences?.getString(StaticValues.accNumber) ?? "";
+      acc = preferences?.getString(StaticValues.accountNo) ?? "";
       name = preferences?.getString(StaticValues.accName) ?? "";
       address = preferences?.getString(StaticValues.address) ?? "";
       print("userName");
@@ -212,7 +214,7 @@ class _SettingsState extends State<Settings> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Visibility(
-                    visible: isInvalid.length > 0,
+                    visible: isInvalid.isNotEmpty,
                     child: TextView(text: isInvalid, color: Colors.red),
                   ),
                   SizedBox(height: 10.0),
@@ -264,9 +266,8 @@ class _SettingsState extends State<Settings> {
                                       changeUserPasswordBody = {
                                         "Cmp_Code": cmpCodeKey,
                                         "User_ID": userId,
-                                        "Curr_Password": "${oldPassCtrl.text}",
-                                        "New_Password":
-                                            "${confirmPassCtrl.text}",
+                                        "Curr_Password": oldPassCtrl.text,
+                                        "New_Password": confirmPassCtrl.text,
                                       };
 
                                       Map response = await RestAPI().post(

@@ -132,7 +132,7 @@ class _LogoutState extends State<Logout> {
     preferences = StaticValues.sharedPreferences;
     setState(() {
       userId = preferences?.getString(StaticValues.custID) ?? "";
-      acc = preferences?.getString(StaticValues.accNumber) ?? "";
+      acc = preferences?.getString(StaticValues.accountNo) ?? "";
       name = preferences?.getString(StaticValues.accName) ?? "";
       address = preferences?.getString(StaticValues.address) ?? "";
       print("userName");

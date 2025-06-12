@@ -8,7 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/LoginModel.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/SignInModel.dart';
 import 'package:passbook_core_jayant/MainScreens/Register.dart';
-import 'package:passbook_core_jayant/MainScreens/new_user.dart';
+import 'package:passbook_core_jayant/MainScreens/new_user_screen.dart/new_user.dart';
 import 'package:passbook_core_jayant/REST/RestAPI.dart';
 import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
@@ -75,18 +75,15 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
     String verNameFromApi = versionMap["Data"][0]["Ver_Name"].toString();
     String verCodeFromApi = versionMap["Data"][0]["Ver_Code"].toString();
+    String versionCode = versionMap["Data"][0]["Cmp_Code"].toString();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setString(
-      StaticValues.cmpCodeKey,
-      versionMap["Data"][0]["Cmp_Code"].toString(),
-    );
-    String cmpCode = sharedPreferences.getString(StaticValues.cmpCodeKey) ?? "";
+    await sharedPreferences.setString(StaticValues.cmpCodeKey, versionCode);
     String verCodeFromApiDouble =
         double.tryParse(verCodeFromApi)?.round().toString() ?? "";
     alertPrint("Ver_Name Frm Api==$verNameFromApi");
     alertPrint("Ver_Code Frm Api==$verCodeFromApiDouble");
     alertPrint("ver_Code From App==$buildNumber");
-    alertPrint("cmpcode test=$cmpCode");
+   // alertPrint("cmpcode test=$cmpCode");
     if (verCodeFromApiDouble != buildNumber) {
       showDialog(
         context: context,
@@ -226,17 +223,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     checkVersionCompatible();
     SharedPreferences pref = StaticValues.sharedPreferences!;
     MPin = pref.getString(StaticValues.Mpin);
-    //   debugPrint("MPIN : $MPin");
-    /*  Future.delayed(Duration.zero, () {
-      termsAndConditions();
-    });*/
-
-    //  String myTerms = prefs.getString('Accept_Terms');
-
-    /*  if(myTerms != "true"){
-
-    }*/
-
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: pageCtrlTime),
@@ -928,7 +914,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   MPin == null ||
                   _tabController.index == 1) {
                 if (!passVal && !mobVal) {
-                  debugPrint("Login UN & PW > ALL true");
+                  customPrint("Login with UN & PW ");
                   _isLoading = true;
                   try {
                     response = await RestAPI().post(
