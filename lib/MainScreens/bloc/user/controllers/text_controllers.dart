@@ -107,6 +107,23 @@ class Textcntlrs {
   }
 
   void individualClear() {
+    communicationAddress = "";
+    individualCustomerImageFileBase64 = null;
+    individualCustomerSignatureFileBase64 = null;
+    individualAadhaarFrontProofFileBase64 = null;
+    individualAadhaarBackProofFileBase64 = null;
+    individualPanCardProofFileBase64 = null;
+    individualBankDetailsFileBase64 = null;
+    individualSelfieFileBase64 = null;
+    individualVideoRecordingFileBase64 = null;
+    individualCustomerImageFile = null;
+    individualCustomerSignatureFile = null;
+    individualAadhaarFrontProofFile = null;
+    individualAadhaarBackProofFile = null;
+    individualPanCardProofFile = null;
+    individualBankDetailsFile = null;
+    individualSelfieFile = null;
+    individualVideoRecordingFile = null;
     firstNameCntlr.clear();
     selectedIndividualTitle = "";
     selectedIndividualGender = "";
@@ -245,41 +262,6 @@ class Textcntlrs {
   //   }
   // }
 
-  void institutionDispose() {
-    firmName.dispose();
-    firmReg_No.dispose();
-    institutionCommunicationAddress = '';
-    institutionPrimaryEmail.dispose();
-    institutionMobileNo.dispose();
-    institutionFirmGstin.dispose();
-    institutionFirmStartDate.dispose();
-    institutionFirmPlace.dispose();
-    turnOver.dispose();
-    institutionFirmPanCard.dispose();
-    institutionPanCardImageBase64 = '';
-    proprietors.clear();
-    proprietorControllers.clear();
-
-    institutionPermanentAddress1.dispose();
-    institutionPermanentAddress2.dispose();
-    institutionPermanentAddress3.dispose();
-    institutionPermanentCity.dispose();
-    institutionPermanentTaluk.dispose();
-    institutionPermanentDistrict.dispose();
-    institutionPermanentState.dispose();
-    institutionPermanentCountry.dispose();
-    institutionPermanentPinCode.dispose();
-
-    institutionCurrentAddress1.dispose();
-    institutionCurrentAddress2.dispose();
-    institutionCurrentAddress3.dispose();
-    institutionCurrentCity.dispose();
-    institutionCurrentTaluk.dispose();
-    institutionCurrentDistrict.dispose();
-    institutionCurrentState.dispose();
-    institutionCurrentCountry.dispose();
-    institutionCurrentPinCode.dispose();
-  }
   //institution
 
   final TextEditingController firmName = TextEditingController();
@@ -302,6 +284,12 @@ class Textcntlrs {
   String? institutionAadhaarBackImageBase64;
 
   /// Proprietor Details
+  final TextEditingController proprietorName = TextEditingController();
+  final TextEditingController proprietorEducation = TextEditingController();
+  final TextEditingController proprietorDob = TextEditingController();
+  final TextEditingController proprietorExperience = TextEditingController();
+
+  /// Ownership Details
   List<ProprietorModal> proprietors = [ProprietorModal()];
   List<Map<String, TextEditingController>> proprietorControllers = [
     {
@@ -349,4 +337,83 @@ class Textcntlrs {
   final TextEditingController institutionCurrentPinCode =
       TextEditingController();
   String institutionCommunicationAddress = "";
+
+  //institution new vishnu
+  void institutionClear() {
+    firmName.clear();
+    firmReg_No.clear();
+    institutionPrimaryEmail.clear();
+    institutionMobileNo.clear();
+    institutionFirmGstin.clear();
+    institutionFirmStartDate.clear();
+    institutionFirmPlace.clear();
+    turnOver.clear();
+    institutionFirmPanCard.clear();
+    institutionPanCardImage = null;
+    institutionPanCardImageBase64 = null;
+    proprietorControllers.clear();
+    institutionPermanentAddress1.clear();
+    institutionPermanentAddress2.clear();
+    institutionPermanentAddress3.clear();
+    institutionPermanentCity.clear();
+    institutionPermanentTaluk.clear();
+    institutionPermanentDistrict.clear();
+    institutionPermanentState.clear();
+    institutionPermanentCountry.clear();
+    institutionPermanentPinCode.clear();
+    institutionCurrentAddress1.clear();
+    institutionCurrentAddress2.clear();
+    institutionCurrentAddress3.clear();
+    institutionCurrentCity.clear();
+    institutionCurrentTaluk.clear();
+    institutionCurrentDistrict.clear();
+    institutionCurrentState.clear();
+    institutionCurrentCountry.clear();
+    institutionCurrentPinCode.clear();
+    institutionCommunicationAddress = "";
+    institutionAadhaarFrontImage = null;
+    institutionAadhaarFrontImageBase64 = null;
+    institutionAadhaarBackImage = null;
+    institutionAadhaarBackImageBase64 = null;
+    proprietorName.clear();
+    proprietorEducation.clear();
+    proprietorDob.clear();
+    proprietorExperience.clear();
+  }
+
+  void institutionDispose() {
+    firmName.dispose();
+    firmReg_No.dispose();
+    institutionPrimaryEmail.dispose();
+    institutionMobileNo.dispose();
+    institutionFirmGstin.dispose();
+    institutionFirmStartDate.dispose();
+    institutionFirmPlace.dispose();
+    turnOver.dispose();
+    institutionFirmPanCard.dispose();
+    //proprietorControllers.dispose();
+    institutionPermanentAddress1.dispose();
+    institutionPermanentAddress2.dispose();
+    institutionPermanentAddress3.dispose();
+    institutionPermanentCity.dispose();
+    institutionPermanentTaluk.dispose();
+    institutionPermanentDistrict.dispose();
+    institutionPermanentState.dispose();
+    institutionPermanentCountry.dispose();
+    institutionPermanentPinCode.dispose();
+    institutionCurrentAddress1.dispose();
+    institutionCurrentAddress2.dispose();
+    institutionCurrentAddress3.dispose();
+    institutionCurrentCity.dispose();
+    institutionCurrentTaluk.dispose();
+    institutionCurrentDistrict.dispose();
+    institutionCurrentState.dispose();
+    institutionCurrentCountry.dispose();
+    institutionCurrentPinCode.dispose();
+    institutionCommunicationAddress = "";
+    proprietorName.dispose();
+    proprietorEducation.dispose();
+    proprietorDob.dispose();
+    proprietorExperience.dispose();
+  }
 }

@@ -17,15 +17,14 @@ import 'package:passbook_core_jayant/Util/custom_textfield.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class UserInstitutionCreation extends StatefulWidget {
-  const UserInstitutionCreation({super.key});
-
+  const UserInstitutionCreation({super.key, required this.cntlrs});
+  final Textcntlrs cntlrs;
   @override
   State<UserInstitutionCreation> createState() =>
       _UserInstitutionCreationState();
 }
 
 class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
-  final cntlrs = Textcntlrs();
   final captureService = CaptureService();
   List<PlatformFile> uploadedDocs = [];
 
@@ -43,11 +42,11 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
     );
     if (picked != null) {
       final formattedDate = DateFormat('dd/MM/yyyy').format(picked);
-      cntlrs.institutionFirmStartDate.text = formattedDate;
+      widget.cntlrs.institutionFirmStartDate.text = formattedDate;
     }
   }
 
@@ -63,12 +62,12 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
         final bytes = await pickedFile.readAsBytes();
 
         setState(() {
-          cntlrs.institutionPanCardImage = file;
-          cntlrs.institutionPanCardImageBase64 = base64Encode(bytes);
+          widget.cntlrs.institutionPanCardImage = file;
+          widget.cntlrs.institutionPanCardImageBase64 = base64Encode(bytes);
         });
 
         alertPrint(
-          "Base64: ${cntlrs.institutionPanCardImageBase64?.substring(0, 30)}...",
+          "Base64: ${widget.cntlrs.institutionPanCardImageBase64?.substring(0, 30)}...",
         );
       }
     } else if (status.isDenied || status.isPermanentlyDenied) {
@@ -82,7 +81,7 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
   }
 
   void previewPanCardImage() {
-    if (cntlrs.institutionPanCardImage == null) return;
+    if (widget.cntlrs.institutionPanCardImage == null) return;
 
     showDialog(
       context: context,
@@ -90,7 +89,7 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
         return AlertDialog(
           title: const Text("Preview PAN Card"),
           content: Image.file(
-            cntlrs.institutionPanCardImage!,
+            widget.cntlrs.institutionPanCardImage!,
             fit: BoxFit.contain,
           ),
           actions: [
@@ -120,7 +119,10 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            Navigator.of(context).pop();
+            widget.cntlrs.institutionClear();
+          },
         ),
         centerTitle: true,
         title: const Text(
@@ -148,12 +150,12 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
                 blockSpecialCharacters(),
                 LengthLimitingTextInputFormatter(50),
               ],
-              controller: cntlrs.firmName,
+              controller: widget.cntlrs.firmName,
               hintText: "Firm Name",
               textFieldLabel: "Firm Name",
             ),
             LabelCustomTextField(
-              controller: cntlrs.firmReg_No,
+              controller: widget.cntlrs.firmReg_No,
               hintText: "Firm Reg No",
               textFieldLabel: "Firm Reg No",
               inputFormatters: [
@@ -162,7 +164,7 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
               ],
             ),
             LabelCustomTextField(
-              controller: cntlrs.institutionPrimaryEmail,
+              controller: widget.cntlrs.institutionPrimaryEmail,
               hintText: "Firm Primary Email",
               textFieldLabel: "Firm Primary Email",
               inputFormatters: [
@@ -175,11 +177,11 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
               textFieldLabel: "Mobile No",
               inputType: TextInputType.number,
               inputFormatters: [LengthLimitingTextInputFormatter(10)],
-              controller: cntlrs.institutionMobileNo,
+              controller: widget.cntlrs.institutionMobileNo,
             ),
 
             LabelCustomTextField(
-              controller: cntlrs.institutionFirmGstin,
+              controller: widget.cntlrs.institutionFirmGstin,
               hintText: "Firm GSTIN",
               textFieldLabel: "Firm GSTIN",
               inputFormatters: [
@@ -190,13 +192,13 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
             LabelCustomTextField(
               hintText: "Date of Establishment",
               textFieldLabel: "Date of Establishment",
-              controller: cntlrs.institutionFirmStartDate,
+              controller: widget.cntlrs.institutionFirmStartDate,
               readOnly: true,
               onTap: () => _selectFirmStartDate(context),
             ),
 
             LabelCustomTextField(
-              controller: cntlrs.institutionFirmPlace,
+              controller: widget.cntlrs.institutionFirmPlace,
               hintText: "Firm Place",
               textFieldLabel: "Firm Place",
               inputFormatters: [
@@ -206,7 +208,7 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
             ),
 
             LabelCustomTextField(
-              controller: cntlrs.turnOver,
+              controller: widget.cntlrs.turnOver,
               hintText: "Turn Over",
               textFieldLabel: "Turn Over",
               inputType: TextInputType.number,
@@ -230,7 +232,7 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
             SizedBox(height: h * 0.01),
 
             LabelCustomTextField(
-              controller: cntlrs.institutionFirmPanCard,
+              controller: widget.cntlrs.institutionFirmPanCard,
               hintText: "Firm’s PAN Number",
               textFieldLabel: "Firm’s PAN Number",
               inputFormatters: [
@@ -256,7 +258,7 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
                 ///Image capture
                 GestureDetector(
                   onTap: () {
-                    if (cntlrs.institutionPanCardImage != null) {
+                    if (widget.cntlrs.institutionPanCardImage != null) {
                       previewPanCardImage();
                     } else {
                       pickPanCardImage();
@@ -275,9 +277,9 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
                       alignment: Alignment.center,
                       padding: const EdgeInsets.all(12),
                       child:
-                          cntlrs.institutionPanCardImage != null
+                          widget.cntlrs.institutionPanCardImage != null
                               ? Image.file(
-                                cntlrs.institutionPanCardImage!,
+                                widget.cntlrs.institutionPanCardImage!,
                                 fit: BoxFit.contain,
                               )
                               : Column(
@@ -309,17 +311,17 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
                 onPressed: () async {
                   bool isEmpty(String val) => val.trim().isEmpty;
 
-                  if (isEmpty(cntlrs.firmName.text) ||
-                      isEmpty(cntlrs.firmReg_No.text) ||
-                      isEmpty(cntlrs.institutionPrimaryEmail.text) ||
-                      isEmpty(cntlrs.institutionMobileNo.text) ||
-                      isEmpty(cntlrs.institutionFirmGstin.text) ||
-                      isEmpty(cntlrs.institutionFirmStartDate.text) ||
-                      isEmpty(cntlrs.institutionFirmPlace.text) ||
-                      isEmpty(cntlrs.institutionFirmPanCard.text) ||
-                      cntlrs.institutionPanCardImage == null ||
-                      cntlrs.institutionPanCardImage == "" ||
-                      isEmpty(cntlrs.turnOver.text)) {
+                  if (isEmpty(widget.cntlrs.firmName.text) ||
+                      isEmpty(widget.cntlrs.firmReg_No.text) ||
+                      isEmpty(widget.cntlrs.institutionPrimaryEmail.text) ||
+                      isEmpty(widget.cntlrs.institutionMobileNo.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmGstin.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmStartDate.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmPlace.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmPanCard.text) ||
+                      widget.cntlrs.institutionPanCardImage == null ||
+                      widget.cntlrs.institutionPanCardImage == "" ||
+                      isEmpty(widget.cntlrs.turnOver.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please fill all fields",
@@ -327,70 +329,70 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
                     return;
                   }
 
-                  if (isEmpty(cntlrs.firmName.text)) {
+                  if (isEmpty(widget.cntlrs.firmName.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter Firm Name",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.firmReg_No.text)) {
+                  if (isEmpty(widget.cntlrs.firmReg_No.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter Firm Registration Number",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.institutionPrimaryEmail.text)) {
+                  if (isEmpty(widget.cntlrs.institutionPrimaryEmail.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter Primary Email",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.institutionMobileNo.text)) {
+                  if (isEmpty(widget.cntlrs.institutionMobileNo.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter Mobile Number",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.institutionFirmGstin.text)) {
+                  if (isEmpty(widget.cntlrs.institutionFirmGstin.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter Firm GSTIN",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.institutionFirmStartDate.text)) {
+                  if (isEmpty(widget.cntlrs.institutionFirmStartDate.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please select Firm Start Date",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.institutionFirmPlace.text)) {
+                  if (isEmpty(widget.cntlrs.institutionFirmPlace.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter Place of Firm",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.institutionFirmPanCard.text)) {
+                  if (isEmpty(widget.cntlrs.institutionFirmPanCard.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter PAN Card Number",
                     );
                     return;
                   }
-                  if (cntlrs.institutionPanCardImage == null) {
+                  if (widget.cntlrs.institutionPanCardImage == null) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please upload PAN Card Image",
                     );
                     return;
                   }
-                  if (isEmpty(cntlrs.turnOver.text)) {
+                  if (isEmpty(widget.cntlrs.turnOver.text)) {
                     GlobalWidgets().showSnackBar(
                       context,
                       "Please enter Annual Turnover",
@@ -399,22 +401,25 @@ class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
                   }
                   successPrint('''  
 ------ Form Submission ------  
-Firm Name: ${cntlrs.firmName.text}  
-Firm Reg No: ${cntlrs.firmReg_No.text}  
-Firm Primary Email: ${cntlrs.institutionPrimaryEmail.text} 
-Mobile No: ${cntlrs.institutionMobileNo.text}   
-Firm GSTIN: ${cntlrs.institutionFirmGstin.text}  
-Firm Establishment Date: ${cntlrs.institutionFirmStartDate.text}  
-Firm Place: ${cntlrs.institutionFirmPlace.text}  
-Turn Over: ${cntlrs.turnOver.text}  
-Firm PAN Card Number: ${cntlrs.institutionFirmPanCard.text}  
-Uploaded PAN Card Image: ${cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
-Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}    
+Firm Name: ${widget.cntlrs.firmName.text}  
+Firm Reg No: ${widget.cntlrs.firmReg_No.text}  
+Firm Primary Email: ${widget.cntlrs.institutionPrimaryEmail.text} 
+Mobile No: ${widget.cntlrs.institutionMobileNo.text}   
+Firm GSTIN: ${widget.cntlrs.institutionFirmGstin.text}  
+Firm Establishment Date: ${widget.cntlrs.institutionFirmStartDate.text}  
+Firm Place: ${widget.cntlrs.institutionFirmPlace.text}  
+Turn Over: ${widget.cntlrs.turnOver.text}  
+Firm PAN Card Number: ${widget.cntlrs.institutionFirmPanCard.text}  
+Uploaded PAN Card Image: ${widget.cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
+Uploaded Base 64: ${widget.cntlrs.institutionPanCardImageBase64}    
 ----------------------------  
 ''');
 
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => InstitutionPage2()),
+                    MaterialPageRoute(
+                      builder:
+                          (context) => InstitutionPage2(cntlrs: widget.cntlrs),
+                    ),
                   );
                 },
               ),

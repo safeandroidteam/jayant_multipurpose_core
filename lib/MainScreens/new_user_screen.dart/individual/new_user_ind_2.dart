@@ -18,7 +18,7 @@ class UserIndividualCreation2 extends StatelessWidget {
 
     return SafeArea(
       child: PopScope(
-         canPop: false,
+        canPop: false,
         child: Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -90,9 +90,9 @@ class UserIndividualCreation2 extends StatelessWidget {
                 controller: cntlrs.permanent_district_cntlr,
                 textInputAction: TextInputAction.done,
               ),
-        
+
               SizedBox(height: h * 0.03),
-        
+
               //"present"
               _sectionTitle("Present Address", w),
               LabelCustomTextField(
@@ -152,7 +152,8 @@ class UserIndividualCreation2 extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: w * 0.02),
                 child: LabelWithDropDownField(
-                  isHintvalue: cntlrs.communicationAddress.isEmpty ? false : true,
+                  isHintvalue:
+                      cntlrs.communicationAddress.isEmpty ? false : true,
                   labelText:
                       cntlrs.communicationAddress.isEmpty
                           ? "Select Communication Address"
@@ -162,8 +163,8 @@ class UserIndividualCreation2 extends StatelessWidget {
                           ? "Select Communication Address"
                           : cntlrs.communicationAddress,
                   textDropDownLabel: "Communication Address",
-                  items: ["Permanant Adress", "Present Address"],
-        
+                  items: ["Permanent Address", "Present Address"],
+
                   onChanged: (value) {
                     cntlrs.communicationAddress = value;
                   },
@@ -190,7 +191,7 @@ class UserIndividualCreation2 extends StatelessWidget {
                             .isEmpty &&
                         cntlrs.permanent_country_cntlr.text.trim().isEmpty &&
                         cntlrs.permanent_district_cntlr.text.trim().isEmpty;
-        
+
                     final isPresentEmpty =
                         cntlrs.presentAddressHouseNoNameCntlr.text
                             .trim()
@@ -205,7 +206,7 @@ class UserIndividualCreation2 extends StatelessWidget {
                             .isEmpty &&
                         cntlrs.present_country_cntlr.text.trim().isEmpty &&
                         cntlrs.present_district_cntlr.text.trim().isEmpty;
-        
+
                     if (isPermanentEmpty) {
                       GlobalWidgets().showSnackBar(
                         context,
@@ -213,7 +214,7 @@ class UserIndividualCreation2 extends StatelessWidget {
                       );
                       return;
                     }
-        
+
                     if (cntlrs.permanentAddressHouseNoNameCntlr.text
                         .trim()
                         .isEmpty) {
@@ -269,7 +270,7 @@ class UserIndividualCreation2 extends StatelessWidget {
                       );
                       return;
                     }
-        
+
                     // Validate Present Address
                     if (isPresentEmpty) {
                       GlobalWidgets().showSnackBar(
@@ -278,7 +279,7 @@ class UserIndividualCreation2 extends StatelessWidget {
                       );
                       return;
                     }
-        
+
                     if (cntlrs.presentAddressHouseNoNameCntlr.text
                         .trim()
                         .isEmpty) {
@@ -337,7 +338,7 @@ class UserIndividualCreation2 extends StatelessWidget {
                     customPrint(
                       "=== INDIVIDUAL USER CREATION DATA new user 2===",
                     );
-        
+
                     customPrint("Selected Branch: ${cntlrs.selectedBranch}");
                     customPrint(
                       "Selected Customer Type: ${cntlrs.selectedCustomerType}",
@@ -345,7 +346,9 @@ class UserIndividualCreation2 extends StatelessWidget {
                     customPrint(
                       "Selected Account Type: ${cntlrs.selectedAccType}",
                     );
-                    customPrint("Reference ID: ${cntlrs.newUserRefIDCntlr.text}");
+                    customPrint(
+                      "Reference ID: ${cntlrs.newUserRefIDCntlr.text}",
+                    );
                     customPrint("Title: ${cntlrs.selectedIndividualTitle}");
                     customPrint("First Name: ${cntlrs.firstNameCntlr.text}");
                     customPrint("Middle Name: ${cntlrs.middleNameCntlr.text}");
@@ -373,7 +376,7 @@ class UserIndividualCreation2 extends StatelessWidget {
                     customPrint(
                       "CKYC Number: ${cntlrs.customerCkycNumberCntlr.text}",
                     );
-        
+
                     customPrint("--- PERMANENT ADDRESS ---");
                     customPrint(
                       "House No/Name: ${cntlrs.permanentAddressHouseNoNameCntlr.text}",
@@ -402,7 +405,8 @@ class UserIndividualCreation2 extends StatelessWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder:
-                            (context) => UserIndividualCreation3(cntlrs: cntlrs),
+                            (context) =>
+                                UserIndividualCreation3(cntlrs: cntlrs),
                       ),
                     );
                   },

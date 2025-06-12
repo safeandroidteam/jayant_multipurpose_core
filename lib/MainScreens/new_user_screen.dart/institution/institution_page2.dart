@@ -1,71 +1,87 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 
+import '../../../Util/capture_image_video.dart';
 import '../../../Util/custom_print.dart';
 import '../../../Util/custom_textfield.dart';
+import '../../../Util/image_picker_widget.dart';
 import '../../Model/institution/proprietor_modal.dart';
 import '../../bloc/user/controllers/text_controllers.dart';
-import 'institutin_page3.dart';
+import 'institution_page3.dart';
 
 class InstitutionPage2 extends StatefulWidget {
-  const InstitutionPage2({super.key});
-
+  const InstitutionPage2({super.key, required this.cntlrs});
+  final Textcntlrs cntlrs;
   @override
   State<InstitutionPage2> createState() => _InstitutionPage2State();
 }
 
 class _InstitutionPage2State extends State<InstitutionPage2> {
-  final cntlrs = Textcntlrs();
+  void _selectProprietorDOB(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      final formattedDate = DateFormat('dd/MM/yyyy').format(picked);
+      widget.cntlrs.proprietorDob.text = formattedDate;
+    }
+  }
 
   @override
   void initState() {
     successPrint('''
                           
-                          BR Code - ${cntlrs.selectedBranch}
-                          Customer Type - ${cntlrs.selectedCustomerType}
-                          Account Type - ${cntlrs.selectedAccType}
-                          Reference ID - ${cntlrs.newUserRefIDCntlr.text}
+                          BR Code - ${widget.cntlrs.selectedBranch}
+                          Customer Type - ${widget.cntlrs.selectedCustomerType}
+                          Account Type - ${widget.cntlrs.selectedAccType}
+                          Reference ID - ${widget.cntlrs.newUserRefIDCntlr.text}
 
                           
                       ------FIRM DETAILS------
-                    Firm Name: ${cntlrs.firmName.text}  
-                  Firm Reg No: ${cntlrs.firmReg_No.text}  
-                  Firm Primary Email: ${cntlrs.institutionPrimaryEmail.text} 
-                  Mobile No: ${cntlrs.institutionMobileNo.text}   
-                  Firm GSTIN: ${cntlrs.institutionFirmGstin.text}  
-                  Firm Establishment Date: ${cntlrs.institutionFirmStartDate.text}  
-                  Firm Place: ${cntlrs.institutionFirmPlace.text}  
-                  Turn Over: ${cntlrs.turnOver.text}  
-                  Firm PAN Card Number: ${cntlrs.institutionFirmPanCard.text}  
-                  Uploaded PAN Card Image: ${cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
-                  Uploaded Base 64: ${cntlrs.institutionPanCardImageBase64}    
+                    Firm Name: ${widget.cntlrs.firmName.text}  
+                  Firm Reg No: ${widget.cntlrs.firmReg_No.text}  
+                  Firm Primary Email: ${widget.cntlrs.institutionPrimaryEmail.text} 
+                  Mobile No: ${widget.cntlrs.institutionMobileNo.text}   
+                  Firm GSTIN: ${widget.cntlrs.institutionFirmGstin.text}  
+                  Firm Establishment Date: ${widget.cntlrs.institutionFirmStartDate.text}  
+                  Firm Place: ${widget.cntlrs.institutionFirmPlace.text}  
+                  Turn Over: ${widget.cntlrs.turnOver.text}  
+                  Firm PAN Card Number: ${widget.cntlrs.institutionFirmPanCard.text}  
+                  Uploaded PAN Card Image: ${widget.cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
+                  Uploaded Base 64: ${widget.cntlrs.institutionPanCardImageBase64}    
                   ----------------------------  
                      
                 
                       
                   --------- Permanent Address ---------
-                  Address 1: ${cntlrs.institutionPermanentAddress1.text}
-                  Address 2: ${cntlrs.institutionPermanentAddress2.text}
-                  Address 3: ${cntlrs.institutionPermanentAddress3.text}
-                  City/Town/Village: ${cntlrs.institutionPermanentCity.text}
-                  Taluk: ${cntlrs.institutionPermanentTaluk.text}
-                  District: ${cntlrs.institutionPermanentDistrict.text}
-                  State: ${cntlrs.institutionPermanentState.text}
-                  Country: ${cntlrs.institutionPermanentCountry.text}
-                  Pincode: ${cntlrs.institutionPermanentPinCode.text}
+                  Address 1: ${widget.cntlrs.institutionPermanentAddress1.text}
+                  Address 2: ${widget.cntlrs.institutionPermanentAddress2.text}
+                  Address 3: ${widget.cntlrs.institutionPermanentAddress3.text}
+                  City/Town/Village: ${widget.cntlrs.institutionPermanentCity.text}
+                  Taluk: ${widget.cntlrs.institutionPermanentTaluk.text}
+                  District: ${widget.cntlrs.institutionPermanentDistrict.text}
+                  State: ${widget.cntlrs.institutionPermanentState.text}
+                  Country: ${widget.cntlrs.institutionPermanentCountry.text}
+                  Pincode: ${widget.cntlrs.institutionPermanentPinCode.text}
                   
                   --------- Current Address ---------
-                  Address 1: ${cntlrs.institutionCurrentAddress1.text}
-                  Address 2: ${cntlrs.institutionCurrentAddress2.text}
-                  Address 3: ${cntlrs.institutionCurrentAddress3.text}
-                  City/Town/Village: ${cntlrs.institutionCurrentCity.text}
-                  Taluk: ${cntlrs.institutionCurrentTaluk.text}
-                  District: ${cntlrs.institutionCurrentDistrict.text}
-                  State: ${cntlrs.institutionCurrentState.text}
-                  Country: ${cntlrs.institutionCurrentCountry.text}
-                  PinCode: ${cntlrs.institutionCurrentPinCode.text}
+                  Address 1: ${widget.cntlrs.institutionCurrentAddress1.text}
+                  Address 2: ${widget.cntlrs.institutionCurrentAddress2.text}
+                  Address 3: ${widget.cntlrs.institutionCurrentAddress3.text}
+                  City/Town/Village: ${widget.cntlrs.institutionCurrentCity.text}
+                  Taluk: ${widget.cntlrs.institutionCurrentTaluk.text}
+                  District: ${widget.cntlrs.institutionCurrentDistrict.text}
+                  State: ${widget.cntlrs.institutionCurrentState.text}
+                  Country: ${widget.cntlrs.institutionCurrentCountry.text}
+                  PinCode: ${widget.cntlrs.institutionCurrentPinCode.text}
                   ''');
     // TODO: implement initState
     super.initState();
@@ -78,8 +94,8 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
 
     /// Proprietor Details Section Builder
     Widget buildProprietorSection(int index) {
-      final modal = cntlrs.proprietors[index];
-      final controllerSet = cntlrs.proprietorControllers[index];
+      final modal = widget.cntlrs.proprietors[index];
+      final controllerSet = widget.cntlrs.proprietorControllers[index];
 
       return Card(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
@@ -94,7 +110,7 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Proprietor Details ${index + 1}",
+                    "Ownership Details ${index + 1}",
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
@@ -106,8 +122,8 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                       icon: const Icon(Icons.remove_circle, color: Colors.red),
                       onPressed: () {
                         setState(() {
-                          cntlrs.proprietors.removeAt(index);
-                          cntlrs.proprietorControllers.removeAt(index);
+                          widget.cntlrs.proprietors.removeAt(index);
+                          widget.cntlrs.proprietorControllers.removeAt(index);
                         });
                       },
                     ),
@@ -160,23 +176,130 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                "Proprietor Details",
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: w * 0.045,
+                ),
+              ),
+              const Divider(thickness: 1.2),
+              SizedBox(height: h * 0.02),
+              LabelCustomTextField(
+                hintText: "Name",
+                textFieldLabel: "Name",
+                controller: widget.cntlrs.proprietorName,
+                inputFormatters: [LengthLimitingTextInputFormatter(50)],
+              ),
+              LabelCustomTextField(
+                hintText: "Education",
+                textFieldLabel: "Education",
+                controller: widget.cntlrs.proprietorEducation,
+                inputFormatters: [LengthLimitingTextInputFormatter(250)],
+              ),
+              LabelCustomTextField(
+                hintText: "DOB",
+                textFieldLabel: "DOB",
+                controller: widget.cntlrs.proprietorDob,
+                readOnly: true,
+                onTap: () => _selectProprietorDOB(context),
+              ),
+              LabelCustomTextField(
+                hintText: "Experience",
+                textFieldLabel: "Experience",
+                controller: widget.cntlrs.proprietorExperience,
+                inputFormatters: [LengthLimitingTextInputFormatter(20)],
+              ),
+              SizedBox(height: h * 0.03),
+
+              _sectionTitle(
+                "Aadhaar Card Details",
+                w,
+                w * 0.04,
+                FontWeight.w500,
+              ),
+              Divider(),
+              SizedBox(height: h * 0.03),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ///Id Proof
+                  ImageWidget(
+                    text: 'Aadhaar Card – Front',
+                    imageFile: widget.cntlrs.institutionAadhaarFrontImage,
+                    onTap: () async {
+                      final file = await CaptureService().captureImage();
+                      if (file != null) {
+                        final base64 = await ImageUtils.compressXFileToBase64(
+                          file,
+                        );
+                        setState(() {
+                          widget.cntlrs.institutionAadhaarFrontImage = file;
+                          widget.cntlrs.institutionAadhaarFrontImageBase64 =
+                              base64;
+
+                          widget.cntlrs.institutionAadhaarFrontImage = File(
+                            file.path,
+                          );
+                          widget.cntlrs.institutionAadhaarFrontImageBase64 =
+                              base64;
+                        });
+                        successPrint(
+                          "Aadhar front Image ${widget.cntlrs.institutionAadhaarFrontImageBase64}",
+                        );
+                      }
+                    },
+                  ),
+
+                  ///Id Proof
+                  ImageWidget(
+                    text: 'Aadhaar Card – Back',
+                    imageFile: widget.cntlrs.institutionAadhaarBackImage,
+                    onTap: () async {
+                      final file = await CaptureService().captureImage();
+                      if (file != null) {
+                        final base64 = await ImageUtils.compressXFileToBase64(
+                          file,
+                        );
+                        setState(() {
+                          widget.cntlrs.institutionAadhaarBackImage = file;
+                          widget.cntlrs.institutionAadhaarBackImageBase64 =
+                              base64;
+
+                          widget.cntlrs.institutionAadhaarBackImage = File(
+                            file.path,
+                          );
+                          widget.cntlrs.institutionAadhaarBackImageBase64 =
+                              base64;
+                        });
+                        successPrint(
+                          "Aadhar back  ${widget.cntlrs.institutionAadhaarBackImageBase64}",
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: h * 0.05),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Proprietor Details",
+                    "Ownership Details",
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                       fontSize: w * 0.045,
                     ),
                   ),
+
                   IconButton(
                     icon: const Icon(Icons.add_circle, color: Colors.green),
                     onPressed: () {
                       setState(() {
-                        cntlrs.proprietors.add(ProprietorModal());
-                        cntlrs.proprietorControllers.add({
+                        widget.cntlrs.proprietors.add(ProprietorModal());
+                        widget.cntlrs.proprietorControllers.add({
                           'name': TextEditingController(),
                           'address': TextEditingController(),
                           'panCardNo': TextEditingController(),
@@ -194,7 +317,7 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
               const Divider(thickness: 1.2),
               SizedBox(height: h * 0.02),
               ...List.generate(
-                cntlrs.proprietors.length,
+                widget.cntlrs.proprietors.length,
                 buildProprietorSection,
               ),
               const SizedBox(height: 20),
@@ -205,7 +328,7 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                   onPressed: () {
                     bool isValid = true;
 
-                    if (cntlrs.proprietors.isEmpty) {
+                    if (widget.cntlrs.proprietors.isEmpty) {
                       GlobalWidgets().showSnackBar(
                         context,
                         "Please add at least one proprietor.",
@@ -213,9 +336,10 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                       return;
                     }
 
-                    for (int i = 0; i < cntlrs.proprietors.length; i++) {
-                      final controllerSet = cntlrs.proprietorControllers[i];
-                      final model = cntlrs.proprietors[i];
+                    for (int i = 0; i < widget.cntlrs.proprietors.length; i++) {
+                      final controllerSet =
+                          widget.cntlrs.proprietorControllers[i];
+                      final model = widget.cntlrs.proprietors[i];
 
                       String name = controllerSet['name']?.text.trim() ?? '';
                       String address =
@@ -255,7 +379,8 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                       MaterialPageRoute(
                         builder:
                             (context) => InstitutionPage3(
-                              proprietors: cntlrs.proprietors,
+                              proprietors: widget.cntlrs.proprietors,
+                              cntlrs: widget.cntlrs,
                             ),
                       ),
                     );
@@ -266,6 +391,22 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(
+    String title,
+    double w,
+    double? fontsize,
+    FontWeight? fontWeight,
+  ) {
+    return Text(
+      title,
+      style: GoogleFonts.poppins(
+        fontWeight: fontWeight ?? FontWeight.bold,
+        color: Colors.black,
+        fontSize: fontsize ?? w * 0.042,
       ),
     );
   }
