@@ -505,9 +505,6 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
 
                           customPrint("Proprietor Details");
                           customPrint("${widget.cntlrs.proprietorName.text}");
-                          customPrint("Proprietor Details");
-                          customPrint("Proprietor Details");
-                          customPrint("Proprietor Details");
                           userBloc.add(
                             InstitutionUserCreationEvent(
                               institutionUiModal: InstituitionUiReqModel(
@@ -647,6 +644,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
     final userData = responseModel.data.first;
 
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return AlertDialog(
