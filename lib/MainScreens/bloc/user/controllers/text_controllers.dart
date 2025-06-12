@@ -262,41 +262,7 @@ class Textcntlrs {
   //   }
   // }
 
-  void institutionDispose() {
-    firmName.dispose();
-    firmReg_No.dispose();
-    institutionCommunicationAddress = '';
-    institutionPrimaryEmail.dispose();
-    institutionMobileNo.dispose();
-    institutionFirmGstin.dispose();
-    institutionFirmStartDate.dispose();
-    institutionFirmPlace.dispose();
-    turnOver.dispose();
-    institutionFirmPanCard.dispose();
-    institutionPanCardImageBase64 = '';
-    proprietors.clear();
-    proprietorControllers.clear();
 
-    institutionPermanentAddress1.dispose();
-    institutionPermanentAddress2.dispose();
-    institutionPermanentAddress3.dispose();
-    institutionPermanentCity.dispose();
-    institutionPermanentTaluk.dispose();
-    institutionPermanentDistrict.dispose();
-    institutionPermanentState.dispose();
-    institutionPermanentCountry.dispose();
-    institutionPermanentPinCode.dispose();
-
-    institutionCurrentAddress1.dispose();
-    institutionCurrentAddress2.dispose();
-    institutionCurrentAddress3.dispose();
-    institutionCurrentCity.dispose();
-    institutionCurrentTaluk.dispose();
-    institutionCurrentDistrict.dispose();
-    institutionCurrentState.dispose();
-    institutionCurrentCountry.dispose();
-    institutionCurrentPinCode.dispose();
-  }
   //institution
 
   final TextEditingController firmName = TextEditingController();
@@ -366,4 +332,75 @@ class Textcntlrs {
   final TextEditingController institutionCurrentPinCode =
       TextEditingController();
   String institutionCommunicationAddress = "";
+
+  //institution new vishnu
+  void institutionClear(){
+    firmName.clear();
+    firmReg_No.clear();
+    institutionPrimaryEmail.clear();
+    institutionMobileNo.clear();
+    institutionFirmGstin.clear();
+    institutionFirmStartDate.clear();
+    institutionFirmPlace.clear();
+    turnOver.clear();
+    institutionFirmPanCard.clear();
+    institutionPanCardImage= null;
+    institutionPanCardImageBase64= null;
+    proprietorControllers.clear();
+    institutionPermanentAddress1.clear();
+    institutionPermanentAddress2.clear();
+    institutionPermanentAddress3.clear();
+    institutionPermanentCity.clear();
+    institutionPermanentTaluk.clear();
+    institutionPermanentDistrict.clear();
+    institutionPermanentState.clear();
+    institutionPermanentCountry.clear();
+    institutionPermanentPinCode.clear();
+    institutionCurrentAddress1.clear();
+    institutionCurrentAddress2.clear();
+    institutionCurrentAddress3.clear();
+    institutionCurrentCity.clear();
+    institutionCurrentTaluk.clear();
+    institutionCurrentDistrict.clear();
+    institutionCurrentState.clear();
+    institutionCurrentCountry.clear();
+    institutionCurrentPinCode.clear();
+    institutionCommunicationAddress="";
+    institutionAadhaarFrontImage= null;
+    institutionAadhaarFrontImageBase64=null;
+    institutionAadhaarBackImage= null;
+    institutionAadhaarBackImageBase64= null;
+
+  }
+  void institutionDispose(){
+    firmName.dispose();
+    firmReg_No.dispose();
+    institutionPrimaryEmail.dispose();
+    institutionMobileNo.dispose();
+    institutionFirmGstin.dispose();
+    institutionFirmStartDate.dispose();
+    institutionFirmPlace.dispose();
+    turnOver.dispose();
+    institutionFirmPanCard.dispose();
+    //proprietorControllers.dispose();
+    institutionPermanentAddress1.dispose();
+    institutionPermanentAddress2.dispose();
+    institutionPermanentAddress3.dispose();
+    institutionPermanentCity.dispose();
+    institutionPermanentTaluk.dispose();
+    institutionPermanentDistrict.dispose();
+    institutionPermanentState.dispose();
+    institutionPermanentCountry.dispose();
+    institutionPermanentPinCode.dispose();
+    institutionCurrentAddress1.dispose();
+    institutionCurrentAddress2.dispose();
+    institutionCurrentAddress3.dispose();
+    institutionCurrentCity.dispose();
+    institutionCurrentTaluk.dispose();
+    institutionCurrentDistrict.dispose();
+    institutionCurrentState.dispose();
+    institutionCurrentCountry.dispose();
+    institutionCurrentPinCode.dispose();
+    institutionCommunicationAddress="";
+  }
 }
