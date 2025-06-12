@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 
+import '../../../Model/institution/proprietor_modal.dart';
+
 class Textcntlrs {
   // ///Individual image data type
   File? individualCustomerImageFile;
@@ -197,117 +199,154 @@ class Textcntlrs {
     communicationAddress = "";
   }
 
-  void dispose() {
-    ///Individual
-    firstNameCntlr.dispose();
-    middleNameCntlr.dispose();
-    lastNameCntlr.dispose();
-    fatherNameCntlr.dispose();
-    motherNameCntlr.dispose();
-    spouseNameCntlr.dispose();
-    guardian.dispose();
-    customerPrimaryMobileNumberCntlr.dispose();
-    secondaryMobileNumberCntlr.dispose();
-    customerPrimaryEmailCntlr.dispose();
-    customerAadharNumberCntlr.dispose();
-    customerPanNumberCntlr.dispose();
-    customerQualificationCntlr.dispose();
-    customerCkycNumberCntlr.dispose();
-    permanentAddress.dispose();
-    permanentAddress1.dispose();
-    permanentAddress2.dispose();
-    permanent_City_town_village.dispose();
-    permanent_post_office_pincode.dispose();
-    permanent_country.dispose();
-    permanent_states_cntlr.dispose();
-    permanent_district.dispose();
+  // void dispose() {
+  //   ///Individual
+  //   firstNameCntlr.dispose();
+  //   middleNameCntlr.dispose();
+  //   lastNameCntlr.dispose();
+  //   fatherNameCntlr.dispose();
+  //   motherNameCntlr.dispose();
+  //   spouseNameCntlr.dispose();
+  //   guardian.dispose();
+  //   customerPrimaryMobileNumberCntlr.dispose();
+  //   secondaryMobileNumberCntlr.dispose();
+  //   customerPrimaryEmailCntlr.dispose();
+  //   customerAadharNumberCntlr.dispose();
+  //   customerPanNumberCntlr.dispose();
+  //   customerQualificationCntlr.dispose();
+  //   customerCkycNumberCntlr.dispose();
+  //   permanentAddress.dispose();
+  //   permanentAddress1.dispose();
+  //   permanentAddress2.dispose();
+  //   permanent_City_town_village.dispose();
+  //   permanent_post_office_pincode.dispose();
+  //   permanent_country.dispose();
+  //   permanent_states_cntlr.dispose();
+  //   permanent_district.dispose();
+  //
+  //   presentAddress.dispose();
+  //   presentAddressHouseNoNameCntlr.dispose();
+  //   presentAddress1Cntrl.dispose();
+  //   presentAddress2Cntrl.dispose();
+  //   present_City_town_village_cntlr.dispose();
+  //   present_post_office_pincode_cntlr.dispose();
+  //   present_country_cntlr.dispose();
+  //   present_states_cntlr.dispose();
+  //   present_district_cntlr.dispose();
+  //
+  //   ///Institution
+  //   firmName.dispose();
+  //   firmReg_No.dispose();
+  //   turnOver.dispose();
+  //   for (var map in proprietorControllers) {
+  //     for (var controller in map.values) {
+  //       controller.dispose();
+  //     }
+  //   }
+  // }
 
-    presentAddress.dispose();
-    presentAddressHouseNoNameCntlr.dispose();
-    presentAddress1Cntrl.dispose();
-    presentAddress2Cntrl.dispose();
-    present_City_town_village_cntlr.dispose();
-    present_post_office_pincode_cntlr.dispose();
-    present_country_cntlr.dispose();
-    present_states_cntlr.dispose();
-    present_district_cntlr.dispose();
-
-    ///Institution
-
+  void institutionDispose() {
     firmName.dispose();
     firmReg_No.dispose();
-    firmAddress.dispose();
-    productDetails.dispose();
+    institutionCommunicationAddress = '';
+    institutionPrimaryEmail.dispose();
+    institutionMobileNo.dispose();
+    institutionFirmGstin.dispose();
+    institutionFirmStartDate.dispose();
+    institutionFirmPlace.dispose();
     turnOver.dispose();
+    institutionFirmPanCard.dispose();
+    institutionPanCardImageBase64 = '';
+    proprietors.clear();
+    proprietorControllers.clear();
 
-    // proprietorName.dispose();
-    proprietorMobileNumber.dispose();
-    proprietorDOB.dispose();
-    proprietorMotherName.dispose();
-    proprietorFatherName.dispose();
-    proprietorEmailId.dispose();
+    institutionPermanentAddress1.dispose();
+    institutionPermanentAddress2.dispose();
+    institutionPermanentAddress3.dispose();
+    institutionPermanentCity.dispose();
+    institutionPermanentTaluk.dispose();
+    institutionPermanentDistrict.dispose();
+    institutionPermanentState.dispose();
+    institutionPermanentCountry.dispose();
+    institutionPermanentPinCode.dispose();
 
-    institutionQualification.dispose();
-    profession.dispose();
-    institutionPanCard.dispose();
-    institutionAadharNo.dispose();
-
-    institutionPermanentAddress.dispose();
-    institution_Current_communticationAddress.dispose();
-
-    aadharOtpVerification.dispose();
+    institutionCurrentAddress1.dispose();
+    institutionCurrentAddress2.dispose();
+    institutionCurrentAddress3.dispose();
+    institutionCurrentCity.dispose();
+    institutionCurrentTaluk.dispose();
+    institutionCurrentDistrict.dispose();
+    institutionCurrentState.dispose();
+    institutionCurrentCountry.dispose();
+    institutionCurrentPinCode.dispose();
   }
-
   //institution
-  File? institutionSelfieFile;
-  File? institutionSignatureFile;
-  File? institutionImageFile;
-  File? institutionBlinkEyeVideoFile;
-  File? institutionTalkingVideoFile;
-
-  String? institutionSelfieBase64;
-  String? institutionSignatureBase64;
-  String? institutionImageBase64;
-  String? institutionBlinkEyeVideoBase64;
-  String? institutionTalkingVideoBase64;
 
   final TextEditingController firmName = TextEditingController();
   final TextEditingController firmReg_No = TextEditingController();
-  final TextEditingController firmAddress = TextEditingController();
-  final TextEditingController productDetails = TextEditingController();
+  final TextEditingController institutionPrimaryEmail = TextEditingController();
+  final TextEditingController institutionMobileNo = TextEditingController();
+  final TextEditingController institutionFirmGstin = TextEditingController();
+  final TextEditingController institutionFirmStartDate =
+      TextEditingController();
+  final TextEditingController institutionFirmPlace = TextEditingController();
   final TextEditingController turnOver = TextEditingController();
+  final TextEditingController institutionFirmPanCard = TextEditingController();
+
+  File? institutionPanCardImage;
+  File? institutionAadhaarFrontImage;
+  File? institutionAadhaarBackImage;
+
+  String? institutionPanCardImageBase64;
+  String? institutionAadhaarFrontImageBase64;
+  String? institutionAadhaarBackImageBase64;
 
   /// Proprietor Details
+  List<ProprietorModal> proprietors = [ProprietorModal()];
   List<Map<String, TextEditingController>> proprietorControllers = [
     {
       'name': TextEditingController(),
-      'dob': TextEditingController(),
-      'fatherName': TextEditingController(),
-      'motherName': TextEditingController(),
-      'mobile': TextEditingController(),
-      'email': TextEditingController(),
+      'address': TextEditingController(),
+      'panCardNo': TextEditingController(),
     },
   ];
 
-  final TextEditingController proprietorMobileNumber = TextEditingController();
-  final TextEditingController proprietorDOB = TextEditingController();
-  final TextEditingController proprietorMotherName = TextEditingController();
-  final TextEditingController proprietorFatherName = TextEditingController();
-  final TextEditingController proprietorEmailId = TextEditingController();
-
-  /// Institution Identity Info
-  final TextEditingController institutionQualification =
+  /// Institution address
+  /// permanent address
+  final TextEditingController institutionPermanentAddress1 =
       TextEditingController();
-  final TextEditingController profession = TextEditingController();
-  final TextEditingController institutionPanCard = TextEditingController();
-  final TextEditingController institutionAadharNo = TextEditingController();
-
-  /// Address Details
-  final TextEditingController institutionPermanentAddress =
+  final TextEditingController institutionPermanentAddress2 =
       TextEditingController();
-  final TextEditingController institution_Current_communticationAddress =
+  final TextEditingController institutionPermanentAddress3 =
+      TextEditingController();
+  final TextEditingController institutionPermanentCity =
+      TextEditingController();
+  final TextEditingController institutionPermanentTaluk =
+      TextEditingController();
+  final TextEditingController institutionPermanentDistrict =
+      TextEditingController();
+  final TextEditingController institutionPermanentState =
+      TextEditingController();
+  final TextEditingController institutionPermanentCountry =
+      TextEditingController();
+  final TextEditingController institutionPermanentPinCode =
       TextEditingController();
 
-  /// Aadhar OTP Verification
-  final TextEditingController aadharOtpVerification = TextEditingController();
+  ///Current
+  final TextEditingController institutionCurrentAddress1 =
+      TextEditingController();
+  final TextEditingController institutionCurrentAddress2 =
+      TextEditingController();
+  final TextEditingController institutionCurrentAddress3 =
+      TextEditingController();
+  final TextEditingController institutionCurrentCity = TextEditingController();
+  final TextEditingController institutionCurrentTaluk = TextEditingController();
+  final TextEditingController institutionCurrentDistrict =
+      TextEditingController();
+  final TextEditingController institutionCurrentState = TextEditingController();
+  final TextEditingController institutionCurrentCountry =
+      TextEditingController();
+  final TextEditingController institutionCurrentPinCode =
+      TextEditingController();
+  String institutionCommunicationAddress = "";
 }

@@ -19,8 +19,10 @@ class UserState with _$UserState {
     @Default(false) bool isIndividualUserLoading,
     String? individualUserCreationError,
     String? referenceID,
-
     String? dobCustomer,
+    final InstitutionResponseModal? institutionResponse,
+    @Default(false) bool isInstitutionCreationLoading,
+    String? institutionCreationError,
   }) = NewUserState;
 
   factory UserState.initial() => UserState();
