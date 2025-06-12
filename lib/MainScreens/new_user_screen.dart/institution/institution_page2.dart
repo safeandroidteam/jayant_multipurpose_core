@@ -134,14 +134,20 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                 hintText: "Name",
                 textFieldLabel: "Name",
                 controller: controllerSet['name'],
-                inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                  LengthLimitingTextInputFormatter(50),
+                ],
                 onchanged: (val) => modal.name = val,
               ),
               LabelCustomTextField(
                 hintText: "Address",
                 textFieldLabel: "Address",
                 controller: controllerSet['address'],
-                inputFormatters: [LengthLimitingTextInputFormatter(250)],
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                  LengthLimitingTextInputFormatter(250),
+                ],
 
                 onchanged: (val) => modal.address = val,
               ),
@@ -150,7 +156,13 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                 textFieldLabel: "Pan Card No",
                 controller: controllerSet['panCardNo'],
                 onchanged: (val) => modal.panCardNo = val,
-                inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z0-9]'),
+                  ), // allow letters and digits in any case
+                  LengthLimitingTextInputFormatter(10), // limit length to 10
+                  UpperCaseTextFormatter(), // convert input to uppercase
+                ],
               ),
             ],
           ),
@@ -190,13 +202,19 @@ class _InstitutionPage2State extends State<InstitutionPage2> {
                 hintText: "Name",
                 textFieldLabel: "Name",
                 controller: widget.cntlrs.proprietorName,
-                inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                  LengthLimitingTextInputFormatter(50),
+                ],
               ),
               LabelCustomTextField(
                 hintText: "Education",
                 textFieldLabel: "Education",
                 controller: widget.cntlrs.proprietorEducation,
-                inputFormatters: [LengthLimitingTextInputFormatter(250)],
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                  LengthLimitingTextInputFormatter(250),
+                ],
               ),
               LabelCustomTextField(
                 hintText: "DOB",

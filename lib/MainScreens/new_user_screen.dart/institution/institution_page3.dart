@@ -137,6 +137,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 lines: 2,
                 controller: widget.cntlrs.institutionPermanentAddress1,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Address 2",
@@ -144,6 +145,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 lines: 2,
                 controller: widget.cntlrs.institutionPermanentAddress2,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Address 3",
@@ -151,30 +153,35 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 lines: 2,
                 controller: widget.cntlrs.institutionPermanentAddress3,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "City/Town/Village",
                 textFieldLabel: "City/Town/Village",
                 controller: widget.cntlrs.institutionPermanentCity,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Taluk",
                 textFieldLabel: "Taluk",
                 controller: widget.cntlrs.institutionPermanentTaluk,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "District",
                 textFieldLabel: "District",
                 controller: widget.cntlrs.institutionPermanentDistrict,
-                textInputAction: TextInputAction.done,
+                textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "State",
                 textFieldLabel: "State",
                 controller: widget.cntlrs.institutionPermanentState,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
 
               LabelCustomTextField(
@@ -182,6 +189,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 textFieldLabel: "Country",
                 controller: widget.cntlrs.institutionPermanentCountry,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Post Office Pincode",
@@ -281,6 +289,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 lines: 2,
                 controller: widget.cntlrs.institutionCurrentAddress1,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Address 2",
@@ -288,6 +297,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 lines: 2,
                 controller: widget.cntlrs.institutionCurrentAddress2,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Address 3",
@@ -295,30 +305,35 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 lines: 2,
                 controller: widget.cntlrs.institutionCurrentAddress3,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "City/Town/Village",
                 textFieldLabel: "City/Town/Village",
                 controller: widget.cntlrs.institutionCurrentCity,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Taluk",
                 textFieldLabel: "Taluk",
                 controller: widget.cntlrs.institutionCurrentTaluk,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "District",
                 textFieldLabel: "District",
                 controller: widget.cntlrs.institutionCurrentDistrict,
-                textInputAction: TextInputAction.done,
+                textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "State",
                 textFieldLabel: "State",
                 controller: widget.cntlrs.institutionCurrentState,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
 
               LabelCustomTextField(
@@ -326,6 +341,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                 textFieldLabel: "Country",
                 controller: widget.cntlrs.institutionCurrentCountry,
                 textInputAction: TextInputAction.next,
+                inputFormatters: [UpperCaseTextFormatter()],
               ),
               LabelCustomTextField(
                 hintText: "Post Office Pincode",
@@ -354,7 +370,7 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
                           ? "Select Communication Address"
                           : widget.cntlrs.institutionCommunicationAddress,
                   textDropDownLabel: "Communication Address",
-                  items: ["Permanant Adress", "Present Address"],
+                  items: ["Permanent Address", "Present Address"],
 
                   onChanged: (value) {
                     widget.cntlrs.institutionCommunicationAddress = value;
@@ -690,6 +706,19 @@ class _InstitutionPage3State extends State<InstitutionPage3> {
           ],
         );
       },
+    );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }
