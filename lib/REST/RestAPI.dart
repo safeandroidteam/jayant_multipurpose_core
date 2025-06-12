@@ -248,7 +248,8 @@ class APis {
   static String validateRefID = "$_superLink/ValidateReferalID";
   static String individualUserCreation =
       "$_superLink/InsertUpdateCustomerOnBoarding";
-
+  static String institutionUserCreation =
+      "$_superLink/InsertUpdateInstitutionCustomerOnBoarding"; //
   ///OLD
   static String generateRefID(String key) =>
       "$_superLink/GetReferanceNo?UserId=$key";
