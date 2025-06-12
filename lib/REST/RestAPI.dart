@@ -244,6 +244,10 @@ class APis {
       "$_superLink/Fill_TransferTypeDetails";
   //own Bank transfer
   static String ownBankToAccNo = "$_superLink/Fetch_OwnAccountNumber";
+  static String getBranches = "$_superLink/Fill_BranchDetails";
+  static String validateRefID = "$_superLink/ValidateReferalID";
+  static String individualUserCreation =
+      "$_superLink/InsertUpdateCustomerOnBoarding";
 
   ///OLD
   static String generateRefID(String key) =>

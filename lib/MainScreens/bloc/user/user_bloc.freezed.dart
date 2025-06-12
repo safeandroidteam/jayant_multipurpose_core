@@ -22,18 +22,42 @@ mixin _$UserEvent {
     required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
     required TResult Function(int selectedItem) selectCustomerType,
     required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult? Function(int selectedItem)? selectCustomerType,
     TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult Function(int selectedItem)? selectCustomerType,
     TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -41,18 +65,35 @@ mixin _$UserEvent {
     required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
     required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
     required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -167,6 +208,14 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
     required TResult Function(int selectedItem) selectCustomerType,
     required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
   }) {
     return fillPickUpTypesEvent(cmpCode, pickUpType);
   }
@@ -177,6 +226,14 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult? Function(int selectedItem)? selectCustomerType,
     TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
   }) {
     return fillPickUpTypesEvent?.call(cmpCode, pickUpType);
   }
@@ -187,6 +244,14 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult Function(int selectedItem)? selectCustomerType,
     TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
     required TResult orElse(),
   }) {
     if (fillPickUpTypesEvent != null) {
@@ -201,6 +266,12 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
     required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
     required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
   }) {
     return fillPickUpTypesEvent(this);
   }
@@ -211,6 +282,12 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
   }) {
     return fillPickUpTypesEvent?.call(this);
   }
@@ -221,6 +298,11 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
     required TResult orElse(),
   }) {
     if (fillPickUpTypesEvent != null) {
@@ -322,6 +404,14 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
     required TResult Function(int selectedItem) selectCustomerType,
     required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
   }) {
     return selectCustomerType(selectedItem);
   }
@@ -332,6 +422,14 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult? Function(int selectedItem)? selectCustomerType,
     TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
   }) {
     return selectCustomerType?.call(selectedItem);
   }
@@ -342,6 +440,14 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult Function(int selectedItem)? selectCustomerType,
     TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
     required TResult orElse(),
   }) {
     if (selectCustomerType != null) {
@@ -356,6 +462,12 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
     required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
     required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
   }) {
     return selectCustomerType(this);
   }
@@ -366,6 +478,12 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
   }) {
     return selectCustomerType?.call(this);
   }
@@ -376,6 +494,11 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
     required TResult orElse(),
   }) {
     if (selectCustomerType != null) {
@@ -475,6 +598,14 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
     required TResult Function(int selectedItem) selectCustomerType,
     required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
   }) {
     return pickCustomerDob(dob);
   }
@@ -485,6 +616,14 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult? Function(int selectedItem)? selectCustomerType,
     TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
   }) {
     return pickCustomerDob?.call(dob);
   }
@@ -495,6 +634,14 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
     TResult Function(int selectedItem)? selectCustomerType,
     TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
     required TResult orElse(),
   }) {
     if (pickCustomerDob != null) {
@@ -509,6 +656,12 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
     required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
     required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
   }) {
     return pickCustomerDob(this);
   }
@@ -519,6 +672,12 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
   }) {
     return pickCustomerDob?.call(this);
   }
@@ -529,6 +688,11 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
     TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
     TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
     required TResult orElse(),
   }) {
     if (pickCustomerDob != null) {
@@ -552,18 +716,892 @@ abstract class PickCustomerDobEvent implements UserEvent {
 }
 
 /// @nodoc
+abstract class _$$GetBranchesEventImplCopyWith<$Res> {
+  factory _$$GetBranchesEventImplCopyWith(
+    _$GetBranchesEventImpl value,
+    $Res Function(_$GetBranchesEventImpl) then,
+  ) = __$$GetBranchesEventImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$GetBranchesEventImplCopyWithImpl<$Res>
+    extends _$UserEventCopyWithImpl<$Res, _$GetBranchesEventImpl>
+    implements _$$GetBranchesEventImplCopyWith<$Res> {
+  __$$GetBranchesEventImplCopyWithImpl(
+    _$GetBranchesEventImpl _value,
+    $Res Function(_$GetBranchesEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$GetBranchesEventImpl implements GetBranchesEvent {
+  const _$GetBranchesEventImpl();
+
+  @override
+  String toString() {
+    return 'UserEvent.getBranches()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$GetBranchesEventImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
+    required TResult Function(int selectedItem) selectCustomerType,
+    required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
+  }) {
+    return getBranches();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult? Function(int selectedItem)? selectCustomerType,
+    TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
+  }) {
+    return getBranches?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult Function(int selectedItem)? selectCustomerType,
+    TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (getBranches != null) {
+      return getBranches();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
+    required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
+    required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
+  }) {
+    return getBranches(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
+  }) {
+    return getBranches?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (getBranches != null) {
+      return getBranches(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class GetBranchesEvent implements UserEvent {
+  const factory GetBranchesEvent() = _$GetBranchesEventImpl;
+}
+
+/// @nodoc
+abstract class _$$IndividualUserCreationEventImplCopyWith<$Res> {
+  factory _$$IndividualUserCreationEventImplCopyWith(
+    _$IndividualUserCreationEventImpl value,
+    $Res Function(_$IndividualUserCreationEventImpl) then,
+  ) = __$$IndividualUserCreationEventImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({IndividualUserCreationUIModal individualUserCreationUiModal});
+}
+
+/// @nodoc
+class __$$IndividualUserCreationEventImplCopyWithImpl<$Res>
+    extends _$UserEventCopyWithImpl<$Res, _$IndividualUserCreationEventImpl>
+    implements _$$IndividualUserCreationEventImplCopyWith<$Res> {
+  __$$IndividualUserCreationEventImplCopyWithImpl(
+    _$IndividualUserCreationEventImpl _value,
+    $Res Function(_$IndividualUserCreationEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? individualUserCreationUiModal = null}) {
+    return _then(
+      _$IndividualUserCreationEventImpl(
+        individualUserCreationUiModal:
+            null == individualUserCreationUiModal
+                ? _value.individualUserCreationUiModal
+                : individualUserCreationUiModal // ignore: cast_nullable_to_non_nullable
+                    as IndividualUserCreationUIModal,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$IndividualUserCreationEventImpl implements IndividualUserCreationEvent {
+  const _$IndividualUserCreationEventImpl({
+    required this.individualUserCreationUiModal,
+  });
+
+  @override
+  final IndividualUserCreationUIModal individualUserCreationUiModal;
+
+  @override
+  String toString() {
+    return 'UserEvent.individualUserCreation(individualUserCreationUiModal: $individualUserCreationUiModal)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$IndividualUserCreationEventImpl &&
+            (identical(
+                  other.individualUserCreationUiModal,
+                  individualUserCreationUiModal,
+                ) ||
+                other.individualUserCreationUiModal ==
+                    individualUserCreationUiModal));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, individualUserCreationUiModal);
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$IndividualUserCreationEventImplCopyWith<_$IndividualUserCreationEventImpl>
+  get copyWith => __$$IndividualUserCreationEventImplCopyWithImpl<
+    _$IndividualUserCreationEventImpl
+  >(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
+    required TResult Function(int selectedItem) selectCustomerType,
+    required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
+  }) {
+    return individualUserCreation(individualUserCreationUiModal);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult? Function(int selectedItem)? selectCustomerType,
+    TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
+  }) {
+    return individualUserCreation?.call(individualUserCreationUiModal);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult Function(int selectedItem)? selectCustomerType,
+    TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (individualUserCreation != null) {
+      return individualUserCreation(individualUserCreationUiModal);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
+    required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
+    required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
+  }) {
+    return individualUserCreation(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
+  }) {
+    return individualUserCreation?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (individualUserCreation != null) {
+      return individualUserCreation(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class IndividualUserCreationEvent implements UserEvent {
+  const factory IndividualUserCreationEvent({
+    required final IndividualUserCreationUIModal individualUserCreationUiModal,
+  }) = _$IndividualUserCreationEventImpl;
+
+  IndividualUserCreationUIModal get individualUserCreationUiModal;
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$IndividualUserCreationEventImplCopyWith<_$IndividualUserCreationEventImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ValidateRefIDEventImplCopyWith<$Res> {
+  factory _$$ValidateRefIDEventImplCopyWith(
+    _$ValidateRefIDEventImpl value,
+    $Res Function(_$ValidateRefIDEventImpl) then,
+  ) = __$$ValidateRefIDEventImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String cmpCode, String refID});
+}
+
+/// @nodoc
+class __$$ValidateRefIDEventImplCopyWithImpl<$Res>
+    extends _$UserEventCopyWithImpl<$Res, _$ValidateRefIDEventImpl>
+    implements _$$ValidateRefIDEventImplCopyWith<$Res> {
+  __$$ValidateRefIDEventImplCopyWithImpl(
+    _$ValidateRefIDEventImpl _value,
+    $Res Function(_$ValidateRefIDEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? cmpCode = null, Object? refID = null}) {
+    return _then(
+      _$ValidateRefIDEventImpl(
+        null == cmpCode
+            ? _value.cmpCode
+            : cmpCode // ignore: cast_nullable_to_non_nullable
+                as String,
+        null == refID
+            ? _value.refID
+            : refID // ignore: cast_nullable_to_non_nullable
+                as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$ValidateRefIDEventImpl implements ValidateRefIDEvent {
+  const _$ValidateRefIDEventImpl(this.cmpCode, this.refID);
+
+  @override
+  final String cmpCode;
+  @override
+  final String refID;
+
+  @override
+  String toString() {
+    return 'UserEvent.validateRefID(cmpCode: $cmpCode, refID: $refID)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ValidateRefIDEventImpl &&
+            (identical(other.cmpCode, cmpCode) || other.cmpCode == cmpCode) &&
+            (identical(other.refID, refID) || other.refID == refID));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, cmpCode, refID);
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ValidateRefIDEventImplCopyWith<_$ValidateRefIDEventImpl> get copyWith =>
+      __$$ValidateRefIDEventImplCopyWithImpl<_$ValidateRefIDEventImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
+    required TResult Function(int selectedItem) selectCustomerType,
+    required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
+  }) {
+    return validateRefID(cmpCode, refID);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult? Function(int selectedItem)? selectCustomerType,
+    TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
+  }) {
+    return validateRefID?.call(cmpCode, refID);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult Function(int selectedItem)? selectCustomerType,
+    TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (validateRefID != null) {
+      return validateRefID(cmpCode, refID);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
+    required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
+    required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
+  }) {
+    return validateRefID(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
+  }) {
+    return validateRefID?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (validateRefID != null) {
+      return validateRefID(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ValidateRefIDEvent implements UserEvent {
+  const factory ValidateRefIDEvent(final String cmpCode, final String refID) =
+      _$ValidateRefIDEventImpl;
+
+  String get cmpCode;
+  String get refID;
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ValidateRefIDEventImplCopyWith<_$ValidateRefIDEventImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ClearRefEventImplCopyWith<$Res> {
+  factory _$$ClearRefEventImplCopyWith(
+    _$ClearRefEventImpl value,
+    $Res Function(_$ClearRefEventImpl) then,
+  ) = __$$ClearRefEventImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ClearRefEventImplCopyWithImpl<$Res>
+    extends _$UserEventCopyWithImpl<$Res, _$ClearRefEventImpl>
+    implements _$$ClearRefEventImplCopyWith<$Res> {
+  __$$ClearRefEventImplCopyWithImpl(
+    _$ClearRefEventImpl _value,
+    $Res Function(_$ClearRefEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ClearRefEventImpl implements ClearRefEvent {
+  const _$ClearRefEventImpl();
+
+  @override
+  String toString() {
+    return 'UserEvent.clearRefValidation()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ClearRefEventImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
+    required TResult Function(int selectedItem) selectCustomerType,
+    required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
+  }) {
+    return clearRefValidation();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult? Function(int selectedItem)? selectCustomerType,
+    TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
+  }) {
+    return clearRefValidation?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult Function(int selectedItem)? selectCustomerType,
+    TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (clearRefValidation != null) {
+      return clearRefValidation();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
+    required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
+    required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
+  }) {
+    return clearRefValidation(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
+  }) {
+    return clearRefValidation?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (clearRefValidation != null) {
+      return clearRefValidation(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ClearRefEvent implements UserEvent {
+  const factory ClearRefEvent() = _$ClearRefEventImpl;
+}
+
+/// @nodoc
+abstract class _$$ClearDobEventImplCopyWith<$Res> {
+  factory _$$ClearDobEventImplCopyWith(
+    _$ClearDobEventImpl value,
+    $Res Function(_$ClearDobEventImpl) then,
+  ) = __$$ClearDobEventImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ClearDobEventImplCopyWithImpl<$Res>
+    extends _$UserEventCopyWithImpl<$Res, _$ClearDobEventImpl>
+    implements _$$ClearDobEventImplCopyWith<$Res> {
+  __$$ClearDobEventImplCopyWithImpl(
+    _$ClearDobEventImpl _value,
+    $Res Function(_$ClearDobEventImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UserEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ClearDobEventImpl implements ClearDobEvent {
+  const _$ClearDobEventImpl();
+
+  @override
+  String toString() {
+    return 'UserEvent.clearDobSelection()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ClearDobEventImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int cmpCode, int pickUpType) fillPickUpTypesEvent,
+    required TResult Function(int selectedItem) selectCustomerType,
+    required TResult Function(String dob) pickCustomerDob,
+    required TResult Function() getBranches,
+    required TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )
+    individualUserCreation,
+    required TResult Function(String cmpCode, String refID) validateRefID,
+    required TResult Function() clearRefValidation,
+    required TResult Function() clearDobSelection,
+  }) {
+    return clearDobSelection();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult? Function(int selectedItem)? selectCustomerType,
+    TResult? Function(String dob)? pickCustomerDob,
+    TResult? Function()? getBranches,
+    TResult? Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult? Function(String cmpCode, String refID)? validateRefID,
+    TResult? Function()? clearRefValidation,
+    TResult? Function()? clearDobSelection,
+  }) {
+    return clearDobSelection?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int cmpCode, int pickUpType)? fillPickUpTypesEvent,
+    TResult Function(int selectedItem)? selectCustomerType,
+    TResult Function(String dob)? pickCustomerDob,
+    TResult Function()? getBranches,
+    TResult Function(
+      IndividualUserCreationUIModal individualUserCreationUiModal,
+    )?
+    individualUserCreation,
+    TResult Function(String cmpCode, String refID)? validateRefID,
+    TResult Function()? clearRefValidation,
+    TResult Function()? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (clearDobSelection != null) {
+      return clearDobSelection();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(FillPickUpTypesEvent value) fillPickUpTypesEvent,
+    required TResult Function(selectCustomerTypeEvent value) selectCustomerType,
+    required TResult Function(PickCustomerDobEvent value) pickCustomerDob,
+    required TResult Function(GetBranchesEvent value) getBranches,
+    required TResult Function(IndividualUserCreationEvent value)
+    individualUserCreation,
+    required TResult Function(ValidateRefIDEvent value) validateRefID,
+    required TResult Function(ClearRefEvent value) clearRefValidation,
+    required TResult Function(ClearDobEvent value) clearDobSelection,
+  }) {
+    return clearDobSelection(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult? Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult? Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult? Function(GetBranchesEvent value)? getBranches,
+    TResult? Function(IndividualUserCreationEvent value)?
+    individualUserCreation,
+    TResult? Function(ValidateRefIDEvent value)? validateRefID,
+    TResult? Function(ClearRefEvent value)? clearRefValidation,
+    TResult? Function(ClearDobEvent value)? clearDobSelection,
+  }) {
+    return clearDobSelection?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(FillPickUpTypesEvent value)? fillPickUpTypesEvent,
+    TResult Function(selectCustomerTypeEvent value)? selectCustomerType,
+    TResult Function(PickCustomerDobEvent value)? pickCustomerDob,
+    TResult Function(GetBranchesEvent value)? getBranches,
+    TResult Function(IndividualUserCreationEvent value)? individualUserCreation,
+    TResult Function(ValidateRefIDEvent value)? validateRefID,
+    TResult Function(ClearRefEvent value)? clearRefValidation,
+    TResult Function(ClearDobEvent value)? clearDobSelection,
+    required TResult orElse(),
+  }) {
+    if (clearDobSelection != null) {
+      return clearDobSelection(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ClearDobEvent implements UserEvent {
+  const factory ClearDobEvent() = _$ClearDobEventImpl;
+}
+
+/// @nodoc
 mixin _$UserState {
   String? get slectedBranch => throw _privateConstructorUsedError;
   int? get selectedCustomerTypeCode => throw _privateConstructorUsedError;
   bool get isPickupCustomerTypeLoading => throw _privateConstructorUsedError;
   bool get isPickupTitleeLoading => throw _privateConstructorUsedError;
   bool get isPickupGenderLoading => throw _privateConstructorUsedError;
+  bool get isPickUpBranchLoading => throw _privateConstructorUsedError;
   List<PickUpTypeResponseModal> get pickUpCustomerTypeList =>
       throw _privateConstructorUsedError;
   List<PickUpTypeResponseModal> get pickUpTitileList =>
       throw _privateConstructorUsedError;
   List<PickUpTypeResponseModal> get pickUpGenderList =>
       throw _privateConstructorUsedError;
+  List<BranchData> get branchList => throw _privateConstructorUsedError;
+  bool get validateRefIDLoading => throw _privateConstructorUsedError;
+  ValidateRefIDResponseModal? get validateRefidResponse =>
+      throw _privateConstructorUsedError;
+  IndividualUserResponseModel? get individualResponse =>
+      throw _privateConstructorUsedError;
+  bool get isIndividualUserLoading => throw _privateConstructorUsedError;
+  String? get individualUserCreationError => throw _privateConstructorUsedError;
+  String? get referenceID => throw _privateConstructorUsedError;
   String? get dobCustomer => throw _privateConstructorUsedError;
 
   /// Create a copy of UserState
@@ -584,9 +1622,17 @@ abstract class $UserStateCopyWith<$Res> {
     bool isPickupCustomerTypeLoading,
     bool isPickupTitleeLoading,
     bool isPickupGenderLoading,
+    bool isPickUpBranchLoading,
     List<PickUpTypeResponseModal> pickUpCustomerTypeList,
     List<PickUpTypeResponseModal> pickUpTitileList,
     List<PickUpTypeResponseModal> pickUpGenderList,
+    List<BranchData> branchList,
+    bool validateRefIDLoading,
+    ValidateRefIDResponseModal? validateRefidResponse,
+    IndividualUserResponseModel? individualResponse,
+    bool isIndividualUserLoading,
+    String? individualUserCreationError,
+    String? referenceID,
     String? dobCustomer,
   });
 }
@@ -611,9 +1657,17 @@ class _$UserStateCopyWithImpl<$Res, $Val extends UserState>
     Object? isPickupCustomerTypeLoading = null,
     Object? isPickupTitleeLoading = null,
     Object? isPickupGenderLoading = null,
+    Object? isPickUpBranchLoading = null,
     Object? pickUpCustomerTypeList = null,
     Object? pickUpTitileList = null,
     Object? pickUpGenderList = null,
+    Object? branchList = null,
+    Object? validateRefIDLoading = null,
+    Object? validateRefidResponse = freezed,
+    Object? individualResponse = freezed,
+    Object? isIndividualUserLoading = null,
+    Object? individualUserCreationError = freezed,
+    Object? referenceID = freezed,
     Object? dobCustomer = freezed,
   }) {
     return _then(
@@ -643,6 +1697,11 @@ class _$UserStateCopyWithImpl<$Res, $Val extends UserState>
                     ? _value.isPickupGenderLoading
                     : isPickupGenderLoading // ignore: cast_nullable_to_non_nullable
                         as bool,
+            isPickUpBranchLoading:
+                null == isPickUpBranchLoading
+                    ? _value.isPickUpBranchLoading
+                    : isPickUpBranchLoading // ignore: cast_nullable_to_non_nullable
+                        as bool,
             pickUpCustomerTypeList:
                 null == pickUpCustomerTypeList
                     ? _value.pickUpCustomerTypeList
@@ -658,6 +1717,41 @@ class _$UserStateCopyWithImpl<$Res, $Val extends UserState>
                     ? _value.pickUpGenderList
                     : pickUpGenderList // ignore: cast_nullable_to_non_nullable
                         as List<PickUpTypeResponseModal>,
+            branchList:
+                null == branchList
+                    ? _value.branchList
+                    : branchList // ignore: cast_nullable_to_non_nullable
+                        as List<BranchData>,
+            validateRefIDLoading:
+                null == validateRefIDLoading
+                    ? _value.validateRefIDLoading
+                    : validateRefIDLoading // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            validateRefidResponse:
+                freezed == validateRefidResponse
+                    ? _value.validateRefidResponse
+                    : validateRefidResponse // ignore: cast_nullable_to_non_nullable
+                        as ValidateRefIDResponseModal?,
+            individualResponse:
+                freezed == individualResponse
+                    ? _value.individualResponse
+                    : individualResponse // ignore: cast_nullable_to_non_nullable
+                        as IndividualUserResponseModel?,
+            isIndividualUserLoading:
+                null == isIndividualUserLoading
+                    ? _value.isIndividualUserLoading
+                    : isIndividualUserLoading // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            individualUserCreationError:
+                freezed == individualUserCreationError
+                    ? _value.individualUserCreationError
+                    : individualUserCreationError // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            referenceID:
+                freezed == referenceID
+                    ? _value.referenceID
+                    : referenceID // ignore: cast_nullable_to_non_nullable
+                        as String?,
             dobCustomer:
                 freezed == dobCustomer
                     ? _value.dobCustomer
@@ -684,9 +1778,17 @@ abstract class _$$NewUserStateImplCopyWith<$Res>
     bool isPickupCustomerTypeLoading,
     bool isPickupTitleeLoading,
     bool isPickupGenderLoading,
+    bool isPickUpBranchLoading,
     List<PickUpTypeResponseModal> pickUpCustomerTypeList,
     List<PickUpTypeResponseModal> pickUpTitileList,
     List<PickUpTypeResponseModal> pickUpGenderList,
+    List<BranchData> branchList,
+    bool validateRefIDLoading,
+    ValidateRefIDResponseModal? validateRefidResponse,
+    IndividualUserResponseModel? individualResponse,
+    bool isIndividualUserLoading,
+    String? individualUserCreationError,
+    String? referenceID,
     String? dobCustomer,
   });
 }
@@ -710,9 +1812,17 @@ class __$$NewUserStateImplCopyWithImpl<$Res>
     Object? isPickupCustomerTypeLoading = null,
     Object? isPickupTitleeLoading = null,
     Object? isPickupGenderLoading = null,
+    Object? isPickUpBranchLoading = null,
     Object? pickUpCustomerTypeList = null,
     Object? pickUpTitileList = null,
     Object? pickUpGenderList = null,
+    Object? branchList = null,
+    Object? validateRefIDLoading = null,
+    Object? validateRefidResponse = freezed,
+    Object? individualResponse = freezed,
+    Object? isIndividualUserLoading = null,
+    Object? individualUserCreationError = freezed,
+    Object? referenceID = freezed,
     Object? dobCustomer = freezed,
   }) {
     return _then(
@@ -742,6 +1852,11 @@ class __$$NewUserStateImplCopyWithImpl<$Res>
                 ? _value.isPickupGenderLoading
                 : isPickupGenderLoading // ignore: cast_nullable_to_non_nullable
                     as bool,
+        isPickUpBranchLoading:
+            null == isPickUpBranchLoading
+                ? _value.isPickUpBranchLoading
+                : isPickUpBranchLoading // ignore: cast_nullable_to_non_nullable
+                    as bool,
         pickUpCustomerTypeList:
             null == pickUpCustomerTypeList
                 ? _value._pickUpCustomerTypeList
@@ -757,6 +1872,41 @@ class __$$NewUserStateImplCopyWithImpl<$Res>
                 ? _value._pickUpGenderList
                 : pickUpGenderList // ignore: cast_nullable_to_non_nullable
                     as List<PickUpTypeResponseModal>,
+        branchList:
+            null == branchList
+                ? _value._branchList
+                : branchList // ignore: cast_nullable_to_non_nullable
+                    as List<BranchData>,
+        validateRefIDLoading:
+            null == validateRefIDLoading
+                ? _value.validateRefIDLoading
+                : validateRefIDLoading // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        validateRefidResponse:
+            freezed == validateRefidResponse
+                ? _value.validateRefidResponse
+                : validateRefidResponse // ignore: cast_nullable_to_non_nullable
+                    as ValidateRefIDResponseModal?,
+        individualResponse:
+            freezed == individualResponse
+                ? _value.individualResponse
+                : individualResponse // ignore: cast_nullable_to_non_nullable
+                    as IndividualUserResponseModel?,
+        isIndividualUserLoading:
+            null == isIndividualUserLoading
+                ? _value.isIndividualUserLoading
+                : isIndividualUserLoading // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        individualUserCreationError:
+            freezed == individualUserCreationError
+                ? _value.individualUserCreationError
+                : individualUserCreationError // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        referenceID:
+            freezed == referenceID
+                ? _value.referenceID
+                : referenceID // ignore: cast_nullable_to_non_nullable
+                    as String?,
         dobCustomer:
             freezed == dobCustomer
                 ? _value.dobCustomer
@@ -776,13 +1926,22 @@ class _$NewUserStateImpl implements NewUserState {
     this.isPickupCustomerTypeLoading = false,
     this.isPickupTitleeLoading = false,
     this.isPickupGenderLoading = false,
+    this.isPickUpBranchLoading = false,
     final List<PickUpTypeResponseModal> pickUpCustomerTypeList = const [],
     final List<PickUpTypeResponseModal> pickUpTitileList = const [],
     final List<PickUpTypeResponseModal> pickUpGenderList = const [],
+    final List<BranchData> branchList = const [],
+    this.validateRefIDLoading = false,
+    this.validateRefidResponse,
+    this.individualResponse,
+    this.isIndividualUserLoading = false,
+    this.individualUserCreationError,
+    this.referenceID,
     this.dobCustomer,
   }) : _pickUpCustomerTypeList = pickUpCustomerTypeList,
        _pickUpTitileList = pickUpTitileList,
-       _pickUpGenderList = pickUpGenderList;
+       _pickUpGenderList = pickUpGenderList,
+       _branchList = branchList;
 
   @override
   final String? slectedBranch;
@@ -797,6 +1956,9 @@ class _$NewUserStateImpl implements NewUserState {
   @override
   @JsonKey()
   final bool isPickupGenderLoading;
+  @override
+  @JsonKey()
+  final bool isPickUpBranchLoading;
   final List<PickUpTypeResponseModal> _pickUpCustomerTypeList;
   @override
   @JsonKey()
@@ -827,12 +1989,35 @@ class _$NewUserStateImpl implements NewUserState {
     return EqualUnmodifiableListView(_pickUpGenderList);
   }
 
+  final List<BranchData> _branchList;
+  @override
+  @JsonKey()
+  List<BranchData> get branchList {
+    if (_branchList is EqualUnmodifiableListView) return _branchList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_branchList);
+  }
+
+  @override
+  @JsonKey()
+  final bool validateRefIDLoading;
+  @override
+  final ValidateRefIDResponseModal? validateRefidResponse;
+  @override
+  final IndividualUserResponseModel? individualResponse;
+  @override
+  @JsonKey()
+  final bool isIndividualUserLoading;
+  @override
+  final String? individualUserCreationError;
+  @override
+  final String? referenceID;
   @override
   final String? dobCustomer;
 
   @override
   String toString() {
-    return 'UserState(slectedBranch: $slectedBranch, selectedCustomerTypeCode: $selectedCustomerTypeCode, isPickupCustomerTypeLoading: $isPickupCustomerTypeLoading, isPickupTitleeLoading: $isPickupTitleeLoading, isPickupGenderLoading: $isPickupGenderLoading, pickUpCustomerTypeList: $pickUpCustomerTypeList, pickUpTitileList: $pickUpTitileList, pickUpGenderList: $pickUpGenderList, dobCustomer: $dobCustomer)';
+    return 'UserState(slectedBranch: $slectedBranch, selectedCustomerTypeCode: $selectedCustomerTypeCode, isPickupCustomerTypeLoading: $isPickupCustomerTypeLoading, isPickupTitleeLoading: $isPickupTitleeLoading, isPickupGenderLoading: $isPickupGenderLoading, isPickUpBranchLoading: $isPickUpBranchLoading, pickUpCustomerTypeList: $pickUpCustomerTypeList, pickUpTitileList: $pickUpTitileList, pickUpGenderList: $pickUpGenderList, branchList: $branchList, validateRefIDLoading: $validateRefIDLoading, validateRefidResponse: $validateRefidResponse, individualResponse: $individualResponse, isIndividualUserLoading: $isIndividualUserLoading, individualUserCreationError: $individualUserCreationError, referenceID: $referenceID, dobCustomer: $dobCustomer)';
   }
 
   @override
@@ -857,6 +2042,8 @@ class _$NewUserStateImpl implements NewUserState {
                 other.isPickupTitleeLoading == isPickupTitleeLoading) &&
             (identical(other.isPickupGenderLoading, isPickupGenderLoading) ||
                 other.isPickupGenderLoading == isPickupGenderLoading) &&
+            (identical(other.isPickUpBranchLoading, isPickUpBranchLoading) ||
+                other.isPickUpBranchLoading == isPickUpBranchLoading) &&
             const DeepCollectionEquality().equals(
               other._pickUpCustomerTypeList,
               _pickUpCustomerTypeList,
@@ -869,6 +2056,29 @@ class _$NewUserStateImpl implements NewUserState {
               other._pickUpGenderList,
               _pickUpGenderList,
             ) &&
+            const DeepCollectionEquality().equals(
+              other._branchList,
+              _branchList,
+            ) &&
+            (identical(other.validateRefIDLoading, validateRefIDLoading) ||
+                other.validateRefIDLoading == validateRefIDLoading) &&
+            (identical(other.validateRefidResponse, validateRefidResponse) ||
+                other.validateRefidResponse == validateRefidResponse) &&
+            (identical(other.individualResponse, individualResponse) ||
+                other.individualResponse == individualResponse) &&
+            (identical(
+                  other.isIndividualUserLoading,
+                  isIndividualUserLoading,
+                ) ||
+                other.isIndividualUserLoading == isIndividualUserLoading) &&
+            (identical(
+                  other.individualUserCreationError,
+                  individualUserCreationError,
+                ) ||
+                other.individualUserCreationError ==
+                    individualUserCreationError) &&
+            (identical(other.referenceID, referenceID) ||
+                other.referenceID == referenceID) &&
             (identical(other.dobCustomer, dobCustomer) ||
                 other.dobCustomer == dobCustomer));
   }
@@ -881,9 +2091,17 @@ class _$NewUserStateImpl implements NewUserState {
     isPickupCustomerTypeLoading,
     isPickupTitleeLoading,
     isPickupGenderLoading,
+    isPickUpBranchLoading,
     const DeepCollectionEquality().hash(_pickUpCustomerTypeList),
     const DeepCollectionEquality().hash(_pickUpTitileList),
     const DeepCollectionEquality().hash(_pickUpGenderList),
+    const DeepCollectionEquality().hash(_branchList),
+    validateRefIDLoading,
+    validateRefidResponse,
+    individualResponse,
+    isIndividualUserLoading,
+    individualUserCreationError,
+    referenceID,
     dobCustomer,
   );
 
@@ -903,9 +2121,17 @@ abstract class NewUserState implements UserState {
     final bool isPickupCustomerTypeLoading,
     final bool isPickupTitleeLoading,
     final bool isPickupGenderLoading,
+    final bool isPickUpBranchLoading,
     final List<PickUpTypeResponseModal> pickUpCustomerTypeList,
     final List<PickUpTypeResponseModal> pickUpTitileList,
     final List<PickUpTypeResponseModal> pickUpGenderList,
+    final List<BranchData> branchList,
+    final bool validateRefIDLoading,
+    final ValidateRefIDResponseModal? validateRefidResponse,
+    final IndividualUserResponseModel? individualResponse,
+    final bool isIndividualUserLoading,
+    final String? individualUserCreationError,
+    final String? referenceID,
     final String? dobCustomer,
   }) = _$NewUserStateImpl;
 
@@ -920,11 +2146,27 @@ abstract class NewUserState implements UserState {
   @override
   bool get isPickupGenderLoading;
   @override
+  bool get isPickUpBranchLoading;
+  @override
   List<PickUpTypeResponseModal> get pickUpCustomerTypeList;
   @override
   List<PickUpTypeResponseModal> get pickUpTitileList;
   @override
   List<PickUpTypeResponseModal> get pickUpGenderList;
+  @override
+  List<BranchData> get branchList;
+  @override
+  bool get validateRefIDLoading;
+  @override
+  ValidateRefIDResponseModal? get validateRefidResponse;
+  @override
+  IndividualUserResponseModel? get individualResponse;
+  @override
+  bool get isIndividualUserLoading;
+  @override
+  String? get individualUserCreationError;
+  @override
+  String? get referenceID;
   @override
   String? get dobCustomer;
 
