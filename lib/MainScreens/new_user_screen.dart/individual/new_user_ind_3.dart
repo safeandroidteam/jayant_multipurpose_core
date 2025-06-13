@@ -317,7 +317,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                           context,
                           state.individualResponse!,
                         );
-                        widget.cntlrs.individualDispose();
+                        widget.cntlrs.individualClear();
                       } else {
                         customPrint(
                           "individual creation  msg=${state.individualUserCreationError}",
@@ -638,49 +638,53 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
     final userData = responseModel.data.first;
 
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('User Created Successfully'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: Text('Customer ID : ${userData.custId}')),
-                  IconButton(
-                    icon: const Icon(Icons.copy, size: 18),
-                    tooltip: 'Copy Customer ID',
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: userData.custId));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Customer ID copied to clipboard'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: const Text('User Created Successfully'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: Text('Customer ID : ${userData.custId}')),
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 18),
+                      tooltip: 'Copy Customer ID',
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: userData.custId));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Customer ID copied to clipboard'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text('Account No  : ${userData.accNo}'),
+                Text('Share No    : ${userData.shareNo}'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Login()),
+                  );
+                },
+                child: const Text('OK'),
               ),
-              const SizedBox(height: 4),
-              Text('Account No  : ${userData.accNo}'),
-              Text('Share No    : ${userData.shareNo}'),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),
-                );
-              },
-              child: const Text('OK'),
-            ),
-          ],
         );
       },
     );
