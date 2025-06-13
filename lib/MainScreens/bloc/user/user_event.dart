@@ -18,4 +18,7 @@ class UserEvent with _$UserEvent {
       ValidateRefIDEvent;
   const factory UserEvent.clearRefValidation() = ClearRefEvent;
   const factory UserEvent.clearDobSelection() = ClearDobEvent;
+  const factory UserEvent.institutionCreation({
+    required InstituitionUiReqModel institutionUiModal,
+  }) = InstitutionUserCreationEvent;
 }

@@ -1,20 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:passbook_core_jayant/MainScreens/Model/proprietor_modal.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/MainScreens/bloc/user/controllers/text_controllers.dart';
-import 'package:passbook_core_jayant/MainScreens/bloc/user/user_bloc.dart';
+import 'package:passbook_core_jayant/MainScreens/new_user_screen.dart/institution/institution_page2.dart';
+import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
 import 'package:passbook_core_jayant/Util/capture_image_video.dart';
-import 'package:passbook_core_jayant/Util/custom_drop_down.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:passbook_core_jayant/Util/custom_textfield.dart';
-import 'package:passbook_core_jayant/Util/image_picker_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-///Institution Page
 class UserInstitutionCreation extends StatefulWidget {
-  const UserInstitutionCreation({super.key});
+  const UserInstitutionCreation({super.key, required this.cntlrs});
+
+  final Textcntlrs cntlrs;
 
   @override
   State<UserInstitutionCreation> createState() =>
@@ -22,348 +27,408 @@ class UserInstitutionCreation extends StatefulWidget {
 }
 
 class _UserInstitutionCreationState extends State<UserInstitutionCreation> {
-  final cntlrs = Textcntlrs();
   final captureService = CaptureService();
-  List<int> proprietorIndexes = [1];
-  List<ProprietorModel> proprietors = [ProprietorModel()];
+  List<PlatformFile> uploadedDocs = [];
+
+  bool containsSpecialCharacters(String input) {
+    final pattern = RegExp(r'[!@#<>?":_`~;\[\]\\|=+)(*&^%₹₹]');
+    return pattern.hasMatch(input);
+  }
+
+  TextInputFormatter blockSpecialCharacters() {
+    return FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z0-9\s&\-,.'@]"));
+  }
+
+  void _selectFirmStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      final formattedDate = DateFormat('dd/MM/yyyy').format(picked);
+      widget.cntlrs.institutionFirmStartDate.text = formattedDate;
+    }
+  }
+
+  Future<void> pickPanCardImage() async {
+    final status = await Permission.camera.request();
+
+    if (status.isGranted) {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+      if (pickedFile != null) {
+        final File file = File(pickedFile.path);
+        final bytes = await pickedFile.readAsBytes();
+
+        setState(() {
+          widget.cntlrs.institutionPanCardImage = file;
+          widget.cntlrs.institutionPanCardImageBase64 = base64Encode(bytes);
+        });
+
+        alertPrint(
+          "Base64: ${widget.cntlrs.institutionPanCardImageBase64?.substring(0, 30)}...",
+        );
+      }
+    } else if (status.isDenied || status.isPermanentlyDenied) {
+      openAppSettings();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please allow camera access from settings.'),
+        ),
+      );
+    }
+  }
+
+  void previewPanCardImage() {
+    if (widget.cntlrs.institutionPanCardImage == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Preview PAN Card"),
+          content: Image.file(
+            widget.cntlrs.institutionPanCardImage!,
+            fit: BoxFit.contain,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Close"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await pickPanCardImage();
+              },
+              child: const Text("Re-Capture"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
     final w = MediaQuery.of(context).size.width;
-    Widget buildProprietorSection(int index) {
-      final modal = proprietors[index];
 
-      alertPrint("Index added $index");
-      return SafeArea(
-        child: Scaffold(
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Proprietor Details $index",
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontSize: 16,
-                ),
-              ),
-              SizedBox(height: 8),
-              LabelCustomTextField(
-                hintText: "Name",
-                textFieldLabel: "Name",
-                onchanged: (val) {
-                  modal.name = val;
-                },
-              ),
-              LabelCustomTextField(
-                hintText: "DOB",
-                textFieldLabel: "DOB",
-                onchanged: (val) {
-                  modal.dob = val;
-                },
-              ),
-              LabelCustomTextField(
-                hintText: "Father Name",
-                textFieldLabel: "Father Name",
-                onchanged: (val) {
-                  modal.fatherName = val;
-                },
-              ),
-              LabelCustomTextField(
-                hintText: "Mother Maiden Name",
-                textFieldLabel: "Mother Maiden Name",
-                onchanged: (val) {
-                  modal.motherName = val;
-                },
-              ),
-              LabelCustomTextField(
-                hintText: "Mobile No",
-                textFieldLabel: "Mobile No",
-                onchanged: (val) {
-                  modal.mobile = val;
-                },
-              ),
-              LabelCustomTextField(
-                hintText: "Email ID",
-                textFieldLabel: "Email ID",
-                onchanged: (val) {
-                  modal.email = val;
-                },
-              ),
-              SizedBox(height: 16),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white, size: 30.0),
+          onPressed: () {
+            Navigator.of(context).pop();
+            widget.cntlrs.institutionClear();
+          },
         ),
-      );
-    }
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: h * 0.03),
-        Text(
-          "Firms Details",
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: w * 0.042,
-          ),
+        centerTitle: true,
+        title: const Text(
+          "Institution Creation",
+          style: TextStyle(color: Colors.white),
         ),
-        SizedBox(height: h * 0.02),
-        LabelCustomTextField(
-          hintText: "Firm Name",
-          textFieldLabel: "Firm Name",
-        ),
-        LabelCustomTextField(
-          hintText: "Firm Reg No",
-          textFieldLabel: "Firm Reg No",
-        ),
-        LabelCustomTextField(
-          hintText: "Firm Registered Address",
-          textFieldLabel: "Firm Registered Address",
-          lines: 3,
-        ),
-        Text("Document Attached"),
-        SizedBox(height: h * 0.01),
-        Container(
-          height: h * 0.07,
-          width: w,
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey, width: 0.3),
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.add, color: Colors.blueAccent),
-              ),
-            ],
-          ),
-        ),
-        LabelCustomTextField(
-          hintText: "Product Details",
-          textFieldLabel: "Product Details",
-        ),
-        LabelCustomTextField(
-          hintText: "Turn Over",
-          textFieldLabel: "Turn Over",
-        ),
-        SizedBox(height: h * 0.03),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(w * 0.04),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Proprietor Details",
+              "Firms Details",
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
                 fontSize: w * 0.042,
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.add_circle),
-              onPressed: () {
-                setState(() {
-                  proprietorIndexes.add(proprietorIndexes.length + 1);
-                });
-              },
+            const Divider(thickness: 1.2),
+            SizedBox(height: h * 0.02),
+            LabelCustomTextField(
+              inputFormatters: [
+                blockSpecialCharacters(),
+                LengthLimitingTextInputFormatter(50),
+              ],
+              controller: widget.cntlrs.firmName,
+              hintText: "Firm Name",
+              textFieldLabel: "Firm Name",
             ),
-          ],
-        ),
-
-        /// All Proprietor Sections
-        ...proprietorIndexes.map((index) => buildProprietorSection(index)),
-
-        LabelWithDropDownField(
-          textDropDownLabel: "Gender",
-          items: ["MALE", "FEMALE"],
-        ),
-        LabelWithDropDownField(
-          textDropDownLabel: "Nationality",
-          items: ["A", "B"],
-        ),
-        LabelCustomTextField(
-          hintText: "Qualification",
-          textFieldLabel: "Qualification",
-        ),
-        LabelCustomTextField(
-          hintText: "Profession",
-          textFieldLabel: "Profession",
-        ),
-        LabelCustomTextField(
-          hintText: "PAN CARD No",
-          textFieldLabel: "PAN CARD No",
-        ),
-        LabelCustomTextField(
-          hintText: "Aadhar CARD No",
-          textFieldLabel: "Aadhar CARD No",
-        ),
-        LabelCustomTextField(
-          lines: 3,
-          hintText: "Permanent Address",
-          textFieldLabel: "Permanent Address",
-        ),
-        LabelCustomTextField(
-          lines: 3,
-          hintText: "Current/ Communication Address",
-          textFieldLabel: "Curent/ Communication Address",
-        ),
-        //fetch the geo location
-        SizedBox(height: h * 0.03),
-        Text(
-          "Nomination",
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: w * 0.042,
-          ),
-        ),
-        SizedBox(height: h * 0.05),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ImageWidget(
-              text: "Selfie",
-              imageFile: cntlrs.institutionSelfieFile,
-              onTap: () async {
-                final file = await captureService.captureImage();
-                if (file != null) {
-                  final base64 = await ImageUtils.compressXFileToBase64(file);
-                  setState(() {
-                    cntlrs.institutionSelfieFile = file;
-                    cntlrs.institutionSelfieBase64 = base64;
-
-                    cntlrs.institutionSelfieFile = File(file.path);
-                    cntlrs.institutionSelfieBase64 = base64;
-                  });
-
-                  successPrint(
-                    "Individual Capture Image ${cntlrs.individualCustomerImageFileBase64}",
-                  );
-                }
-              },
+            LabelCustomTextField(
+              controller: widget.cntlrs.firmReg_No,
+              hintText: "Firm Reg No",
+              textFieldLabel: "Firm Reg No",
+              inputFormatters: [
+                blockSpecialCharacters(),
+                LengthLimitingTextInputFormatter(50),
+              ],
             ),
-            ImageWidget(
-              text: "Blinking Eyes",
-              isVideo: true,
-              imageFile: cntlrs.institutionBlinkEyeVideoFile,
-              onTap: () async {
-                final video = await captureService.captureVideo();
-                if (video != null) {
-                  final bytes = await video.readAsBytes();
-                  final base64 = base64Encode(bytes);
-                  setState(() {
-                    cntlrs.institutionBlinkEyeVideoFile = File(video.path);
-                    cntlrs.institutionBlinkEyeVideoBase64 = base64;
-                  });
-                  successPrint("Blinking Video $base64");
-                  successPrint(
-                    "Blinking Video ${cntlrs.institutionBlinkEyeVideoBase64}",
-                  );
-                } else {
-                  warningPrint("Video recording cancelled or failed.");
-                }
-              },
+            LabelCustomTextField(
+              controller: widget.cntlrs.institutionPrimaryEmail,
+              hintText: "Firm Primary Email",
+              textFieldLabel: "Firm Primary Email",
+              inputFormatters: [
+                blockSpecialCharacters(),
+                LengthLimitingTextInputFormatter(50),
+              ],
             ),
-          ],
-        ),
+            LabelCustomTextField(
+              hintText: "Mobile No",
+              textFieldLabel: "Mobile No",
+              inputType: TextInputType.number,
+              inputFormatters: [LengthLimitingTextInputFormatter(10)],
+              controller: widget.cntlrs.institutionMobileNo,
+            ),
 
-        SizedBox(height: h * 0.05),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ImageWidget(
-              text: "Signature",
-              imageFile: cntlrs.institutionSignatureFile,
-              onTap: () async {
-                final file = await captureService.captureImage();
-                if (file != null) {
-                  final base64 = await ImageUtils.compressXFileToBase64(file);
-                  setState(() {
-                    cntlrs.institutionSignatureFile = file;
-                    cntlrs.institutionSignatureBase64 = base64;
-                    cntlrs.institutionSignatureFile = File(file.path);
-                  });
-                  cntlrs.institutionSignatureBase64 = base64;
-                  successPrint(
-                    "Individual Selfie Image ${cntlrs.institutionSignatureBase64}",
-                  );
-                }
-              },
+            LabelCustomTextField(
+              controller: widget.cntlrs.institutionFirmGstin,
+              hintText: "Firm GSTIN",
+              textFieldLabel: "Firm GSTIN",
+              inputFormatters: [
+                blockSpecialCharacters(),
+                LengthLimitingTextInputFormatter(15),
+              ],
             ),
-          ],
-        ),
-        SizedBox(height: h * 0.05),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ImageWidget(
-              text: "Selfie",
-              imageFile: cntlrs.institutionSelfieFile,
-              onTap: () async {
-                final file = await captureService.captureImage();
-                if (file != null) {
-                  final base64 = await ImageUtils.compressXFileToBase64(file);
-                  setState(() {
-                    cntlrs.institutionSelfieFile = file;
-                    cntlrs.institutionSelfieBase64 = base64;
-                    cntlrs.institutionSelfieFile = File(file.path);
-                  });
-                  cntlrs.institutionSelfieBase64 = base64;
-                  successPrint(
-                    "Individual Selfie Image ${cntlrs.institutionSelfieBase64}",
-                  );
-                }
-              },
+            LabelCustomTextField(
+              hintText: "Date of Establishment",
+              textFieldLabel: "Date of Establishment",
+              controller: widget.cntlrs.institutionFirmStartDate,
+              readOnly: true,
+              onTap: () => _selectFirmStartDate(context),
             ),
-            ImageWidget(
-              text: "Video Recording",
-              isVideo: true,
-              imageFile: cntlrs.institutionTalkingVideoFile,
-              onTap: () async {
-                final video = await captureService.captureVideo();
-                if (video != null) {
-                  final bytes = await video.readAsBytes();
-                  final base64 = base64Encode(bytes);
-                  setState(() {
-                    cntlrs.institutionTalkingVideoFile = File(video.path);
-                    cntlrs.institutionTalkingVideoBase64 = base64;
-                  });
-                  successPrint("Blinking Video $base64");
-                  successPrint(
-                    "Blinking Video ${cntlrs.institutionTalkingVideoBase64}",
-                  );
-                } else {
-                  warningPrint("Video recording cancelled or failed.");
-                }
-              },
-            ),
-          ],
-        ),
 
-        SizedBox(height: h * 0.05),
-        LabelCustomTextField(
-          hintText: "Aadhar Card OTP",
-          textFieldLabel: "Aadhar Card OTP Verification",
-        ),
-        SizedBox(height: h * 0.03),
-        Row(
-          children: [
-            Checkbox(value: true, onChanged: (value) {}),
+            LabelCustomTextField(
+              controller: widget.cntlrs.institutionFirmPlace,
+              hintText: "Firm Place",
+              textFieldLabel: "Firm Place",
+              inputFormatters: [
+                blockSpecialCharacters(),
+                LengthLimitingTextInputFormatter(250),
+              ],
+            ),
+
+            LabelCustomTextField(
+              controller: widget.cntlrs.turnOver,
+              hintText: "Turn Over",
+              textFieldLabel: "Turn Over",
+              inputType: TextInputType.number,
+              inputFormatters: [
+                blockSpecialCharacters(),
+                LengthLimitingTextInputFormatter(15),
+              ],
+            ),
+            SizedBox(height: h * 0.02),
+
+            ///Aadhaar , pan, front and back
             Text(
-              "Terms & Conditions",
-              style: TextStyle(
+              "Document Attached",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
                 color: Colors.black,
-                fontWeight: FontWeight.w500,
+                fontSize: w * 0.042,
+              ),
+            ),
+            const Divider(thickness: 1.2),
+            SizedBox(height: h * 0.01),
+
+            LabelCustomTextField(
+              controller: widget.cntlrs.institutionFirmPanCard,
+              hintText: "Firm’s PAN Number",
+              textFieldLabel: "Firm’s PAN Number",
+              inputFormatters: [
+                blockSpecialCharacters(),
+                LengthLimitingTextInputFormatter(10),
+              ],
+            ),
+            SizedBox(height: h * 0.01),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'PAN Card Photo',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: w * 0.035,
+                  ),
+                ),
+
+                ///Image capture
+                GestureDetector(
+                  onTap: () {
+                    if (widget.cntlrs.institutionPanCardImage != null) {
+                      previewPanCardImage();
+                    } else {
+                      pickPanCardImage();
+                    }
+                  },
+                  child: DottedBorder(
+                    options: RectDottedBorderOptions(
+                      borderPadding: EdgeInsets.all(10),
+                      dashPattern: [6, 4],
+                      strokeWidth: 1.5,
+                      color: Colors.grey,
+                    ),
+                    child: Container(
+                      height: 150,
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(12),
+                      child:
+                          widget.cntlrs.institutionPanCardImage != null
+                              ? Image.file(
+                                widget.cntlrs.institutionPanCardImage!,
+                                fit: BoxFit.contain,
+                              )
+                              : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.image,
+                                    size: 40,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    "Tap to upload Firm PAN Card",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: h * 0.03),
+            SizedBox(
+              width: w,
+              child: CustomRaisedButton(
+                buttonText: "Continue",
+                onPressed: () async {
+                  bool isEmpty(String val) => val.trim().isEmpty;
+
+                  if (isEmpty(widget.cntlrs.firmName.text) ||
+                      isEmpty(widget.cntlrs.firmReg_No.text) ||
+                      isEmpty(widget.cntlrs.institutionPrimaryEmail.text) ||
+                      isEmpty(widget.cntlrs.institutionMobileNo.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmGstin.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmStartDate.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmPlace.text) ||
+                      isEmpty(widget.cntlrs.institutionFirmPanCard.text) ||
+                      widget.cntlrs.institutionPanCardImage == null ||
+                      widget.cntlrs.institutionPanCardImage == "" ||
+                      isEmpty(widget.cntlrs.turnOver.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please fill all fields",
+                    );
+                    return;
+                  }
+
+                  if (isEmpty(widget.cntlrs.firmName.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter Firm Name",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.firmReg_No.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter Firm Registration Number",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.institutionPrimaryEmail.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter Primary Email",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.institutionMobileNo.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter Mobile Number",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.institutionFirmGstin.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter Firm GSTIN",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.institutionFirmStartDate.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please select Firm Start Date",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.institutionFirmPlace.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter Place of Firm",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.institutionFirmPanCard.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter PAN Card Number",
+                    );
+                    return;
+                  }
+                  if (widget.cntlrs.institutionPanCardImage == null) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please upload PAN Card Image",
+                    );
+                    return;
+                  }
+                  if (isEmpty(widget.cntlrs.turnOver.text)) {
+                    GlobalWidgets().showSnackBar(
+                      context,
+                      "Please enter Annual Turnover",
+                    );
+                    return;
+                  }
+                  successPrint('''  
+------ Form Submission ------  
+Firm Name: ${widget.cntlrs.firmName.text}  
+Firm Reg No: ${widget.cntlrs.firmReg_No.text}  
+Firm Primary Email: ${widget.cntlrs.institutionPrimaryEmail.text} 
+Mobile No: ${widget.cntlrs.institutionMobileNo.text}   
+Firm GSTIN: ${widget.cntlrs.institutionFirmGstin.text}  
+Firm Establishment Date: ${widget.cntlrs.institutionFirmStartDate.text}  
+Firm Place: ${widget.cntlrs.institutionFirmPlace.text}  
+Turn Over: ${widget.cntlrs.turnOver.text}  
+Firm PAN Card Number: ${widget.cntlrs.institutionFirmPanCard.text}  
+Uploaded PAN Card Image: ${widget.cntlrs.institutionPanCardImage != null ? 'Yes' : 'No'}  
+Uploaded Base 64: ${widget.cntlrs.institutionPanCardImageBase64}    
+----------------------------  
+''');
+
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder:
+                          (context) => InstitutionPage2(cntlrs: widget.cntlrs),
+                    ),
+                  );
+                },
               ),
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
