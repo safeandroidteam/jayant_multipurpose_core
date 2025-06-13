@@ -262,6 +262,7 @@ class Textcntlrs {
   //   }
   // }
 
+
   //institution
 
   final TextEditingController firmName = TextEditingController();
@@ -339,7 +340,7 @@ class Textcntlrs {
   String institutionCommunicationAddress = "";
 
   //institution new vishnu
-  void institutionClear() {
+  void institutionClear(){
     firmName.clear();
     firmReg_No.clear();
     institutionPrimaryEmail.clear();
@@ -349,8 +350,8 @@ class Textcntlrs {
     institutionFirmPlace.clear();
     turnOver.clear();
     institutionFirmPanCard.clear();
-    institutionPanCardImage = null;
-    institutionPanCardImageBase64 = null;
+    institutionPanCardImage= null;
+    institutionPanCardImageBase64= null;
     proprietorControllers.clear();
     institutionPermanentAddress1.clear();
     institutionPermanentAddress2.clear();
