@@ -1,8 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/fill_pickUp_response_modal.dart';
+import 'package:passbook_core_jayant/MainScreens/Model/institution/proprietor_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/user_modal/individual_user_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/user_modal/prsent_address_modal.dart';
 import 'package:passbook_core_jayant/MainScreens/Model/user_modal/request/individual_request_modal.dart';
@@ -15,7 +17,9 @@ import 'package:passbook_core_jayant/REST/app_exceptions.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
 import 'package:xml/xml.dart' as xml;
 
+import '../../Model/institution/address_modal.dart';
 import '../../Model/institution/institution_request_modal.dart';
+import '../../Model/institution/intitutionUiReqModel.dart';
 import '../../Model/user_modal/response/institution_response_modal.dart';
 
 part 'user_bloc.freezed.dart'; // GENERATED FILE
@@ -134,7 +138,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     // warningPrint("branch Loading ");
     try {
       final response = await RestAPI().get(APis.getBranches);
-      //  warningPrint("branch respose =$response");
+      //  warningPrint("branch response =$response");
       final List<BranchData> branchList =
           (response["Data"] as List)
               .map((e) => BranchData.fromJson(e))
@@ -269,36 +273,81 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(state.copyWith(isInstitutionCreationLoading: true));
 
     try {
-      // Prepare your request model
-      final requestModel = InstitutionUiModal(
-        event.institutionUiModal.cmpCode,
-        event.institutionUiModal.brCode,
-        event.institutionUiModal.custTypeCode,
-        event.institutionUiModal.accountType,
-        event.institutionUiModal.refID,
-        event.institutionUiModal.firmName,
-        event.institutionUiModal.firmRegNo,
-        event.institutionUiModal.firmRegType,
-        event.institutionUiModal.firmStartDate,
-        event.institutionUiModal.firmPlaceINC,
-        event.institutionUiModal.firmPanNo,
-        event.institutionUiModal.firmPrimaryEmail,
-        event.institutionUiModal.firmGstin,
-        event.institutionUiModal.firmPresentAdd,
-        event.institutionUiModal.firmPermanentAdd,
-        event.institutionUiModal.communicationAddress.toLowerCase() == 'present'
-            ? "Present"
-            : "Permanent",
-        event.institutionUiModal.proprietors,
-        event.institutionUiModal.aadhaarCardFront,
-        event.institutionUiModal.aadhaarCardBack,
-        event.institutionUiModal.panCardFront,
+      List<InstitutionAddressModal> tempAddressDataList = [];
+      List<ProprietorModal> tempProprietorAddressDataList = [];
+      tempAddressDataList.add(event.institutionUiModal.presentAddressXml);
+      tempAddressDataList.add(event.institutionUiModal.permanentAddressXml);
+
+      tempProprietorAddressDataList.addAll(
+        event.institutionUiModal.proprietorsXml,
       );
-      alertPrint("Institution Request modal $requestModel");
+      customPrint("address data list length == ${tempAddressDataList.length}");
+
+      List<xml.XmlElement> presentXmllist = [];
+      List<xml.XmlElement> permanentXmllist = [];
+      List<xml.XmlElement> proprietorsXmllist = [];
+
+      for (var address in tempAddressDataList) {
+        if (address.addType.toLowerCase() == "present") {
+          presentXmllist.add(address.toXml());
+        } else if (address.addType.toLowerCase() == "permanent") {
+          permanentXmllist.add(address.toXml());
+        }
+      }
+
+      var presentAddRoot = xml.XmlElement(xml.XmlName('root'));
+      var permanentAddRoot = xml.XmlElement(xml.XmlName('root'));
+      var proprietorsAddRoot = xml.XmlElement(xml.XmlName('root'));
+
+      for (var xmlElement in presentXmllist) {
+        presentAddRoot.children.add(xmlElement);
+      }
+      for (var xmlElement in permanentXmllist) {
+        permanentAddRoot.children.add(xmlElement);
+      }
+      for (var xmlElement in tempProprietorAddressDataList) {
+        proprietorsAddRoot.children.add(xmlElement.toXml());
+      }
+      String permanentXmlString = permanentAddRoot.toXmlString(pretty: true);
+      String presentXmlString = presentAddRoot.toXmlString(pretty: true);
+      String proprietorsXmlString = proprietorsAddRoot.toXmlString(
+        pretty: true,
+      );
+
+      final institiutionReqModel = InstitutionReqModal(
+        cmpCode: event.institutionUiModal.cmpCode,
+        brCode: event.institutionUiModal.brCode,
+        custTypeCode: event.institutionUiModal.custTypeCode,
+        firmName: event.institutionUiModal.firmName,
+        firmRegType: event.institutionUiModal.firmRegType,
+        firmRegNo: event.institutionUiModal.firmRegNo,
+        firmStartDate: event.institutionUiModal.firmStartDate,
+        firmPlaceInc: event.institutionUiModal.firmPlaceInc,
+        firmPanNo: event.institutionUiModal.firmPanNo,
+        firmPrimaryEmail: event.institutionUiModal.firmPrimaryEmail,
+        firmGstin: event.institutionUiModal.firmGstin,
+        presentAddressXml: permanentXmlString,
+        permanentAddressXml: presentXmlString,
+        communicationAddress: event.institutionUiModal.communicationAddress,
+        proprietorsXml: proprietorsXmlString,
+        accountType: event.institutionUiModal.accountType,
+        refID: event.institutionUiModal.refID,
+        aadhaarFrontImage: event.institutionUiModal.aadhaarFrontImage,
+        aadhaarBackImage: event.institutionUiModal.aadhaarBackImage,
+        panImage: event.institutionUiModal.panImage,
+        proprietorName: event.institutionUiModal.proprietorName,
+        proprietorEducation: event.institutionUiModal.proprietorEducation,
+        proprietorDOB: event.institutionUiModal.proprietorDOB,
+        proprietorExperience: event.institutionUiModal.proprietorExperience,
+      );
+      // Prepare your request model
+      // alertPrint("Institution Request modal $institiutionReqModel");
+      // log("Institution Pan Image ${institiutionReqModel.panImage}");
+      log("Institution Request modal $institiutionReqModel");
 
       final response = await RestAPI().post(
         APis.institutionUserCreation,
-        params: requestModel.toJson(),
+        params: institiutionReqModel.toJson(),
       );
 
       final parsedResponse = InstitutionResponseModal.fromJson(response);
@@ -307,11 +356,30 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         state.copyWith(
           isInstitutionCreationLoading: false,
           institutionResponse: parsedResponse,
-          institutionCreationError: null,
+          institutionCreationError: response["ProceedMessage"],
         ),
       );
 
       successPrint("✅ Institution creation success");
+    } on RestException catch (e) {
+      emit(
+        state.copyWith(
+          isInstitutionCreationLoading: false,
+          institutionResponse: null,
+          institutionCreationError:
+              e.message["ProceedMessage"] ?? "Request failed",
+        ),
+      );
+      errorPrint("❌ Institution creation Rest exception: $e");
+    } on SocketException catch (e) {
+      emit(
+        state.copyWith(
+          isInstitutionCreationLoading: false,
+          institutionResponse: null,
+          institutionCreationError: "Network error. Please try again.",
+        ),
+      );
+      customPrint("❌ Institution creation Socket exception: $e");
     } catch (e) {
       emit(
         state.copyWith(

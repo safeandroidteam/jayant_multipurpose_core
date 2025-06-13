@@ -1,13 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:intl/intl.dart';
 import 'package:passbook_core_jayant/Passbook/bloc/pass_book_bloc.dart';
 import 'package:passbook_core_jayant/Util/GlobalWidgets.dart';
-import 'package:passbook_core_jayant/Util/StaticValue.dart';
 import 'package:passbook_core_jayant/Util/custom_print.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Model/PassbookListModel.dart';
@@ -218,7 +213,9 @@ class _DepositShareTransactionState extends State<DepositShareTransaction>
                                   ),
                                   TableCell(
                                     child: TextView(
-                                      text: state.transactionList[index].amount!
+                                      text: state
+                                          .transactionList[index]
+                                          .balance!
                                           .toStringAsFixed(2),
                                       textAlign: TextAlign.end,
                                       size: 12,

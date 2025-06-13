@@ -9,11 +9,13 @@ class ProprietorModal {
 
   xml.XmlElement toXml() {
     return xml.XmlElement(xml.XmlName('Data'), [], [
-      xml.XmlElement(xml.XmlName('Name'), [], [xml.XmlText(name.toString())]),
-      xml.XmlElement(xml.XmlName('address'), [], [
+      xml.XmlElement(xml.XmlName('Own_OperName'), [], [
+        xml.XmlText(name.toString()),
+      ]),
+      xml.XmlElement(xml.XmlName('Own_OperAdd'), [], [
         xml.XmlText(address.toString()),
       ]),
-      xml.XmlElement(xml.XmlName('panCardNo'), [], [
+      xml.XmlElement(xml.XmlName('Own_Pan'), [], [
         xml.XmlText(panCardNo.toString()),
       ]),
     ]);

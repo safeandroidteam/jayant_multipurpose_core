@@ -285,6 +285,12 @@ class Textcntlrs {
   String? institutionAadhaarBackImageBase64;
 
   /// Proprietor Details
+  final TextEditingController proprietorName = TextEditingController();
+  final TextEditingController proprietorEducation = TextEditingController();
+  final TextEditingController proprietorDob = TextEditingController();
+  final TextEditingController proprietorExperience = TextEditingController();
+
+  /// Ownership Details
   List<ProprietorModal> proprietors = [ProprietorModal()];
   List<Map<String, TextEditingController>> proprietorControllers = [
     {
@@ -334,7 +340,7 @@ class Textcntlrs {
   String institutionCommunicationAddress = "";
 
   //institution new vishnu
-  void institutionClear(){
+  void institutionClear() {
     firmName.clear();
     firmReg_No.clear();
     institutionPrimaryEmail.clear();
@@ -344,8 +350,8 @@ class Textcntlrs {
     institutionFirmPlace.clear();
     turnOver.clear();
     institutionFirmPanCard.clear();
-    institutionPanCardImage= null;
-    institutionPanCardImageBase64= null;
+    institutionPanCardImage = null;
+    institutionPanCardImageBase64 = null;
     proprietorControllers.clear();
     institutionPermanentAddress1.clear();
     institutionPermanentAddress2.clear();
@@ -365,14 +371,18 @@ class Textcntlrs {
     institutionCurrentState.clear();
     institutionCurrentCountry.clear();
     institutionCurrentPinCode.clear();
-    institutionCommunicationAddress="";
-    institutionAadhaarFrontImage= null;
-    institutionAadhaarFrontImageBase64=null;
-    institutionAadhaarBackImage= null;
-    institutionAadhaarBackImageBase64= null;
-
+    institutionCommunicationAddress = "";
+    institutionAadhaarFrontImage = null;
+    institutionAadhaarFrontImageBase64 = null;
+    institutionAadhaarBackImage = null;
+    institutionAadhaarBackImageBase64 = null;
+    proprietorName.clear();
+    proprietorEducation.clear();
+    proprietorDob.clear();
+    proprietorExperience.clear();
   }
-  void institutionDispose(){
+
+  void institutionDispose() {
     firmName.dispose();
     firmReg_No.dispose();
     institutionPrimaryEmail.dispose();
@@ -401,6 +411,10 @@ class Textcntlrs {
     institutionCurrentState.dispose();
     institutionCurrentCountry.dispose();
     institutionCurrentPinCode.dispose();
-    institutionCommunicationAddress="";
+    institutionCommunicationAddress = "";
+    proprietorName.dispose();
+    proprietorEducation.dispose();
+    proprietorDob.dispose();
+    proprietorExperience.dispose();
   }
 }

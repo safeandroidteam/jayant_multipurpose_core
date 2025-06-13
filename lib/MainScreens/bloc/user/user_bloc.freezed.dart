@@ -30,7 +30,7 @@ mixin _$UserEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -46,7 +46,7 @@ mixin _$UserEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -62,7 +62,7 @@ mixin _$UserEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -226,7 +226,7 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return fillPickUpTypesEvent(cmpCode, pickUpType);
@@ -246,7 +246,7 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return fillPickUpTypesEvent?.call(cmpCode, pickUpType);
@@ -266,7 +266,7 @@ class _$FillPickUpTypesEventImpl implements FillPickUpTypesEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -432,7 +432,7 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return selectCustomerType(selectedItem);
@@ -452,7 +452,7 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return selectCustomerType?.call(selectedItem);
@@ -472,7 +472,7 @@ class _$selectCustomerTypeEventImpl implements selectCustomerTypeEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -636,7 +636,7 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return pickCustomerDob(dob);
@@ -656,7 +656,7 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return pickCustomerDob?.call(dob);
@@ -676,7 +676,7 @@ class _$PickCustomerDobEventImpl implements PickCustomerDobEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -809,7 +809,7 @@ class _$GetBranchesEventImpl implements GetBranchesEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return getBranches();
@@ -829,7 +829,7 @@ class _$GetBranchesEventImpl implements GetBranchesEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return getBranches?.call();
@@ -849,7 +849,7 @@ class _$GetBranchesEventImpl implements GetBranchesEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -1010,7 +1010,7 @@ class _$IndividualUserCreationEventImpl implements IndividualUserCreationEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return individualUserCreation(individualUserCreationUiModal);
@@ -1030,7 +1030,7 @@ class _$IndividualUserCreationEventImpl implements IndividualUserCreationEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return individualUserCreation?.call(individualUserCreationUiModal);
@@ -1050,7 +1050,7 @@ class _$IndividualUserCreationEventImpl implements IndividualUserCreationEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -1221,7 +1221,7 @@ class _$ValidateRefIDEventImpl implements ValidateRefIDEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return validateRefID(cmpCode, refID);
@@ -1241,7 +1241,7 @@ class _$ValidateRefIDEventImpl implements ValidateRefIDEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return validateRefID?.call(cmpCode, refID);
@@ -1261,7 +1261,7 @@ class _$ValidateRefIDEventImpl implements ValidateRefIDEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -1395,7 +1395,7 @@ class _$ClearRefEventImpl implements ClearRefEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return clearRefValidation();
@@ -1415,7 +1415,7 @@ class _$ClearRefEventImpl implements ClearRefEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return clearRefValidation?.call();
@@ -1435,7 +1435,7 @@ class _$ClearRefEventImpl implements ClearRefEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -1559,7 +1559,7 @@ class _$ClearDobEventImpl implements ClearDobEvent {
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return clearDobSelection();
@@ -1579,7 +1579,7 @@ class _$ClearDobEventImpl implements ClearDobEvent {
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return clearDobSelection?.call();
@@ -1599,7 +1599,7 @@ class _$ClearDobEventImpl implements ClearDobEvent {
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -1676,7 +1676,7 @@ abstract class _$$InstitutionUserCreationEventImplCopyWith<$Res> {
     $Res Function(_$InstitutionUserCreationEventImpl) then,
   ) = __$$InstitutionUserCreationEventImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({InstitutionUiModal institutionUiModal});
+  $Res call({InstituitionUiReqModel institutionUiModal});
 }
 
 /// @nodoc
@@ -1699,7 +1699,7 @@ class __$$InstitutionUserCreationEventImplCopyWithImpl<$Res>
             null == institutionUiModal
                 ? _value.institutionUiModal
                 : institutionUiModal // ignore: cast_nullable_to_non_nullable
-                    as InstitutionUiModal,
+                    as InstituitionUiReqModel,
       ),
     );
   }
@@ -1712,7 +1712,7 @@ class _$InstitutionUserCreationEventImpl
   const _$InstitutionUserCreationEventImpl({required this.institutionUiModal});
 
   @override
-  final InstitutionUiModal institutionUiModal;
+  final InstituitionUiReqModel institutionUiModal;
 
   @override
   String toString() {
@@ -1757,7 +1757,7 @@ class _$InstitutionUserCreationEventImpl
     required TResult Function(String cmpCode, String refID) validateRefID,
     required TResult Function() clearRefValidation,
     required TResult Function() clearDobSelection,
-    required TResult Function(InstitutionUiModal institutionUiModal)
+    required TResult Function(InstituitionUiReqModel institutionUiModal)
     institutionCreation,
   }) {
     return institutionCreation(institutionUiModal);
@@ -1777,7 +1777,7 @@ class _$InstitutionUserCreationEventImpl
     TResult? Function(String cmpCode, String refID)? validateRefID,
     TResult? Function()? clearRefValidation,
     TResult? Function()? clearDobSelection,
-    TResult? Function(InstitutionUiModal institutionUiModal)?
+    TResult? Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
   }) {
     return institutionCreation?.call(institutionUiModal);
@@ -1797,7 +1797,7 @@ class _$InstitutionUserCreationEventImpl
     TResult Function(String cmpCode, String refID)? validateRefID,
     TResult Function()? clearRefValidation,
     TResult Function()? clearDobSelection,
-    TResult Function(InstitutionUiModal institutionUiModal)?
+    TResult Function(InstituitionUiReqModel institutionUiModal)?
     institutionCreation,
     required TResult orElse(),
   }) {
@@ -1865,10 +1865,10 @@ class _$InstitutionUserCreationEventImpl
 
 abstract class InstitutionUserCreationEvent implements UserEvent {
   const factory InstitutionUserCreationEvent({
-    required final InstitutionUiModal institutionUiModal,
+    required final InstituitionUiReqModel institutionUiModal,
   }) = _$InstitutionUserCreationEventImpl;
 
-  InstitutionUiModal get institutionUiModal;
+  InstituitionUiReqModel get institutionUiModal;
 
   /// Create a copy of UserEvent
   /// with the given fields replaced by the non-null parameter values.
