@@ -136,8 +136,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     try {
       Map<String, dynamic> fetchBeneficiaryListBody = {
         "Cmp_Code": event.cmpCode,
-        //"Cust_ID": event.custID,
-        "Cust_ID": "1139",
+        "Cust_ID": event.custID,
+        // "Cust_ID": "1139",
       };
       final response = await RestAPI().post(
         APis.fetchBeneficiaryList,
