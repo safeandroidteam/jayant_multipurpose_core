@@ -83,7 +83,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     alertPrint("Ver_Name Frm Api==$verNameFromApi");
     alertPrint("Ver_Code Frm Api==$verCodeFromApiDouble");
     alertPrint("ver_Code From App==$buildNumber");
-
+   // alertPrint("cmpcode test=$cmpCode");
     if (verCodeFromApiDouble != buildNumber) {
       showDialog(
         context: context,
@@ -337,7 +337,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       height:
                           (MediaQuery.of(context).size.width *
                                   _animation!.value +
-                              MediaQuery.of(context).size.height * .085),
+                              MediaQuery.of(context).size.height * .19),
                       // height: MediaQuery.of(context).size.height * .8,
                       //onRegister .83
                       child: Card(
@@ -586,6 +586,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   void loadSims() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String mobNo = preferences.getString(StaticValues.mobileNo) ?? "";
+    warningPrint("mob no in pref = ${mobNo}");
     if (mobNo.isEmpty && mobNo.length != 10) {
       customPrint("mob no is empty");
       // Request permission
@@ -640,9 +641,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       }
     } else if (mobNo.isNotEmpty && mobNo.length == 10) {
       mobCtrl.text = mobNo;
-      successPrint("Mobile no ==${mobCtrl.text}");
+      successPrint("Mobile no  ==${mobCtrl.text}");
     }
-    alertPrint("mob No =${mobCtrl.text}");
+    alertPrint("mob No in cntrl added=${mobCtrl.text}");
   }
 
   @override
@@ -891,6 +892,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
               debugPrint(
                 "Login Button : UN from usernameCtrl - ${usernameCtrl.text}",
               );
+              customPrint("login loading");
               mergeMPinCtrlValues();
               setState(() {
                 passVal = passCtrl.text.trim().length < 4;
@@ -1184,6 +1186,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
               }
             } else {
               loadSims();
+              customPrint("sim loadin");
             }
           },
           buttonText: "Login",
