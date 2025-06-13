@@ -209,6 +209,7 @@ class _RegisterUIState extends State<RegisterUI>
                       child: Column(
                         children: <Widget>[
                           LabelWithDropDownField<RegisterAccData>(
+                            enabled: isOtpValid,
                             textDropDownLabel: "Select A/C No",
                             items: accNos,
                             itemAsString: (p0) => p0.accNo,
@@ -220,6 +221,7 @@ class _RegisterUIState extends State<RegisterUI>
 
                           SizedBox(height: 20.0),
                           EditTextBordered(
+                            readOnly: isOtpValid == true ? false : true,
                             controller: usernameCtrl,
                             hint: "Enter a user name",
                             errorText: userNameVal ? "Invalid username" : null,
@@ -237,6 +239,7 @@ class _RegisterUIState extends State<RegisterUI>
                           ),
                           SizedBox(height: 20.0),
                           EditTextBordered(
+                             readOnly: isOtpValid == true ? false : true,
                             controller: passCtrl,
                             hint: "Password",
                             errorText:
@@ -264,6 +267,7 @@ class _RegisterUIState extends State<RegisterUI>
                           ),
                           SizedBox(height: 20.0),
                           EditTextBordered(
+                             readOnly: isOtpValid == true ? false : true,
                             controller: rePassCtrl,
                             hint: "Confirm Password",
                             focusNode: chapass,
@@ -282,6 +286,7 @@ class _RegisterUIState extends State<RegisterUI>
 
                           ///MPIN
                           EditTextBordered(
+                             readOnly: isOtpValid == true ? false : true,
                             controller: mpinCtrl,
                             hint: "MPIN",
                             keyboardType: TextInputType.number,
@@ -304,6 +309,7 @@ class _RegisterUIState extends State<RegisterUI>
                           ),
                           SizedBox(height: 20.0),
                           EditTextBordered(
+                             readOnly: isOtpValid == true ? false : true,
                             controller: reMpinCtrl,
                             hint: "Confirm MPIN",
                             keyboardType: TextInputType.number,
