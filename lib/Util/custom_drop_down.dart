@@ -19,6 +19,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
     this.isHintvalue = false,
     this.showboxshadow = false,
     this.padding,
+    this.enabled = true,
   });
   final String textDropDownLabel;
   final Future<bool?> Function(T?)? onBeforePopupOpening;
@@ -33,6 +34,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
   final bool? isHintvalue;
   final String Function(T)? itemAsString;
   final double? padding;
+  final bool? enabled;
 
   final bool? showboxshadow;
   @override
@@ -56,6 +58,7 @@ class LabelWithDropDownField<T> extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           DropdownSearch<T>(
+            enabled: enabled ?? true,
             selectedItem: selectedItem,
             popupProps: PopupProps.menu(
               fit: FlexFit.loose,

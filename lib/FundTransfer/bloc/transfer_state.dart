@@ -3,6 +3,8 @@ import 'package:passbook_core_jayant/FundTransfer/Model/beneficiaryResModal.dart
 import 'package:passbook_core_jayant/FundTransfer/Model/fundTransferTypeModal.dart';
 import 'package:passbook_core_jayant/FundTransfer/Model/userAccResModal.dart';
 
+import '../Model/deleteBeneficiaryModal.dart';
+import '../Model/fetchBeneficiaryToUpdateModal.dart';
 import '../Model/fetchBeniBankDetailModal.dart';
 import '../Model/fetchUserLimitRightModal.dart';
 import '../Model/saveBenificiaryModal.dart';
@@ -100,6 +102,37 @@ class SaveBeneficiaryError extends TransferState {
 
   SaveBeneficiaryError(this.error);
 }
+
+//deleteBeneficiary
+class DeleteBeneficiaryLoading extends TransferState {}
+
+class DeleteBeneficiaryResponse extends TransferState {
+  final List<DeleteBeneficiaryData> deleteBeneficiaryList;
+
+  DeleteBeneficiaryResponse(this.deleteBeneficiaryList);
+}
+
+class DeleteBeneficiaryError extends TransferState {
+  final String error;
+
+  DeleteBeneficiaryError(this.error);
+}
+
+//fetchBeneficiary to update
+class FetchBeneficiaryToUpdateLoading extends TransferState {}
+
+class FetchBeneficiaryToUpdateResponse extends TransferState {
+  final List<BeneficiaryDataToUpdate> fetchBeneficiaryToUpdateList;
+
+  FetchBeneficiaryToUpdateResponse(this.fetchBeneficiaryToUpdateList);
+}
+
+class FetchBeneficiaryToUpdateError extends TransferState {
+  final String error;
+
+  FetchBeneficiaryToUpdateError(this.error);
+}
+
 
 //check IFSC
 class FetchBeneficiaryBankDetailsLoading extends TransferState {}
