@@ -1,4 +1,8 @@
-class InstitutionReqModal {
+import 'package:passbook_core_jayant/MainScreens/Model/institution/proprietor_modal.dart';
+
+import 'address_modal.dart';
+
+class InstituitionUiReqModel {
   final String cmpCode;
   final String brCode;
   final String custTypeCode;
@@ -10,10 +14,10 @@ class InstitutionReqModal {
   final String firmPanNo;
   final String firmPrimaryEmail;
   final String firmGstin;
-  final String presentAddressXml;
-  final String permanentAddressXml;
+  final InstitutionAddressModal presentAddressXml;
+  final InstitutionAddressModal permanentAddressXml;
   final String communicationAddress;
-  final String proprietorsXml;
+  final List<ProprietorModal> proprietorsXml;
   final String accountType;
   final String refID;
   final String aadhaarFrontImage;
@@ -24,7 +28,7 @@ class InstitutionReqModal {
   final String proprietorDOB;
   final String proprietorExperience;
 
-  InstitutionReqModal({
+  InstituitionUiReqModel({
     required this.cmpCode,
     required this.brCode,
     required this.custTypeCode,
@@ -50,35 +54,4 @@ class InstitutionReqModal {
     required this.proprietorDOB,
     required this.proprietorExperience,
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      "Parameter_Xml": {
-        "Cmp_Code": cmpCode,
-        "Br_Code": brCode,
-        "Cust_Type_Code": custTypeCode,
-        "Firm_Name": firmName,
-        "Firm_RegistrationType": firmRegType,
-        "Firm_RegistrationNumber": firmRegNo,
-        "Firm_StartDate": firmStartDate,
-        "Cust_PlaceInc": firmPlaceInc,
-        "Cust_Pan": firmPanNo,
-        "Cust_PrimaryEmail": firmPrimaryEmail,
-        "Cust_GSTIN": firmGstin,
-        "Cust_ProprietorName": proprietorName,
-        "Cust_ProprietorEducation": proprietorEducation,
-        "Cust_Proprietordob_Inc": proprietorDOB,
-        "Cust_ProprietorExp": proprietorExperience,
-        "Present_Add_Xml": presentAddressXml,
-        "Permanent_Add_Xml": permanentAddressXml,
-        "Communication_Add_Xml": communicationAddress,
-        "Own_Xml": proprietorsXml,
-        "Account_Type": accountType,
-        "Ref_ID": refID,
-      },
-      "Aadhaar_FrontImage": aadhaarFrontImage,
-      "Aadhaar_BackImage": aadhaarBackImage,
-      "PAN_Image": panImage,
-    };
-  }
 }

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -317,7 +317,7 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
                           context,
                           state.individualResponse!,
                         );
-                        widget.cntlrs.individualDispose();
+                        widget.cntlrs.individualClear();
                       } else {
                         customPrint(
                           "individual creation  msg=${state.individualUserCreationError}",
@@ -638,100 +638,102 @@ class _UserIndividualCreation3State extends State<UserIndividualCreation3> {
     final userData = responseModel.data.first;
 
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('User Created Successfully'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: Text('Customer ID : ${userData.custId}')),
-                  IconButton(
-                    icon: const Icon(Icons.copy, size: 18),
-                    tooltip: 'Copy Customer ID',
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: userData.custId));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Customer ID copied to clipboard'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            title: const Text('User Created Successfully'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: Text('Customer ID : ${userData.custId}')),
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 18),
+                      tooltip: 'Copy Customer ID',
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: userData.custId));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Customer ID copied to clipboard'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text('Account No  : ${userData.accNo}'),
+                Text('Share No    : ${userData.shareNo}'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => Login()),
+                  );
+                },
+                child: const Text('OK'),
               ),
-              const SizedBox(height: 4),
-              Text('Account No  : ${userData.accNo}'),
-              Text('Share No    : ${userData.shareNo}'),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Login()),
-                );
-              },
-              child: const Text('OK'),
-            ),
-          ],
         );
       },
     );
   }
 }
 
+///Video Recording
+// ImageWidget(
+//   text: "Video Recording",
+//   imageFile: widget.cntlrs.individualVideoRecordingFile,
+//   isVideo: true,
+//   onTap: () async {
+//     final video = await CaptureService().captureVideo();
+//     if (video != null) {
+//       final bytes = await video.readAsBytes();
+//       final base64 = base64Encode(bytes);
+//       setState(() {
+//         widget.cntlrs.individualVideoRecordingFile = File(video.path);
+//         widget.cntlrs.individualVideoRecordingFileBase64 = base64;
+//       });
+//       successPrint("Blinking Video $base64");
+//       successPrint(
+//         "Blinking Video ${widget.cntlrs.individualVideoRecordingFileBase64}",
+//       );
+//     } else {
+//       warningPrint("Video recording cancelled or failed.");
+//     }
+//   },
+// ),
 
-
- ///Video Recording
-                // ImageWidget(
-                //   text: "Video Recording",
-                //   imageFile: widget.cntlrs.individualVideoRecordingFile,
-                //   isVideo: true,
-                //   onTap: () async {
-                //     final video = await CaptureService().captureVideo();
-                //     if (video != null) {
-                //       final bytes = await video.readAsBytes();
-                //       final base64 = base64Encode(bytes);
-                //       setState(() {
-                //         widget.cntlrs.individualVideoRecordingFile = File(video.path);
-                //         widget.cntlrs.individualVideoRecordingFileBase64 = base64;
-                //       });
-                //       successPrint("Blinking Video $base64");
-                //       successPrint(
-                //         "Blinking Video ${widget.cntlrs.individualVideoRecordingFileBase64}",
-                //       );
-                //     } else {
-                //       warningPrint("Video recording cancelled or failed.");
-                //     }
-                //   },
-                // ),
-
-                 // ///Customer Bank Details
-                // ImageWidget(
-                //   text: "Customer Bank details",
-                //   imageFile: widget.cntlrs.individualBankDetailsFile,
-                //   onTap: () async {
-                //     final file = await CaptureService().captureImage();
-                //     if (file != null) {
-                //       final base64 = await ImageUtils.compressXFileToBase64(
-                //         file,
-                //       );
-                //       setState(() {
-                //         widget.cntlrs.individualBankDetailsFile = file;
-                //         widget.cntlrs.individualBankDetailsFileBase64 = base64;
-                //         widget.cntlrs.individualBankDetailsFile = File(file.path);
-                //       });
-                //       widget.cntlrs.individualBankDetailsFileBase64 = base64;
-                //       successPrint(
-                //         "Individual Bank Image ${widget.cntlrs.individualBankDetailsFileBase64}",
-                //       );
-                //     }
-                //   },
-                // ),
+// ///Customer Bank Details
+// ImageWidget(
+//   text: "Customer Bank details",
+//   imageFile: widget.cntlrs.individualBankDetailsFile,
+//   onTap: () async {
+//     final file = await CaptureService().captureImage();
+//     if (file != null) {
+//       final base64 = await ImageUtils.compressXFileToBase64(
+//         file,
+//       );
+//       setState(() {
+//         widget.cntlrs.individualBankDetailsFile = file;
+//         widget.cntlrs.individualBankDetailsFileBase64 = base64;
+//         widget.cntlrs.individualBankDetailsFile = File(file.path);
+//       });
+//       widget.cntlrs.individualBankDetailsFileBase64 = base64;
+//       successPrint(
+//         "Individual Bank Image ${widget.cntlrs.individualBankDetailsFileBase64}",
+//       );
+//     }
+//   },
+// ),

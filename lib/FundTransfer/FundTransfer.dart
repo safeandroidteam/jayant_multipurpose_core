@@ -80,9 +80,7 @@ class _FundTransferState extends State<FundTransfer>
     });
   }
 
-  Future<Map> deleteBeneficiary(String recieverId) async {
-    return await RestAPI().get(APis.deleteBeneficiary(recieverId));
-  }
+
 
   @override
   void didChangeDependencies() {
@@ -132,7 +130,7 @@ class _FundTransferState extends State<FundTransfer>
             onPressed: () async {
               var result = await Navigator.of(
                 context,
-              ).push(MaterialPageRoute(builder: (context) => Beneficiary()));
+              ).push(MaterialPageRoute(builder: (context) => Beneficiary(isEdit: false,)));
               print("RESULT ::: $result");
             },
           ),
@@ -157,6 +155,7 @@ class _FundTransferState extends State<FundTransfer>
 
   @override
   Widget build(BuildContext context) {
+    final transferBloc = TransferBloc.get(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushReplacementNamed("/HomePage");
@@ -349,6 +348,11 @@ class _FundTransferState extends State<FundTransfer>
                                                       ElevatedButton(
                                                         onPressed: () async {
                                                           // Add your edit logic here
+                                                          Navigator.pop(context);
+                                                           Navigator.of(
+                                                                          context,
+                                                                        ).push(MaterialPageRoute(builder: (context) => Beneficiary(isEdit: true,
+                                                             beneficiaryId: state.beneficiaryList[index].recieverId,)));
                                                         },
                                                         style: ElevatedButton.styleFrom(
                                                           shape: RoundedRectangleBorder(
@@ -369,9 +373,7 @@ class _FundTransferState extends State<FundTransfer>
                                                       // Delete button
                                                       ElevatedButton(
                                                         onPressed: () async {
-                                                          await deleteBeneficiary(
-                                                            state.beneficiaryList[index].recieverId.toString(),
-                                                          );
+                                                           transferBloc.add(DeleteBeneficiaryevent(cmpCode, userId, state.beneficiaryList[index].recieverId));
                                                           fetchBeneficiary();
                                                           Navigator.pop(context);
                                                         },

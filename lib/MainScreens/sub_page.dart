@@ -37,7 +37,7 @@ class _SubPageState extends State<SubPage> with TickerProviderStateMixin {
 
   void loadData() async {
     preferences = StaticValues.sharedPreferences;
-    alertPrint("homepage loaddata wrking");
+    alertPrint("homepage loaddata working");
     setState(() {
       userId = preferences?.getString(StaticValues.custID) ?? "";
       acc = preferences?.getString(StaticValues.accountNo) ?? "";

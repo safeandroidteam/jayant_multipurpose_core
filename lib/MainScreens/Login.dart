@@ -83,7 +83,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     alertPrint("Ver_Name Frm Api==$verNameFromApi");
     alertPrint("Ver_Code Frm Api==$verCodeFromApiDouble");
     alertPrint("ver_Code From App==$buildNumber");
-
+   // alertPrint("cmpcode test=$cmpCode");
     if (verCodeFromApiDouble != buildNumber) {
       showDialog(
         context: context,
@@ -98,11 +98,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
               return false;
             },
             child: AlertDialog(
-              // content:
-              //     Text("A new version of this application is available now. "
-              //         "Please update to get new features."),
-
-              // title: Text("Update Jayant India?"),
               title: Text("Update $appName?"),
               content: Text(
                 "A new version of this application is available now. "
@@ -342,7 +337,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       height:
                           (MediaQuery.of(context).size.width *
                                   _animation!.value +
-                              MediaQuery.of(context).size.height * .085),
+                              MediaQuery.of(context).size.height * .19),
                       // height: MediaQuery.of(context).size.height * .8,
                       //onRegister .83
                       child: Card(
@@ -496,7 +491,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   String? MPin, strCustName;
   Map? response;
   String? str_Otp;
-  String? cmpCode;
+
   var _pass;
   bool isLoading = false;
   int count = 0;
@@ -574,8 +569,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       SharedPreferences pref = StaticValues.sharedPreferences!;
       MPin = pref.getString(StaticValues.Mpin);
       strCustName = pref.getString(StaticValues.accName);
-      cmpCode = pref.getString(StaticValues.cmpCodeKey);
-      debugPrint("cmpCode : $cmpCode");
+
       debugPrint("MPIN : $MPin");
       isMPinEmpty = false;
       /*usernameCtrl.text = "nira";
@@ -592,6 +586,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
   void loadSims() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String mobNo = preferences.getString(StaticValues.mobileNo) ?? "";
+    warningPrint("mob no in pref = ${mobNo}");
     if (mobNo.isEmpty && mobNo.length != 10) {
       customPrint("mob no is empty");
       // Request permission
@@ -646,9 +641,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
       }
     } else if (mobNo.isNotEmpty && mobNo.length == 10) {
       mobCtrl.text = mobNo;
-      successPrint("Mobile no ==${mobCtrl.text}");
+      successPrint("Mobile no  ==${mobCtrl.text}");
     }
-    alertPrint("mob No =${mobCtrl.text}");
+    alertPrint("mob No in cntrl added=${mobCtrl.text}");
   }
 
   @override
@@ -897,6 +892,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
               debugPrint(
                 "Login Button : UN from usernameCtrl - ${usernameCtrl.text}",
               );
+              customPrint("login loading");
               mergeMPinCtrlValues();
               setState(() {
                 passVal = passCtrl.text.trim().length < 4;
@@ -915,6 +911,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                   customPrint("Login with UN & PW ");
                   _isLoading = true;
                   try {
+                    SharedPreferences pref = StaticValues.sharedPreferences!;
+                    String cmpCode =
+                        pref.getString(StaticValues.cmpCodeKey) ?? "";
                     response = await RestAPI().post(
                       APis.loginUrl,
                       params: {
@@ -1039,6 +1038,9 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                       );
                       _isLoading = false;
                     } else {
+                      SharedPreferences pref = StaticValues.sharedPreferences!;
+                      String cmpCode =
+                          pref.getString(StaticValues.cmpCodeKey) ?? "";
                       response = await RestAPI().post(
                         APis.loginMPin,
                         params: {
@@ -1184,6 +1186,7 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
               }
             } else {
               loadSims();
+              customPrint("sim loadin");
             }
           },
           buttonText: "Login",
@@ -1362,6 +1365,10 @@ class _LoginUIState extends State<LoginUI> with SingleTickerProviderStateMixin {
                           ///UN & PW Login
                           else {
                             try {
+                              SharedPreferences pref =
+                                  StaticValues.sharedPreferences!;
+                              String cmpCode =
+                                  pref.getString(StaticValues.cmpCodeKey) ?? "";
                               debugPrint("OTP: $pass");
                               setState(() {
                                 isLoading = true;

@@ -19,7 +19,6 @@ import 'configuration.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
 
   // This widget is the root of your application.
   final String extDownloadPath = '';
@@ -44,9 +43,9 @@ void main() async {
       homePageConfiguration: HomePageConfiguration(
         baseOption: true,
         fundTransferOption: true,
-        rechargeOption: true,
-        shoppingOption: true,
-        cardOption: true,
+        rechargeOption: false,
+        shoppingOption: false,
+        cardOption: false,
         search: true,
       ),
     ),
